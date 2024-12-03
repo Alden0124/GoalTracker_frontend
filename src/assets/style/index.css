@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Noto Sans TC", sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-gray-200 dark:border-gray-700;
+    /* transition-property: background-color, border-color;
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out; */
+  }
+}
+
+@layer components {
+  .custom-scrollbar {
+    @apply [&::-webkit-scrollbar]:w-[6px]
+           [&::-webkit-scrollbar-track]:bg-transparent
+           [&::-webkit-scrollbar-thumb]:bg-gray-300
+           dark:[&::-webkit-scrollbar-thumb]:bg-gray-600
+           [&::-webkit-scrollbar-thumb]:rounded-full
+           hover:[&::-webkit-scrollbar-thumb]:bg-gray-400
+           dark:hover:[&::-webkit-scrollbar-thumb]:bg-gray-500;
+  }
+}
