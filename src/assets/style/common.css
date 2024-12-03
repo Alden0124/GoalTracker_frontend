@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#portal-root {
+  position: relative;
+  z-index: 100;
+}
+
+/* Sweetalert2 的容器應該要更高 */
+.swal2-container {
+  z-index: 1000 !important;
+}
+
+@layer components {
+  /* 主要按鈕 */
+  .btn-primary {
+    @apply py-[6px] text-center w-[80px] md:w-[140px] rounded-[5px] dark:border text-[#fff] bg-button-light dark:bg-button-dark dark:hover:bg-button-darkHover/30;
+  }
+
+  /* 次要按鈕 */
+  .btn-secondary {
+    @apply py-[6px] text-center w-[80px] md:w-[140px] rounded-[5px] border border-button-light dark:border-[#374151]
+    text-button-light dark:text-[#fff]
+    hover:bg-button-light/10 dark:hover:bg-button-darkHover/30;
+  }
+
+  /* 文字按鈕 */
+  .btn-text {
+    @apply px-4 py-2
+    text-button-light dark:text-button-dark
+    hover:bg-button-light/10 dark:hover:bg-button-dark/10
+    transition-all duration-300;
+  }
+}
