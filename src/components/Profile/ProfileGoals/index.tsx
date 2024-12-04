@@ -24,8 +24,7 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
   const [showGoalDialog, setShowGoalDialog] = useState(false);
   // 新增目標
   const { mutate: createGoal, isPending: isCreatePending } = useCreateGoal(
-    userData.id,
-    isCurrentUser
+    userData.id
   );
 
   // 使用 infinite query 獲取目標列表
@@ -35,7 +34,7 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetUserGoals(userInfoId || "", DEFAULT_GOALS_PARAMS, isCurrentUser);
+  } = useGetUserGoals(userInfoId || "", DEFAULT_GOALS_PARAMS);
 
   // // 使用無限捲動 hook
   useInfiniteScroll({

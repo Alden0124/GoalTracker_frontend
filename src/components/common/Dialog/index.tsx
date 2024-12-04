@@ -26,7 +26,7 @@ const Dialog = ({
   const dialogContentRef = useRef<HTMLDivElement>(null);
 
   // 處理 dialog 的關閉事件
-  const handleClose =() => {
+  const handleClose = () => {
     onClose();
     setToastPortalElement(null);
   };
@@ -38,10 +38,12 @@ const Dialog = ({
 
     if (isOpen) {
       dialog.showModal();
+      setToastPortalElement(dialogContentRef.current);
     } else {
       dialog.close();
+      setToastPortalElement(null);
     }
-  }, [isOpen]);
+  }, [isOpen, setToastPortalElement]);
 
   // 處理 dialog 的 backdrop 點擊事件
   const handleBackdropClick = (e: React.MouseEvent) => {

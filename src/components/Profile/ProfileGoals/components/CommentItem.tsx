@@ -57,15 +57,10 @@ const CommentItem = ({
   const userInfo = useAppSelector(selectUserProFile);
 
   // 新增留言或回覆 API hooks
-  const { mutate: createComment } = useCreateComment(
-    goalId,
-    userInfo,
-    isCurrentUser,
-    {
-      ...DEFAULT_COMMENTS_PARAMS,
-      type: activeTab,
-    }
-  );
+  const { mutate: createComment } = useCreateComment(goalId, userInfo, {
+    ...DEFAULT_COMMENTS_PARAMS,
+    type: activeTab,
+  });
 
   // 獲取回覆列表 API hooks
   const { data: repliesData, isLoading: isRepliesLoading } = useGetReplies(
@@ -88,15 +83,10 @@ const CommentItem = ({
   });
 
   // 刪除留言或回覆 API hooks
-  const { mutate: deleteComment } = useDeleteComment(
-    goalId,
-    userInfo.id,
-    isCurrentUser,
-    {
-      ...DEFAULT_COMMENTS_PARAMS,
-      type: activeTab,
-    }
-  );
+  const { mutate: deleteComment } = useDeleteComment(goalId, userInfo.id, {
+    ...DEFAULT_COMMENTS_PARAMS,
+    type: activeTab,
+  });
 
   // 添加點讚評論的 mutation
   const { mutate: likeComment } = useLikeComment(

@@ -76,14 +76,12 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
   // 此使用者是否已對此目標點讚
   const [isLiked, setIsLiked] = useState(goal.isLiked);
   // 刪除目標query
-  const { mutate: deleteGoal } = useDeleteGoal(userInfo, isCurrentUser);
+  const { mutate: deleteGoal } = useDeleteGoal(userInfo);
   // 更新目標query
-  const { mutate: updateGoal, isPending: isUpdatePending } = useUpdateGoal(
-    userInfo,
-    isCurrentUser
-  );
+  const { mutate: updateGoal, isPending: isUpdatePending } =
+    useUpdateGoal(userInfo);
   // 點讚目標query
-  const { mutate: likeGoal } = useLikeGoal(userInfo, isCurrentUser);
+  const { mutate: likeGoal } = useLikeGoal(userInfo);
   // 狀態配置
   const statusConfig = getStatusConfig(goal.status);
 

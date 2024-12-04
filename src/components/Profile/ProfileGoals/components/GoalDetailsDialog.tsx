@@ -33,14 +33,10 @@ const GoalDetailsDialog = ({
   const userInfo = useAppSelector(selectUserProFile);
 
   // 新增留言或回覆 API hooks
-  const { mutate: createComment } = useCreateComment(
-    goalId,
-    userInfo,
-    isCurrentUser,
-    {
-      ...DEFAULT_COMMENTS_PARAMS,
-      type: activeTab,
-    });
+  const { mutate: createComment } = useCreateComment(goalId, userInfo, {
+    ...DEFAULT_COMMENTS_PARAMS,
+    type: activeTab,
+  });
 
   // 留言或回覆查詢 API hooks
   const { data: commentsData, isLoading: isGetCommentsLoading } =
