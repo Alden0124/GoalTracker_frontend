@@ -203,7 +203,8 @@ const CommentItem = ({
     const confirm = await notification.confirm({
       title: "確定要刪除這則留言嗎？",
     });
-    if (confirm.isConfirmed) {
+
+    if (confirm) {
       deleteComment({
         commentId: comment._id,
         parentId: comment.parentId?._id || "",

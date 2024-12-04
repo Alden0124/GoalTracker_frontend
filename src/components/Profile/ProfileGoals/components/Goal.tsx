@@ -105,11 +105,11 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
 
   // 刪除目標
   const handleDeleteGoal = async () => {
-    const result = await notification.confirm({
+    const isConfirmed = await notification.confirm({
       text: "刪除後將無法恢復！",
     });
 
-    if (result.isConfirmed) {
+    if (isConfirmed) {
       deleteGoal(goal._id);
       setShowMenu(false);
     }

@@ -27,19 +27,4 @@ export default defineConfig({
     port: 10000,
     host: "0.0.0.0",
   },
-  build: {
-    minify: "esbuild",
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-      },
-    },
-    target: "es2015",
-  },
-  define: {
-    "process.env.NODE_ENV": JSON.stringify("production"),
-  },
-  esbuild: {
-    drop: ["console", "debugger"],
-  },
 });
