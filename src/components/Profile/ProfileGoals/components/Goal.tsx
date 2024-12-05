@@ -24,6 +24,7 @@ import {
 } from "react-icons/bs";
 import { FaRegComment } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
+import { Link } from "react-router-dom";
 import GoalDetailsDialog from "./GoalDetailsDialog";
 import GoalFormDialog from "./GoalFormDialog";
 
@@ -160,31 +161,22 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
         key={goal._id}
         className="bg-white dark:bg-background-dark rounded-lg p-5 space-y-4 border"
       >
-        {/* 標題和描述 */}
+        {/* 新增的使用者資訊 */}
         <div className="flex justify-between items-start">
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-medium text-foreground-light dark:text-foreground-dark">
-                {goal.title}
-              </h3>
-              <span
-                className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${statusConfig.textColor} ${statusConfig.bgColor}`}
-              >
-                {statusConfig.icon}
-                {goal.status}
-              </span>
-            </div>
-            <p className="text-sm text-gray-500">{goal.description}</p>
-            <div className="flex items-center gap-1 mt-1">
-              <BsCalendarPlus className="text-gray-500 text-sm" />
-              <span className="text-sm text-gray-500">
-                開始時間：{formatDate(goal.startDate)}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 mt-1">
-              <BsCalendarCheck className="text-gray-500 text-sm" />
-              <span className="text-sm text-gray-500">
-                結束時間：{formatDate(goal.endDate)}
+          <div className="flex items-center gap-3">
+            <Link to={`/profile/${goal.user._id}`}>
+              <img
+                src={goal.user.avatar}
+                alt="Avatar"
+                className="w-10 h-10 rounded-full"
+              />
+            </Link>
+            <div>
+              <h4 className="text-sm font-medium text-foreground-light dark:text-foreground-dark">
+                {goal.user.username}
+              </h4>
+              <span className="text-xs text-gray-500">
+                {formatDate(goal.createdAt)}
               </span>
             </div>
           </div>
@@ -236,6 +228,34 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
               )}
             </div>
           )}
+        </div>
+
+        {/* 標題和描述 */}
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-medium text-foreground-light dark:text-foreground-dark">
+              {goal.title}
+            </h3>
+            <span
+              className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${statusConfig.textColor} ${statusConfig.bgColor}`}
+            >
+              {statusConfig.icon}
+              {goal.status}
+            </span>
+          </div>
+          <p className="text-sm text-gray-500">{goal.description}</p>
+          <div className="flex items-center gap-1 mt-1">
+            <BsCalendarPlus className="text-gray-500 text-sm" />
+            <span className="text-sm text-gray-500">
+              開始時間：{formatDate(goal.startDate)}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 mt-1">
+            <BsCalendarCheck className="text-gray-500 text-sm" />
+            <span className="text-sm text-gray-500">
+              預計完成：{formatDate(goal.endDate)}
+            </span>
+          </div>
         </div>
 
         {/* 在非 Dialog 時只顯示 Tab */}

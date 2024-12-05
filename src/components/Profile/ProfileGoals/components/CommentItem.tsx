@@ -215,7 +215,11 @@ const CommentItem = ({
         {/* 留言 */}
         <div className="border-t dark:border-gray-700 pt-3">
           <div className="flex gap-2">
-            <CommentAvater avatar={comment.user.avatar} size={40} />
+            <CommentAvater
+              userId={comment.user._id}
+              avatar={comment.user.avatar}
+              size={40}
+            />
             {/* 留言內容 */}
             <div className="flex-1">
               <div className="flex justify-between items-start">
