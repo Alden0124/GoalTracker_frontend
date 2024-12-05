@@ -1,10 +1,7 @@
 import Dialog from "@/components/common/Dialog";
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { useMinimumLoadingTime } from "@/hooks/common/useMinimumLoadingTime";
-import {
-  useCreateComment,
-  useGetComments,
-} from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
+import { useCreateComment, useGetComments } from "@/hooks/feed/useFeedQueries";
 import { CommentFormData, commentSchema } from "@/schemas/commentSchema";
 import { DEFAULT_COMMENTS_PARAMS } from "@/services/api/Profile/ProfileGoals/constants";
 import { CreateCommentParams } from "@/services/api/Profile/ProfileGoals/type";

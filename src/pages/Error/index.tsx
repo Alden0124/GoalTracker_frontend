@@ -1,11 +1,17 @@
-import { useRouteError, isRouteErrorResponse, useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/hooks/common/useAppReduxs";
+import { selectIsAuthenticated } from "@/stores/slice/userReducer";
+import {
+  isRouteErrorResponse,
+  useNavigate,
+  useRouteError,
+} from "react-router-dom";
 
 const ErrorPage = () => {
   const error = useRouteError();
   const navigate = useNavigate();
-
+  const isLogin = useAppSelector(selectIsAuthenticated);
   let errorMessage = "發生未知錯誤";
-  
+
   if (isRouteErrorResponse(error)) {
     switch (error.status) {
       case 404:
@@ -26,7 +32,7 @@ const ErrorPage = () => {
   }
 
   const handleBackHome = () => {
-    navigate("/");
+    navigate(isLogin ? "/feed" : "/");
   };
 
   return (
@@ -34,15 +40,14 @@ const ErrorPage = () => {
       <h1 className="text-4xl font-bold mb-4 dark:text-foreground-dark">
         糟糕！出錯了
       </h1>
-      <p className="text-gray-600 mb-8 dark:text-foreground-dark">{errorMessage}</p>
-      <button
-        onClick={handleBackHome}
-        className="btn-primary"
-      >
+      <p className="text-gray-600 mb-8 dark:text-foreground-dark">
+        {errorMessage}
+      </p>
+      <button onClick={handleBackHome} className="btn-primary">
         返回首頁
       </button>
     </main>
   );
 };
 
-export default ErrorPage; 
+export default ErrorPage;

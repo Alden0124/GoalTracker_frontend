@@ -1,3 +1,4 @@
+import CommentAvater from "@/components/Profile/ProfileInfo/components/CommentAvater";
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import {
   useCreateComment,
@@ -5,7 +6,7 @@ import {
   useGetReplies,
   useLikeComment,
   useUpdateComment,
-} from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
+} from "@/hooks/feed/useFeedQueries";
 import { CommentFormData, commentSchema } from "@/schemas/commentSchema";
 import { DEFAULT_COMMENTS_PARAMS } from "@/services/api/Profile/ProfileGoals/constants";
 import {
@@ -21,7 +22,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiEdit2, FiHeart, FiMoreVertical, FiTrash2 } from "react-icons/fi";
 import { IoSend } from "react-icons/io5";
-import CommentAvater from "../../ProfileInfo/components/CommentAvater";
 import CommentSkeleton from "../skeleton/CommentSkeleton";
 
 interface CommentItemProps {

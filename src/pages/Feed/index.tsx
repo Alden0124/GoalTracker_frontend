@@ -1,31 +1,14 @@
 import Wrapper from "@/components/common/Wrapper";
-import GoalFormDialog from "@/components/Profile/ProfileGoals/components/GoalFormDialog";
+import GoalList from "@/components/Feed/components/GoalList";
+import GoalSkeleton from "@/components/Profile/ProfileGoals/skeleton/GoalSkeleton";
 import { useInfiniteScroll } from "@/hooks/common/useInfiniteScroll";
-import {
-  useCreateGoal,
-  useGetUserGoals,
-} from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
-import { GoalFormData } from "@/schemas/goalSchema";
+import { useGetFeed } from "@/hooks/feed/useFeedQueries";
 import { DEFAULT_GOALS_PARAMS } from "@/services/api/Profile/ProfileGoals/constants";
-import { UserProfileResponse } from "@/services/api/Profile/ProfileInfo/type";
 import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import GoalList from "./components/GoalList";
-import GoalSkeleton from "./skeleton/GoalSkeleton";
 
-interface ProfileGoalsProps {
-  isCurrentUser: boolean;
-  userData: UserProfileResponse["user"];
-}
-
-const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
-  const { id: userInfoId } = useParams();
-  // 控制新增目標對話框的顯示
-  const [showGoalDialog, setShowGoalDialog] = useState(false);
-  // 新增目標
-  const { mutate: createGoal, isPending: isCreatePending } = useCreateGoal(
-    userData.id
-  );
+const Feed = () => {
+  // 新增狀態來管理當前選中的標籤
+  const [activeTab, setActiveTab] = useState("followers");
 
   // 使用 infinite query 獲取目標列表
   const {
@@ -34,7 +17,7 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetUserGoals(userInfoId || "", DEFAULT_GOALS_PARAMS);
+  } = useGetFeed(DEFAULT_GOALS_PARAMS);
 
   // // 使用無限捲動 hook
   useInfiniteScroll({
@@ -50,37 +33,53 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
     return userGoalsPages?.pages.flatMap((page) => page.goals) ?? [];
   }, [userGoalsPages]);
 
-  // 處理新增目標
-  const handleSubmit = (data: GoalFormData) => {
-    createGoal(data);
-    setShowGoalDialog(false);
-  };
-
   return (
-    <Wrapper className="!shadow-none md:w-[60%] dark:bg-transparent !p-0 border-none md:!min-h-[600px]">
-      <div className="h-full flex flex-col gap-4">
-        {/* 標題區域 */}
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl text-foreground-light dark:text-foreground-dark font-bold">
-            目標列表
-          </h2>
-          {isCurrentUser && (
+    <div className="flex w-[90%] flex-col  items-center py-[20px] px-[10px] gap-[30px] max-w-[1440px] md:flex-row m-[0_auto] md:items-start">
+      <div className={`flex flex-col w-[30%] gap-4 sticky top-[64px]`}>
+        {/* 粉絲、追蹤者、推薦用戶 */}
+        <Wrapper className="flex flex-col gap-4">
+          {/* Tab 切換 */}
+          <div className="flex justify-around border-b">
             <button
-              className="btn-primary"
-              onClick={() => setShowGoalDialog(true)}
+              className={`py-2 px-4 ${
+                activeTab === "followers" ? "border-b-2 border-blue-500" : ""
+              }`}
+              onClick={() => setActiveTab("followers")}
             >
-              新增目標
+              粉絲
             </button>
-          )}
-        </div>
+            <button
+              className={`py-2 px-4 ${
+                activeTab === "following" ? "border-b-2 border-blue-500" : ""
+              }`}
+              onClick={() => setActiveTab("following")}
+            >
+              追蹤中
+            </button>
+          </div>
+          {/* 根據選中的標籤顯示內容 */}
+          <div>
+            {activeTab === "followers" ? (
+              <div>粉絲列表</div>
+            ) : (
+              <div>追蹤中列表</div>
+            )}
+          </div>
+        </Wrapper>
 
+        {/* 推薦用戶 */}
+        <Wrapper>推薦用戶</Wrapper>
+      </div>
+
+      {/* 目標列表區域 */}
+      <div className="w-[80%] flex  flex-col gap-4">
         {/* 目標列表區域 */}
         <div className="space-y-4">
           {isLoading ? (
             <GoalSkeleton />
           ) : goals.length > 0 ? (
             <>
-              <GoalList goals={goals}  />
+              <GoalList goals={goals} />
               {/* 加載更多的提示 */}
               {isFetchingNextPage && (
                 <div className="py-4">
@@ -112,25 +111,12 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
                 />
               </svg>
               <p className="text-lg font-medium">目前還沒有設定任何目標</p>
-              {isCurrentUser && (
-                <p className="mt-2">
-                  點擊上方「新增目標」按鈕開始設定你的目標吧！
-                </p>
-              )}
             </div>
           )}
         </div>
-
-        {/* 新增目標對話框 */}
-        <GoalFormDialog
-          isOpen={showGoalDialog}
-          isPending={isCreatePending}
-          onClose={() => setShowGoalDialog(false)}
-          onSubmit={handleSubmit}
-        />
       </div>
-    </Wrapper>
+    </div>
   );
 };
 
-export default ProfileGoals;
+export default Feed;

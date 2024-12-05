@@ -33,11 +33,11 @@ export const useInfiniteScroll = ({
       throttle(() => {
         // 檢查是否滿足加載條件
         if (!hasNextPage || isFetchingNextPage || !enabled) {
-          console.log("無法加載更多:", {
-            hasNextPage,
-            isFetchingNextPage,
-            enabled,
-          });
+          // console.log("無法加載更多:", {
+          //   hasNextPage,
+          //   isFetchingNextPage,
+          //   enabled,
+          // });
           return;
         }
 
