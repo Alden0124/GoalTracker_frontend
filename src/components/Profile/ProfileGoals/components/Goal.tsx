@@ -10,7 +10,7 @@ import {
   GoalStatus,
   Goal as GoalType,
 } from "@/services/api/Profile/ProfileGoals/type";
-import { selectIsAuthenticated, selectUserProFile } from "@/stores/slice/userReducer";
+import { selectUserProFile } from "@/stores/slice/userReducer";
 import { formatDate } from "@/utils/dateFormat";
 import { debounce } from "@/utils/debounce";
 import { notification } from "@/utils/notification";
@@ -58,10 +58,10 @@ const getStatusConfig = (status: GoalStatus) => {
 };
 
 const Goal = ({ goal }: GoalProps) => {
-  const isCurrentUser = useAppSelector(selectIsAuthenticated);
-
   // 使用者資料
   const userInfo = useAppSelector(selectUserProFile);
+  // 是否為當前用戶
+  const isCurrentUser = userInfo.id === goal.user._id;
   // 目前選擇的Tab
   const [activeTab, setActiveTab] = useState<"progress" | "comment">(
     "progress"

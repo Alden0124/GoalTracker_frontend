@@ -28,7 +28,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="flex w-[90%] flex-col items-center py-[20px] px-[10px] gap-[30px] max-w-[1440px] md:flex-row m-[0_auto] md:items-start">
+    <div className="flex w-[95%] flex-col items-center py-[20px] gap-[30px] max-w-[1440px] md:flex-row m-[0_auto] md:items-start md:px-[10px] md:gap-[20px] md:w-full">
       {data?.user && (
         <>
           <ProfileInfo isCurrentUser={isCurrentUser} userData={data.user} />

@@ -1,0 +1,48 @@
+{
+  // ... 保留其他設置 ...
+
+  // 調整格式化和存檔相關設置
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file", // 改為 "file" 可能會更快
+  "editor.defaultFormatter": "esbenp.prettier-vscode", // 統一設置默認格式化工具
+  
+  // ESLint 相關優化
+  "eslint.enable": true,
+  "eslint.format.enable": true,
+  "eslint.run": "onSave", // 改為 onSave 而不是 onType 可以減少即時檢查的負擔
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  
+  // 代碼操作優化
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit" // 改為 explicit 而不是 always
+  },
+
+  // 添加文件監視排除
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/dist/**": true,
+    "**/.next/**": true
+  },
+
+  // 優化建議功能
+  "editor.quickSuggestions": {
+    "strings": "on",
+    "comments": "off", // 在註釋中關閉建議
+    "other": "on"
+  },
+
+  // 添加性能相關設���
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.suggest.shareSuggestSelections": false,
+  "typescript.tsserver.maxTsServerMemory": 3072,
+  "typescript.tsserver.watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority"
+  }
+} 

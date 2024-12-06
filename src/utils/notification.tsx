@@ -70,6 +70,8 @@ export const notification = {
 
   // 確認對話框
   confirm: (options: NotificationOptions) => {
+    toast.dismiss();
+
     return new Promise((resolve) => {
       const content = (
         <div className="confirm-dialog">

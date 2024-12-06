@@ -74,7 +74,7 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
   };
 
   return (
-    <Wrapper className="md:px-[50px] md:w-[30%] md:min-h-[600px] md:sticky md:top-[64px] z-0">
+    <Wrapper className="md:px-[10px] md:w-[40%] lg:w-[30%] md:min-h-[600px] md:sticky md:top-[64px] z-0">
       {/* 頭像和用戶名區域 */}
       <div className="flex flex-col items-center pb-6">
         <ProfileAvatar avatar={avatar} size={120} />
@@ -82,7 +82,6 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
           {username}
         </h2>
       </div>
-
       {/* 操作按鈕區域 */}
       {!isCurrentUser && (
         <div className="flex gap-2 py-4">
@@ -95,7 +94,6 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
           <button className="flex-1 btn-secondary">發送訊息</button>
         </div>
       )}
-
       {/* 編輯按鈕 */}
       {canEdit && (
         <div className="flex justify-center">
@@ -107,7 +105,6 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
           </button>
         </div>
       )}
-
       {/* 用戶資訊區域 */}
       <div className="py-10 space-y-5 border-b border-gray-200 dark:border-gray-600">
         {userInfoItems.map((item) => (
@@ -122,7 +119,6 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
           </Fragment>
         ))}
       </div>
-
       {/* 統計數據區域 */}
       <div className="flex justify-around py-4">
         <div
@@ -148,7 +144,6 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
           <div className="text-sm text-gray-600 dark:text-gray-300">追蹤中</div>
         </div>
       </div>
-
       {/* 粉絲/追蹤列表彈窗 */}
       <FollowListDialog
         isOpen={dialogType !== null}
@@ -167,7 +162,6 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
           dialogType === "followers" ? followersList || [] : followingList || []
         }
       />
-
       {/* 編輯個人資料彈窗 */}
       {canEdit && (
         <ProfileEditDialog

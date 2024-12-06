@@ -1,6 +1,10 @@
+import { queryKeys as ProfileQueryKeys } from "@/hooks/profile/ProfileInfo/queries/queryKeys";
 import { GoalFormData } from "@/schemas/goalSchema";
 import { FETCH_FEED } from "@/services/api/Feed";
-import { GetFeedQuery } from "@/services/api/Feed/type";
+import {
+  GetFeedQuery,
+  GetRecommendedUsersQuery,
+} from "@/services/api/Feed/type";
 import { FETCH_GOAL } from "@/services/api/Profile/ProfileGoals";
 import {
   Comment,
@@ -9,6 +13,7 @@ import {
   GetCommentsResponse,
   GoalStatus,
 } from "@/services/api/Profile/ProfileGoals/type";
+import { FETCH_USER_PROFILE } from "@/services/api/Profile/ProfileInfo";
 import { UserInfoType } from "@/stores/slice/userReducer";
 import { handleError } from "@/utils/errorHandler";
 import { notification } from "@/utils/notification";
@@ -18,7 +23,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { queryKeys } from "./queryKeys";
+import { queryKeys as FeedQueryKeys } from "./queryKeys";
 
 interface UpdateGoalData extends GoalFormData {
   status?: GoalStatus;
@@ -27,7 +32,7 @@ interface UpdateGoalData extends GoalFormData {
 // 獲取Feed
 export const useGetFeed = (query: GetFeedQuery) => {
   return useInfiniteQuery({
-    queryKey: queryKeys.feed.GetFeed(query),
+    queryKey: FeedQueryKeys.feed.GetFeed(query),
     queryFn: ({ pageParam = 1 }) =>
       FETCH_FEED.GetFeed({ ...query, page: pageParam }),
     initialPageParam: 1,
@@ -50,7 +55,7 @@ export const useUpdateGoal = () => {
       FETCH_GOAL.UpdateGoal(goalId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.feed.reacquireFeed(),
+        queryKey: FeedQueryKeys.feed.reacquireFeed(),
       });
       notification.success({ title: "目標更新成功" });
     },
@@ -64,7 +69,7 @@ export const useDeleteGoal = () => {
     mutationFn: (goalId: string) => FETCH_GOAL.DeleteGoal(goalId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.feed.reacquireFeed(),
+        queryKey: FeedQueryKeys.feed.reacquireFeed(),
       });
       notification.success({ title: "目標刪除成功" });
     },
@@ -85,7 +90,7 @@ export const useLikeGoal = () => {
     onSuccess: () => {
       // 重新獲取最新資料，確保與後端同步
       queryClient.invalidateQueries({
-        queryKey: queryKeys.feed.reacquireFeed(),
+        queryKey: FeedQueryKeys.feed.reacquireFeed(),
       });
     },
   });
@@ -107,26 +112,28 @@ export const useCreateComment = (
       // 取消正在進行的查詢
       if (newComment.parentId) {
         await queryClient.cancelQueries({
-          queryKey: queryKeys.goals.getReplies(goalId, {
+          queryKey: FeedQueryKeys.goals.getReplies(goalId, {
             ...query,
             parentId: newComment.parentId,
           }),
         });
       } else {
         await queryClient.cancelQueries({
-          queryKey: queryKeys.goals.getComments(goalId, query),
+          queryKey: FeedQueryKeys.goals.getComments(goalId, query),
         });
       }
 
       // 獲取之前的數據
       const previousData = newComment.parentId
         ? queryClient.getQueryData(
-            queryKeys.goals.getReplies(goalId, {
+            FeedQueryKeys.goals.getReplies(goalId, {
               ...query,
               parentId: newComment.parentId,
             })
           )
-        : queryClient.getQueryData(queryKeys.goals.getComments(goalId, query));
+        : queryClient.getQueryData(
+            FeedQueryKeys.goals.getComments(goalId, query)
+          );
 
       // 樂觀更新
       const optimisticComment = {
@@ -146,7 +153,7 @@ export const useCreateComment = (
       // 更新對應的查詢數據
       if (newComment.parentId) {
         queryClient.setQueryData(
-          queryKeys.goals.getReplies(goalId, {
+          FeedQueryKeys.goals.getReplies(goalId, {
             ...query,
             parentId: newComment.parentId,
           }),
@@ -160,7 +167,7 @@ export const useCreateComment = (
         );
       } else {
         queryClient.setQueryData(
-          queryKeys.goals.getComments(goalId, query),
+          FeedQueryKeys.goals.getComments(goalId, query),
           (old: GetCommentsResponse) => ({
             ...old,
             comments: [...(old?.comments || []), optimisticComment],
@@ -175,7 +182,7 @@ export const useCreateComment = (
       // 發生錯誤時回滾到之前的狀態
       if (newComment.parentId) {
         queryClient.setQueryData(
-          queryKeys.goals.getReplies(goalId, {
+          FeedQueryKeys.goals.getReplies(goalId, {
             ...query,
             parentId: newComment.parentId,
           }),
@@ -183,7 +190,7 @@ export const useCreateComment = (
         );
       } else {
         queryClient.setQueryData(
-          queryKeys.goals.getComments(goalId, query),
+          FeedQueryKeys.goals.getComments(goalId, query),
           context?.previousData
         );
       }
@@ -199,14 +206,14 @@ export const useCreateComment = (
       console.log("userInfo", userInfo);
       // 重新獲取最新數據
       queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getComments(goalId, query),
+        queryKey: FeedQueryKeys.goals.getComments(goalId, query),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.feed.reacquireFeed(),
+        queryKey: FeedQueryKeys.feed.reacquireFeed(),
       });
       if (variables.parentId) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.goals.getReplies(goalId, {
+          queryKey: FeedQueryKeys.goals.getReplies(goalId, {
             ...query,
             parentId: variables.parentId,
           }),
@@ -219,7 +226,7 @@ export const useCreateComment = (
 // 獲取留言列表
 export const useGetComments = (goalId: string, query: GetCommentsQuery) => {
   return useQuery({
-    queryKey: queryKeys.goals.getComments(goalId, query),
+    queryKey: FeedQueryKeys.goals.getComments(goalId, query),
     queryFn: () => FETCH_GOAL.GetComments(goalId, query),
     enabled: !!goalId,
     staleTime: 0, // 立即將數據標記為過期
@@ -233,7 +240,7 @@ export const useGetReplies = (
   options?: { enabled?: boolean }
 ) => {
   return useQuery({
-    queryKey: queryKeys.goals.getReplies(goalId, query),
+    queryKey: FeedQueryKeys.goals.getReplies(goalId, query),
     queryFn: () => FETCH_GOAL.GetComments(goalId, query),
     enabled: !!goalId && (options?.enabled ?? false), // 默認為 false，除非明確啟用
     staleTime: 0, // 立即將數據標記為過期
@@ -254,11 +261,11 @@ export const useUpdateComment = (goalId: string, query: GetCommentsQuery) => {
     onSuccess: (data: { comment: Comment; message: string }) => {
       console.log(data);
       queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getComments(goalId, query),
+        queryKey: FeedQueryKeys.goals.getComments(goalId, query),
       });
       if (data.comment?.parentId._id) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.goals.getReplies(goalId, {
+          queryKey: FeedQueryKeys.goals.getReplies(goalId, {
             ...query,
             parentId: data.comment.parentId._id,
           }),
@@ -272,11 +279,7 @@ export const useUpdateComment = (goalId: string, query: GetCommentsQuery) => {
 };
 
 // 刪除留言或回覆
-export const useDeleteComment = (
-  goalId: string,
-  userId: string,
-  query: GetCommentsQuery
-) => {
+export const useDeleteComment = (goalId: string, query: GetCommentsQuery) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ commentId }: { commentId: string; parentId?: string }) =>
@@ -284,18 +287,18 @@ export const useDeleteComment = (
     onSuccess: (_, variables) => {
       // 重新獲取用戶的目標列表
       queryClient.invalidateQueries({
-        queryKey: queryKeys.feed.reacquireFeed(),
+        queryKey: FeedQueryKeys.feed.reacquireFeed(),
       });
 
       // 重新獲取主留言列表
       queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getComments(goalId, query),
+        queryKey: FeedQueryKeys.goals.getComments(goalId, query),
       });
 
       // 如果是回覆，重新獲取特定父留言的回覆列表
       if (variables.parentId) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.goals.getReplies(goalId, {
+          queryKey: FeedQueryKeys.goals.getReplies(goalId, {
             ...query,
             parentId: variables.parentId,
           }),
@@ -329,27 +332,27 @@ export const useLikeComment = (
       // 取消正在進行的查詢
       if (comment.parentId?._id) {
         await queryClient.cancelQueries({
-          queryKey: queryKeys.goals.getReplies(goalId, {
+          queryKey: FeedQueryKeys.goals.getReplies(goalId, {
             ...query,
             parentId: comment.parentId._id,
           }),
         });
       }
       await queryClient.cancelQueries({
-        queryKey: queryKeys.goals.getComments(goalId, query),
+        queryKey: FeedQueryKeys.goals.getComments(goalId, query),
       });
 
       // 獲取之前的數據
       const previousData = {
         comments: comment.parentId?._id
           ? queryClient.getQueryData<GetCommentsResponse>(
-              queryKeys.goals.getReplies(goalId, {
+              FeedQueryKeys.goals.getReplies(goalId, {
                 ...query,
                 parentId: comment.parentId._id,
               })
             )
           : queryClient.getQueryData<GetCommentsResponse>(
-              queryKeys.goals.getComments(goalId, query)
+              FeedQueryKeys.goals.getComments(goalId, query)
             ),
       };
 
@@ -368,7 +371,7 @@ export const useLikeComment = (
       // 樂觀更新
       if (comment.parentId?._id) {
         queryClient.setQueryData(
-          queryKeys.goals.getReplies(goalId, {
+          FeedQueryKeys.goals.getReplies(goalId, {
             ...query,
             parentId: comment.parentId._id,
           }),
@@ -378,7 +381,7 @@ export const useLikeComment = (
       }
 
       queryClient.setQueryData(
-        queryKeys.goals.getComments(goalId, query),
+        FeedQueryKeys.goals.getComments(goalId, query),
         (old: GetCommentsResponse | undefined) =>
           old ? { ...old, comments: updateComments(old.comments) } : undefined
       );
@@ -390,7 +393,7 @@ export const useLikeComment = (
       // 發生錯誤時回滾到之前的狀態
       if (comment.parentId?._id) {
         queryClient.setQueryData(
-          queryKeys.goals.getReplies(goalId, {
+          FeedQueryKeys.goals.getReplies(goalId, {
             ...query,
             parentId: comment.parentId._id,
           }),
@@ -398,7 +401,7 @@ export const useLikeComment = (
         );
       }
       queryClient.setQueryData(
-        queryKeys.goals.getComments(goalId, query),
+        FeedQueryKeys.goals.getComments(goalId, query),
         context?.previousData.comments
       );
     },
@@ -407,16 +410,125 @@ export const useLikeComment = (
       // 重新獲取最新數據
       if (comment.parentId?._id) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.goals.getReplies(goalId, {
+          queryKey: FeedQueryKeys.goals.getReplies(goalId, {
             ...query,
             parentId: comment.parentId._id,
           }),
         });
       }
       queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getComments(goalId, query),
+        queryKey: FeedQueryKeys.goals.getComments(goalId, query),
       });
     },
   });
 };
 
+// 追蹤用戶
+export const useFollowUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (FollowUserId: string) => FETCH_USER_PROFILE.FollowUser(FollowUserId),
+    onSuccess: (_, FollowUserId) => {
+      // 更新粉絲列表
+      queryClient.invalidateQueries({
+        queryKey: FeedQueryKeys.users.following(),
+      });
+      // 更新當前用戶資料
+      queryClient.invalidateQueries({
+        queryKey: ProfileQueryKeys.users.profile(),
+      });
+      // 更新目標用戶的公開資料
+      queryClient.invalidateQueries({
+        queryKey: ProfileQueryKeys.users.publicProfile(FollowUserId),
+      });
+    },
+    onError: (error: unknown) => {
+      handleError(error, "追蹤失敗");
+    },
+  });
+};
+
+// 獲取粉絲列表，每次調用時都會重新獲取數據
+export const useGetFollowers = (
+  userId: string,
+  isOpen: boolean,
+  options = {}
+) => {
+  return useQuery({
+    queryKey: FeedQueryKeys.users.followers(),
+    queryFn: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await FETCH_USER_PROFILE.GetFollowers(userId);
+      return response.followers;
+    },
+    enabled: !!userId && isOpen,
+    gcTime: 1000 * 60 * 5,
+    ...options,
+  });
+};
+
+// 獲取追蹤列表，每次調用時會重新獲取數據
+export const useGetFollowing = (
+  userId: string,
+  isOpen: boolean,
+  options = {}
+) => {
+  return useQuery({
+    queryKey: FeedQueryKeys.users.following(),
+    queryFn: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await FETCH_USER_PROFILE.GetFollowing(userId);
+      return response.following;
+    },
+    enabled: !!userId && isOpen,
+    gcTime: 1000 * 60 * 5,
+    ...options,
+  });
+};
+
+// 取消追蹤用戶
+export const useUnfollowUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (followerId: string) =>
+      FETCH_USER_PROFILE.UnfollowUser(followerId),
+    onSuccess: (_, variables) => {
+      // 更新粉絲列表
+      queryClient.invalidateQueries({
+        queryKey: FeedQueryKeys.users.following(),
+      });
+      // 更新當前用戶資料
+      queryClient.invalidateQueries({
+        queryKey: ProfileQueryKeys.users.profile(),
+      });
+      // 更新目標用戶的公開資料
+      queryClient.invalidateQueries({
+        queryKey: ProfileQueryKeys.users.publicProfile(variables),
+      });
+    },
+    onError: () => {
+      notification.error({ title: "取消追蹤失敗", text: "請稍後再試" });
+    },
+  });
+};
+
+// 獲取推薦用戶
+export const useGetRecommendUsers = (query: GetRecommendedUsersQuery) => {
+  return useQuery({
+    queryKey: FeedQueryKeys.users.recommend(),
+    queryFn: () => FETCH_FEED.GetRecommendedUsers(query),
+  });
+};
+
+// 搜尋目標自動完成
+export const useSearchGoalAutocomplete = (
+  query: SearchGoalAutocompleteQuery,
+  options?: { enabled?: boolean }
+) => {
+  return useQuery({
+    queryKey: FeedQueryKeys.feed.searchAutocomplete(query),
+    queryFn: () => FETCH_FEED.SearchGoalAutocomplete(query),
+    enabled: options?.enabled ?? true,
+  });
+};

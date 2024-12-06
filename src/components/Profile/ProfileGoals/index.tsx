@@ -57,7 +57,7 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
   };
 
   return (
-    <Wrapper className="!shadow-none md:w-[60%] dark:bg-transparent !p-0 border-none md:!min-h-[600px]">
+    <Wrapper className="!shadow-none md:w-[60%] lg:w-[70%] dark:bg-transparent !p-0 border-none md:!min-h-[600px]">
       <div className="h-full flex flex-col gap-4">
         {/* 標題區域 */}
         <div className="flex justify-between items-center">
@@ -80,7 +80,7 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
             <GoalSkeleton />
           ) : goals.length > 0 ? (
             <>
-              <GoalList goals={goals}  />
+              <GoalList goals={goals} />
               {/* 加載更多的提示 */}
               {isFetchingNextPage && (
                 <div className="py-4">

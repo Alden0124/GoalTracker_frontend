@@ -1,17 +1,19 @@
 export interface SearchGoalAutocompleteResponse {
-  goals: Goal[] | [];
-  users: User[] | [];
+  suggestions: {
+    goals: Goal[] | [];
+    users: User[] | [];
+  }
   message: string;
 }
 
-interface User {
+export interface User {
   id: string;
   username: string;
   avatar: string;
   type: "user";
 }
 
-interface Goal {
+export interface Goal {
   type: "goal";
   id: string;
   title: string;

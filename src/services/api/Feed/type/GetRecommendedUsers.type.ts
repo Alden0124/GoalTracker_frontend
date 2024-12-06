@@ -1,12 +1,6 @@
 // 推薦用戶
 export interface RecommendedUserResponse {
-  _id: string;
-  username: string;
-  avatar: string;
-  followerCount: number;
-  followingCount: number;
-  goalCount: number;
-  score: number;
+  users: RecommendedUser[];
   pagination: {
     current: number;
     size: number;
@@ -14,6 +8,18 @@ export interface RecommendedUserResponse {
   };
   message: string;
 }
+
+export interface RecommendedUser {
+  avatar: string;
+  followerCount: number;
+  followingCount: number;
+  goalCount: number;
+  score: number;
+  username: string;
+  _id: string;
+  isFollowing: boolean;
+}
+
 
 export interface GetRecommendedUsersQuery {
   page: number;

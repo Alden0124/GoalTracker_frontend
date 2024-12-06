@@ -57,9 +57,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       (path) => location.pathname.toLowerCase().startsWith(path.toLowerCase()) // 修改這裡
     );
 
-    console.log(isProtectedPath);
-    console.log(location.pathname);
-
     // 有 token 但獲取用戶資料失敗
     if (token && isError) {
       notification.error({

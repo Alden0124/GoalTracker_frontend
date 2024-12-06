@@ -29,8 +29,8 @@ export const FETCH_USER_PROFILE = {
     axiosInstance.post(`/users/follow/${userId}`),
 
   // 取消追蹤
-  UnfollowUser: (userId: string): Promise<UserProfileResponse> =>
-    axiosInstance.delete(`/users/follow/${userId}`),
+  UnfollowUser: (followerId: string): Promise<UserProfileResponse> =>
+    axiosInstance.delete(`/users/follow/${followerId}`),
 
   // 取消粉絲
   UnfollowFollower: (
