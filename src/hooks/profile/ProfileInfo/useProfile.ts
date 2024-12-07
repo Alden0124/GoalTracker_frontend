@@ -1,4 +1,5 @@
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
+import { GetPublicUserProfileResponse, GetUserProfileResponse } from "@/services/api/Profile/ProfileInfo/type/GetUserProfile.type";
 import { selectUserProFile } from "@/stores/slice/userReducer";
 import { GET_COOKIE } from "@/utils/cookies";
 import { useParams } from "react-router-dom";
@@ -7,8 +8,19 @@ import {
   usePublicUserProfile,
 } from "./queries/useProfileProfileInfoQueries";
 
+// 定義返回的數據類型
+type ProfileDataReturn = {
+  isCurrentUser: boolean;
+  isLoading: boolean;
+  error: unknown;
+  data: GetUserProfileResponse | GetPublicUserProfileResponse | undefined;
+  refetch: () => void;
+  isFetching: boolean;
+  isSuccess: boolean;
+};
+
 // 統一處理 Profile 頁面的數據邏輯
-export const useProfileData = () => {
+export const useProfileData = (): ProfileDataReturn => {
   const { id: urlUserId } = useParams();
   const currentUserProfile = useAppSelector(selectUserProFile);
   const token = GET_COOKIE();
@@ -32,7 +44,7 @@ export const useProfileData = () => {
       isCurrentUser: false,
       isLoading: false,
       error: new Error("Unauthorized"),
-      data: null,
+      data: undefined,
       refetch: () => {},
       isFetching: false,
       isSuccess: false,

@@ -8,7 +8,12 @@ import {
 import { DEFAULT_RECOMMENDED_USERS_QUERY } from "@/services/api/Feed/constants";
 import { Link } from "react-router-dom";
 
-const RecommendUsers = () => {
+interface RecommendUsersProps {
+  className?: string;
+  title?: boolean;
+}
+
+const RecommendUsers = ({ className, title = true }: RecommendUsersProps) => {
   // 獲取推薦用戶數據
   const {
     data: recommendedUsers,
@@ -25,12 +30,14 @@ const RecommendUsers = () => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       <>
-        <h3 className="text-lg font-medium mb-4 dark:text-gray-100">
-          推薦用戶
-        </h3>
-        <div className="space-y-4">
+        {title && (
+          <h3 className="text-lg font-medium mb-4 dark:text-gray-100">
+            推薦用戶
+          </h3>
+        )}
+        <div className={`space-y-4 `}>
           {isLoading || isFetching ? (
             <FollowListDialogSkeleton />
           ) : (

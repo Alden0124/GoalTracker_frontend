@@ -4,9 +4,9 @@ export const queryKeys = {
     profile: () => [...queryKeys.users.all, "profile"] as const,
     publicProfile: (userId: string) =>
       [...queryKeys.users.all, "publicProfile", userId] as const,
-    followers: (userId: string) =>
-      [...queryKeys.users.all, "followers", userId] as const,
-    following: (userId: string) =>
-      [...queryKeys.users.all, "following", userId] as const,
+    followers: (targetUserId: string) =>
+      [...queryKeys.users.all, "followers", targetUserId] as const,
+    following: (targetUserId: string) =>
+      [...queryKeys.users.all, "following", targetUserId] as const,
   },
 };

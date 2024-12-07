@@ -14,7 +14,7 @@ import {
   GoalStatus,
 } from "@/services/api/Profile/ProfileGoals/type";
 import { FETCH_USER_PROFILE } from "@/services/api/Profile/ProfileInfo";
-import { UserInfoType } from "@/stores/slice/userReducer";
+import { UserInfoStateType } from "@/stores/slice/userReducer";
 import { handleError } from "@/utils/errorHandler";
 import { notification } from "@/utils/notification";
 import {
@@ -99,7 +99,7 @@ export const useLikeGoal = () => {
 // 創建留言或回覆
 export const useCreateComment = (
   goalId: string,
-  userInfo: UserInfoType,
+  userInfo: UserInfoStateType["userInfo"],
   query: GetCommentsQuery
 ) => {
   const queryClient = useQueryClient();

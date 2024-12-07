@@ -1,13 +1,19 @@
+import {
+  GetPublicUserProfileResponse,
+  GetUserProfileResponse,
+} from "@/services/api/Profile/ProfileInfo/type/index";
 import axiosInstance from "@/services/axiosInstance";
 import { UserProfileResponse } from "./type";
 
 export const FETCH_USER_PROFILE = {
   // 用戶資料管理
-  GetUserProfile: (): Promise<UserProfileResponse> =>
+  GetUserProfile: (): Promise<GetUserProfileResponse> =>
     axiosInstance.get(`/users/profile`),
 
   // 公開用戶資料
-  GetPublicUserProfile: (userId: string): Promise<UserProfileResponse> =>
+  GetPublicUserProfile: (
+    userId: string
+  ): Promise<GetPublicUserProfileResponse> =>
     axiosInstance.get(`/users/profile/${userId}`),
 
   // 更新用戶資料

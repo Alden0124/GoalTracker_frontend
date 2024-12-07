@@ -1,5 +1,6 @@
 import Wrapper from "@/components/common/Wrapper";
 import GoalFormDialog from "@/components/Profile/ProfileGoals/components/GoalFormDialog";
+import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { useInfiniteScroll } from "@/hooks/common/useInfiniteScroll";
 import {
   useCreateGoal,
@@ -7,24 +8,27 @@ import {
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
 import { GoalFormData } from "@/schemas/goalSchema";
 import { DEFAULT_GOALS_PARAMS } from "@/services/api/Profile/ProfileGoals/constants";
-import { UserProfileResponse } from "@/services/api/Profile/ProfileInfo/type";
+import { selectUserProFile } from "@/stores/slice/userReducer";
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import GoalList from "./components/GoalList";
 import GoalSkeleton from "./skeleton/GoalSkeleton";
 
-interface ProfileGoalsProps {
-  isCurrentUser: boolean;
-  userData: UserProfileResponse["user"];
-}
 
-const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
-  const { id: userInfoId } = useParams();
+
+const ProfileGoals = () => {
+  // 獲取 url 中的用戶 id
+  const { id: urlUserId } = useParams();
+  // 獲取當前用戶數據
+  const currentUserProfile = useAppSelector(selectUserProFile);
+  // 判斷是否為當前用戶的個人頁面
+  const isCurrentUser = urlUserId === currentUserProfile.id;
   // 控制新增目標對話框的顯示
   const [showGoalDialog, setShowGoalDialog] = useState(false);
+  
   // 新增目標
   const { mutate: createGoal, isPending: isCreatePending } = useCreateGoal(
-    userData.id
+    currentUserProfile.id
   );
 
   // 使用 infinite query 獲取目標列表
@@ -34,7 +38,7 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetUserGoals(userInfoId || "", DEFAULT_GOALS_PARAMS);
+  } = useGetUserGoals(urlUserId || "", DEFAULT_GOALS_PARAMS);
 
   // // 使用無限捲動 hook
   useInfiniteScroll({

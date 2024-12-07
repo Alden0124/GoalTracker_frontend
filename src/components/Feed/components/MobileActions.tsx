@@ -2,6 +2,7 @@ import Dialog from "@/components/common/Dialog";
 import { memo, useState } from "react";
 import { FiUserPlus, FiUsers } from "react-icons/fi";
 import Following from "./Following";
+import RecommendUsers from "./RecommendUsers";
 
 const MobileActions = memo(() => {
   const [showUserListDialog, setShowUserListDialog] = useState(false);
@@ -51,7 +52,7 @@ const MobileActions = memo(() => {
         onClose={() => setShowRecommendDialog(false)}
         title="推薦用戶"
       >
-        <div>推薦用戶列表內容</div>
+        <RecommendUsers title={false} className="border-none shadow-none " />
       </Dialog>
     </>
   );

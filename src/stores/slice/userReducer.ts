@@ -1,20 +1,13 @@
+import { GetUserProfileResponse } from "@/services/api/Profile/ProfileInfo/type/index";
 import { REMOVE_COOKIE } from "@/utils/cookies";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 // 定義用戶資料介面
-export interface UserInfoType {
-  id: string;
-  email?: string;
-  avatar?: string;
-  username?: string;
-  isEmailVerified: boolean;
-  providers?: Array<"google" | "line">;
-}
+
 
 // 定義用戶資料介面
 export interface UserInfoStateType {
   accessToken: string;
-  userInfo: UserInfoType;
+  userInfo: GetUserProfileResponse["user"];
   isAuthenticated?: boolean;
 }
 
@@ -22,12 +15,17 @@ export interface UserInfoStateType {
 const initialState: UserInfoStateType = {
   accessToken: "",
   userInfo: {
-    id: "",
-    email: "",
-    avatar: "",
-    username: "",
-    isEmailVerified: false,
-    providers: [],
+      id: "",
+      username: "",
+      avatar: "",
+      location: "",
+      occupation: "",
+      education: "",
+      thirdPartyAvatar: "",
+      email: "",
+      providers: [],
+      followersCount: 0,
+      followingCount: 0,
   },
   isAuthenticated: false,
 };
