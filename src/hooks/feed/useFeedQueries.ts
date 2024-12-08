@@ -4,6 +4,7 @@ import { FETCH_FEED } from "@/services/api/Feed";
 import {
   GetFeedQuery,
   GetRecommendedUsersQuery,
+  SearchGoalAutocompleteQuery,
 } from "@/services/api/Feed/type";
 import { FETCH_GOAL } from "@/services/api/Profile/ProfileGoals";
 import {
@@ -494,7 +495,7 @@ export const useUnfollowUser = () => {
     mutationFn: (followerId: string) =>
       FETCH_USER_PROFILE.UnfollowUser(followerId),
     onSuccess: (_, variables) => {
-      // 更新粉絲列表
+      // 更新追蹤列表
       queryClient.invalidateQueries({
         queryKey: FeedQueryKeys.users.following(),
       });

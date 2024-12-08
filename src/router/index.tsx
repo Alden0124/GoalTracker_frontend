@@ -17,7 +17,7 @@ const ResetPassword = lazy(() => import("@/pages/Auth/ResetPassword"));
 const NotFoundPage = lazy(() => import("@/pages/NotFound"));
 const Profile = lazy(() => import("@/pages/Profile"));
 const Feed = lazy(() => import("@/pages/Feed"));
-
+const ChatRoom = lazy(() => import("@/pages/ChatRoom"));
 const routes = [
   {
     path: "*",
@@ -69,6 +69,14 @@ const routes = [
               </Suspense>
             ),
           },
+          {
+            path: "chatRoom",
+            element: (
+              <Suspense fallback={<div className="h-screen"></div>}>
+                <ChatRoom />
+              </Suspense>
+            ),
+          },  
         ],
       },
       {

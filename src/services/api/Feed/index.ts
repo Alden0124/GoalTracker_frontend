@@ -17,7 +17,7 @@ export const FETCH_FEED = {
   GetRecommendedUsers: (
     query: GetRecommendedUsersQuery
   ): Promise<RecommendedUserResponse> =>
-    axiosInstance.get("/feeds/recommended-users", { params: query }),
+    axiosInstance.get("/feeds/recommended-users", {  params:query }),
 
   // 動態自動完成
   SearchGoalAutocomplete: (

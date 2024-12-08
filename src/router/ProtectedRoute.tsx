@@ -45,7 +45,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     // const publicPaths = ["/"];
 
     // 只有登入才能訪問的頁面列表
-    const protectedPaths = ["/feed", "/profile"];
+    const protectedPaths = ["/feed", "/profile", "/chatRoom"];
 
     // 判斷已登入不可訪問的頁面(登入註冊相關頁面)
     const isAuthOnlyPath = authOnlyPaths.some(

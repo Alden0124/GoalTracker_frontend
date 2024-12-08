@@ -2,11 +2,14 @@ import Wrapper from "@/components/common/Wrapper";
 import ProfileAvatar from "@/components/Profile/ProfileInfo/components/ProfileAvatar";
 import ProfileEditDialog from "@/components/Profile/ProfileInfo/components/ProfileEditDialog";
 import ProfileInfoSkeleton from '@/components/Profile/ProfileInfo/skeleton/ProfileInfoSkeleton';
+import { useAppDispatch } from "@/hooks/common/useAppReduxs";
 import {
   useFollowUser,
   useUnfollowUser,
 } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 import { useProfileData } from "@/hooks/profile/ProfileInfo/useProfile";
+import { socketService } from "@/services/api/SocketService";
+import { openChat } from "@/stores/slice/chatReducer";
 import { GET_COOKIE } from "@/utils/cookies";
 import { Fragment, useState } from "react";
 import { IoLocationOutline, IoSchoolOutline } from "react-icons/io5";
@@ -18,6 +21,7 @@ import renderInfoItem from "./components/renderInfoItem";
 type DialogType = "followers" | "following" | null;
 
 const ProfileInfo = () => {
+  const dispatch = useAppDispatch();
   // 獲取用戶ID
   const { id: paramsUserId } = useParams();
   // 獲取token
@@ -49,6 +53,25 @@ const ProfileInfo = () => {
       unfollowUser(paramsUserId);
     } else {
       followUser(paramsUserId);
+    }
+  };
+
+  // 處理開啟聊天
+  const handleOpenChat = () => {
+    if (userData?.user) {
+      const token = GET_COOKIE();
+      if (token) {
+        // 建立 WebSocket 連線
+        socketService.connect(token);
+
+        // 開啟聊天視窗
+        dispatch(
+          openChat({
+            recipientId: userData.user.id,
+            recipientName: userData.user.username,
+          })
+        );
+      }
     }
   };
 
@@ -94,7 +117,9 @@ const ProfileInfo = () => {
             >
               {userData.user.isFollowing ? "取消追蹤" : "關注"}
             </button>
-            <button className="flex-1 btn-secondary">發送訊息</button>
+            <button onClick={handleOpenChat} className="flex-1 btn-secondary">
+              發送訊息
+            </button>
           </div>
         )}
 
@@ -160,7 +185,7 @@ const ProfileInfo = () => {
           isOpen={dialogType !== null}
           isCurrentUser={isCurrentUser}
           onClose={() => setDialogType(null)}
-          title={dialogType}
+          title={dialogType || ""}
         />
 
         {/* 編輯個人資料彈窗 */}
