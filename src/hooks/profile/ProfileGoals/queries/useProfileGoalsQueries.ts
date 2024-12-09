@@ -50,11 +50,12 @@ export const useGetUserGoals = (userId: string, params: GetUserGoalsParams) => {
     queryFn: ({ pageParam = 1 }) =>
       FETCH_GOAL.GetUserGoals(userId, { ...params, page: pageParam }),
     initialPageParam: 1,
+    // 獲取下一頁的頁碼
     getNextPageParam: (lastPage) => {
       // 從 lastPage 中獲取分頁信息
       const { current, total, size } = lastPage.pagination;
+      // 計算總頁數
       const totalPages = Math.ceil(total / size);
-
       // 如果還有下一頁，返回下一頁的頁碼，否則返回 undefined
       return current < totalPages ? current + 1 : undefined;
     },

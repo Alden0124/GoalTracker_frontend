@@ -1,19 +1,16 @@
 import { queryKeys as chatQueryKeys } from "@/hooks/Chat/queryKeys";
 import { socketService } from "@/services/api/SocketService";
-import { ReceiveMessage } from "@/services/api/SocketService/type";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { MessageInput } from "./MessageInput";
 import { MessageList } from "./MessageList";
-import { Message } from "./type";
 
 interface ChatWindowProps {
   recipientId: string;
   recipientName: string;
   onClose: () => void;
 }
-
 
 
 export const ChatWindow = ({
@@ -23,35 +20,24 @@ export const ChatWindow = ({
 }: ChatWindowProps) => {
   // 查詢快取
   const queryClient = useQueryClient();
-  // 訊息狀態
-  const [messages, setMessages] = useState<Message[]>([]);
+  // 使用者資料
+  // const userInfo = useAppSelector(selectUserProFile);
 
   // 監聽新訊息
   useEffect(() => {
-    const handleNewMessage = (message: ReceiveMessage) => {
-      if (message.sender.id === recipientId) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: message.messageId,
-            content: message.content,
-            isCurrentUser: message.sender.id === recipientId,
-            sender: {
-              id: message.sender.id,
-              avatar: message.sender.avatar || "",
-            },
-            timestamp: message.timestamp,
-          },
-        ]);
-      }
+    const handleNewMessage = async () => {
+      // 使該聊天室的快取失效，觸發重新獲取
+      await queryClient.invalidateQueries({
+        queryKey: chatQueryKeys.chat.messages(recipientId),
+      });
     };
 
     socketService.onNewMessage(handleNewMessage);
 
     return () => {
-      socketService.offNewMessage(handleNewMessage);
+        socketService.offNewMessage(handleNewMessage);
     };
-  }, [recipientId]);
+  }, [queryClient, recipientId]);
 
   // 發送訊息
   const handleSend = async (inputMessage: string) => {
@@ -59,21 +45,7 @@ export const ChatWindow = ({
 
     try {
       // 發送訊息
-       socketService.sendPrivateMessage(recipientId, inputMessage);
-
-      // 立即更新本地訊息顯示
-      setMessages((prev) => [
-        ...prev,
-        {
-          content: inputMessage,
-          isCurrentUser: true,
-          sender: {
-            id: recipientId,
-            avatar: "",
-          },
-          timestamp: new Date().toISOString(),
-        },
-      ]);
+      socketService.sendPrivateMessage(recipientId, inputMessage);
 
       // 使該聊天室的快取失效，觸發重新獲取
       await queryClient.invalidateQueries({
@@ -91,8 +63,6 @@ export const ChatWindow = ({
 
       {/* 訊息區域 */}
       <MessageList
-        messages={messages}
-        setMessages={setMessages}
         recipientName={recipientName}
         recipientId={recipientId}
       />

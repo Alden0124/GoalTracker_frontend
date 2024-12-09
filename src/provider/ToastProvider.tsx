@@ -7,7 +7,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [toastPortalElement, setToastPortalElement] =
     useState<HTMLElement | null>(null);
 
-  console.log(toastPortalElement);
+  // console.log(toastPortalElement);
 
   return (
     <ToastContext.Provider

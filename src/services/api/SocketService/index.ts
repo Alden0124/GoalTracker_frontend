@@ -39,7 +39,7 @@ const createSocketService = (): SocketServiceType => {
 
     console.log("開始建立 WebSocket 連線:", import.meta.env.VITE_API_URL);
 
-    socket = socketIO("http://localhost:3001", {
+    socket = socketIO(import.meta.env.VITE_WS_URL, {
       auth: { token },
       transports: ["websocket"],
     });

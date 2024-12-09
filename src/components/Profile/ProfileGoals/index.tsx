@@ -38,7 +38,10 @@ const ProfileGoals = () => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetUserGoals(urlUserId || "", DEFAULT_GOALS_PARAMS);
+  } = useGetUserGoals(urlUserId || "", {
+    ...DEFAULT_GOALS_PARAMS,
+    limit: 2,
+  });
 
   // // 使用無限捲動 hook
   useInfiniteScroll({
@@ -48,7 +51,7 @@ const ProfileGoals = () => {
     threshold: 0.5, // 可選：自定義閾值
     throttleDelay: 500, // 可選：自定義節流延遲
   });
-
+ 
   // 合併所有頁面的目標數據
   const goals = useMemo(() => {
     return userGoalsPages?.pages.flatMap((page) => page.goals) ?? [];
