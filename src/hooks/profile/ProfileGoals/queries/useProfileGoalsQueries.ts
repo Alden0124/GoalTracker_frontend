@@ -17,6 +17,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 import { queryKeys } from "./queryKeys";
 
 interface UpdateGoalData extends GoalFormData {
@@ -24,14 +25,14 @@ interface UpdateGoalData extends GoalFormData {
 }
 
 // 創建目標
-export const useCreateGoal = (userId: string, isCurrentUser: boolean) => {
+export const useCreateGoal = (userId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: GoalFormData) => FETCH_GOAL.CreateGoal(data),
     onSuccess: () => {
       // 使用 getUserGoals 的 queryKey 來使查詢失效
       queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getUserGoals(userId, isCurrentUser),
+        queryKey: queryKeys.goals.getUserGoals(userId),
       });
 
       notification.success({ title: "目標新增成功" });
@@ -43,21 +44,18 @@ export const useCreateGoal = (userId: string, isCurrentUser: boolean) => {
 };
 
 // 獲取指定用戶的目標列表
-export const useGetUserGoals = (
-  userId: string,
-  params: GetUserGoalsParams,
-  isCurrentUser: boolean
-) => {
+export const useGetUserGoals = (userId: string, params: GetUserGoalsParams) => {
   return useInfiniteQuery({
-    queryKey: queryKeys.goals.getUserGoals(userId, isCurrentUser),
+    queryKey: queryKeys.goals.getUserGoals(userId),
     queryFn: ({ pageParam = 1 }) =>
       FETCH_GOAL.GetUserGoals(userId, { ...params, page: pageParam }),
     initialPageParam: 1,
+    // 獲取下一頁的頁碼
     getNextPageParam: (lastPage) => {
       // 從 lastPage 中獲取分頁信息
       const { current, total, size } = lastPage.pagination;
+      // 計算總頁數
       const totalPages = Math.ceil(total / size);
-
       // 如果還有下一頁，返回下一頁的頁碼，否則返回 undefined
       return current < totalPages ? current + 1 : undefined;
     },
@@ -66,17 +64,14 @@ export const useGetUserGoals = (
 };
 
 // 更新目標
-export const useUpdateGoal = (
-  useInfo: UserInfoType,
-  isCurrentUser: boolean
-) => {
+export const useUpdateGoal = (useInfo: UserInfoType) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ goalId, data }: { goalId: string; data: UpdateGoalData }) =>
       FETCH_GOAL.UpdateGoal(goalId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getUserGoals(useInfo.id, isCurrentUser),
+        queryKey: queryKeys.goals.getUserGoals(useInfo.id),
       });
       notification.success({ title: "目標更新成功" });
     },
@@ -84,16 +79,13 @@ export const useUpdateGoal = (
 };
 
 // 刪除目標
-export const useDeleteGoal = (
-  useInfo: UserInfoType,
-  isCurrentUser: boolean
-) => {
+export const useDeleteGoal = (useInfo: UserInfoType) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (goalId: string) => FETCH_GOAL.DeleteGoal(goalId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getUserGoals(useInfo.id, isCurrentUser),
+        queryKey: queryKeys.goals.getUserGoals(useInfo.id),
       });
       notification.success({ title: "目標刪除成功" });
     },
@@ -104,7 +96,7 @@ export const useDeleteGoal = (
 };
 
 // 點讚目標
-export const useLikeGoal = (userInfo: UserInfoType, isCurrentUser: boolean) => {
+export const useLikeGoal = (userInfo: UserInfoType) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -114,7 +106,7 @@ export const useLikeGoal = (userInfo: UserInfoType, isCurrentUser: boolean) => {
     onSuccess: () => {
       // 重新獲取最新資料，確保與後端同步
       queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getUserGoals(userInfo.id, isCurrentUser),
+        queryKey: queryKeys.goals.getUserGoals(userInfo.id),
       });
     },
   });
@@ -124,10 +116,10 @@ export const useLikeGoal = (userInfo: UserInfoType, isCurrentUser: boolean) => {
 export const useCreateComment = (
   goalId: string,
   userInfo: UserInfoType,
-  isCurrentUser: boolean,
   query: GetCommentsQuery
 ) => {
   const queryClient = useQueryClient();
+  const { id: paramsUserId } = useParams();
 
   return useMutation({
     mutationFn: (params: CreateCommentParams) =>
@@ -225,12 +217,16 @@ export const useCreateComment = (
     },
 
     onSettled: (_, __, variables) => {
+      console.log("variables", variables);
+      console.log("userInfo", userInfo);
       // 重新獲取最新數據
       queryClient.invalidateQueries({
         queryKey: queryKeys.goals.getComments(goalId, query),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getUserGoals(userInfo.id, isCurrentUser),
+        queryKey: queryKeys.goals.getUserGoals(
+          userInfo.id !== paramsUserId ? paramsUserId : userInfo.id
+        ),
       });
       if (variables.parentId) {
         queryClient.invalidateQueries({
@@ -279,10 +275,19 @@ export const useUpdateComment = (goalId: string, query: GetCommentsQuery) => {
       commentId: string;
       content: string;
     }) => FETCH_GOAL.UpdateComment(commentId, content),
-    onSuccess: () => {
+    onSuccess: (data: { comment: Comment; message: string }) => {
+      console.log(data);
       queryClient.invalidateQueries({
         queryKey: queryKeys.goals.getComments(goalId, query),
       });
+      if (data.comment?.parentId._id) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.goals.getReplies(goalId, {
+            ...query,
+            parentId: data.comment.parentId._id,
+          }),
+        });
+      }
     },
     onError: (error: unknown) => {
       handleError(error, "留言或回覆更新失敗");
@@ -294,23 +299,24 @@ export const useUpdateComment = (goalId: string, query: GetCommentsQuery) => {
 export const useDeleteComment = (
   goalId: string,
   userId: string,
-  isCurrentUser: boolean,
   query: GetCommentsQuery
 ) => {
   const queryClient = useQueryClient();
-
+  const { id: paramsUserId } = useParams();
   return useMutation({
     mutationFn: ({ commentId }: { commentId: string; parentId?: string }) =>
       FETCH_GOAL.DeleteComment(commentId),
     onSuccess: (_, variables) => {
+      // 重新獲取用戶的目標列表
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.goals.getUserGoals(
+          userId !== paramsUserId ? paramsUserId : userId
+        ),
+      });
+
       // 重新獲取主留言列表
       queryClient.invalidateQueries({
         queryKey: queryKeys.goals.getComments(goalId, query),
-      });
-
-      // 重新獲取用戶的目標列表
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getUserGoals(userId, isCurrentUser),
       });
 
       // 如果是回覆，重新獲取特定父留言的回覆列表

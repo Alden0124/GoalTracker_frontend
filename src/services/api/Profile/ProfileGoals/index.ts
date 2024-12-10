@@ -1,6 +1,7 @@
 import { GoalFormData } from "@/schemas/goalSchema";
 import axiosInstance from "@/services/axiosInstance";
 import {
+  Comment,
   CreateCommentParams,
   GetCommentsQuery,
   GetCommentsResponse,
@@ -55,7 +56,10 @@ export const FETCH_GOAL = {
     axiosInstance.get(`/goals/getComments/${goalId}`, { params: query }),
 
   // 更新留言或回覆
-  UpdateComment: (commentId: string, content: string) =>
+  UpdateComment: (
+    commentId: string,
+    content: string
+  ): Promise<{ comment: Comment; message: string }> =>
     axiosInstance.put(`/goals/updateComment/${commentId}`, { content }),
 
   // 刪除留言或回覆

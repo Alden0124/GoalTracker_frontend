@@ -1,31 +1,34 @@
 import Wrapper from "@/components/common/Wrapper";
 import GoalFormDialog from "@/components/Profile/ProfileGoals/components/GoalFormDialog";
+import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { useInfiniteScroll } from "@/hooks/common/useInfiniteScroll";
 import {
   useCreateGoal,
   useGetUserGoals,
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
 import { GoalFormData } from "@/schemas/goalSchema";
-import { DEFAULT_GOALS_PARAMS } from "@/services/api/Profile/ProfileGoals/common";
-import { UserProfileResponse } from "@/services/api/Profile/ProfileInfo/type";
+import { DEFAULT_GOALS_PARAMS } from "@/services/api/Profile/ProfileGoals/constants";
+import { selectUserProFile } from "@/stores/slice/userReducer";
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import GoalList from "./components/GoalList";
 import GoalSkeleton from "./skeleton/GoalSkeleton";
 
-interface ProfileGoalsProps {
-  isCurrentUser: boolean;
-  userData: UserProfileResponse["user"];
-}
 
-const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
-  const { id: userInfoId } = useParams();
+
+const ProfileGoals = () => {
+  // 獲取 url 中的用戶 id
+  const { id: urlUserId } = useParams();
+  // 獲取當前用戶數據
+  const currentUserProfile = useAppSelector(selectUserProFile);
+  // 判斷是否為當前用戶的個人頁面
+  const isCurrentUser = urlUserId === currentUserProfile.id;
   // 控制新增目標對話框的顯示
   const [showGoalDialog, setShowGoalDialog] = useState(false);
+  
   // 新增目標
   const { mutate: createGoal, isPending: isCreatePending } = useCreateGoal(
-    userData.id,
-    isCurrentUser
+    currentUserProfile.id
   );
 
   // 使用 infinite query 獲取目標列表
@@ -35,7 +38,10 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetUserGoals(userInfoId || "", DEFAULT_GOALS_PARAMS, isCurrentUser);
+  } = useGetUserGoals(urlUserId || "", {
+    ...DEFAULT_GOALS_PARAMS,
+    limit: 2,
+  });
 
   // // 使用無限捲動 hook
   useInfiniteScroll({
@@ -45,7 +51,7 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
     threshold: 0.5, // 可選：自定義閾值
     throttleDelay: 500, // 可選：自定義節流延遲
   });
-
+ 
   // 合併所有頁面的目標數據
   const goals = useMemo(() => {
     return userGoalsPages?.pages.flatMap((page) => page.goals) ?? [];
@@ -58,7 +64,7 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
   };
 
   return (
-    <Wrapper className="md:w-[60%] dark:bg-transparent !p-0 border-none md:!min-h-[600px]">
+    <Wrapper className="!shadow-none md:w-[60%] lg:w-[70%] dark:bg-transparent !p-0 border-none md:!min-h-[600px]">
       <div className="h-full flex flex-col gap-4">
         {/* 標題區域 */}
         <div className="flex justify-between items-center">
@@ -81,7 +87,7 @@ const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
             <GoalSkeleton />
           ) : goals.length > 0 ? (
             <>
-              <GoalList goals={goals} isCurrentUser={isCurrentUser} />
+              <GoalList goals={goals} />
               {/* 加載更多的提示 */}
               {isFetchingNextPage && (
                 <div className="py-4">

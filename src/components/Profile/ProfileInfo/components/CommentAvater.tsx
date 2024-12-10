@@ -1,19 +1,25 @@
+import LazyImage from "@/components/common/LazyImage";
 import { IoPersonOutline } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 interface ProfileAvatarProps {
   avatar?: string;
   size?: number;
+  userId: string;
 }
 
-const CommentAvater = ({ avatar, size = 100 }: ProfileAvatarProps) => {
+const CommentAvater = ({ avatar, size = 100, userId }: ProfileAvatarProps) => {
   if (avatar) {
     return (
-      <img
-        src={avatar}
-        alt="avatar"
-        className="rounded-full object-cover"
-        style={{ width: size, height: size }}
-      />
+      <Link to={`/profile/${userId}`}>
+        <LazyImage
+          src={avatar}
+          alt="avatar"
+          className="rounded-full object-cover"
+          width={size}
+          height={size}
+        />
+      </Link>
     );
   }
 

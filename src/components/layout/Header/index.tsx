@@ -42,7 +42,7 @@ const Header = () => {
         z-10
       `}
     >
-      <Link to={"/"} className="text-[18px]">
+      <Link to={isLogin ? "/feed" : "/"} className="text-[18px]">
         GoalTracker
       </Link>
       <div className="flex items-center text-[16px] gap-[10px]">

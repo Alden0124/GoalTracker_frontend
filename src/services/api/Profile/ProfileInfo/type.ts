@@ -5,16 +5,14 @@ export interface UserProfileResponse {
   message: string;
   user: {
     id: string;
-    username?: string;
-    email?: string;
-    avatar?: string;
-    location?: string;
-    occupation?: string;
-    education?: string;
-    isEmailVerified: boolean;
+    username: string;
+    email: string;
+    avatar: string;
+    location: string;
+    occupation: string;
+    education: string;
     providers?: Array<"google" | "line">;
-    isFollowing?: boolean;
-    followersCount?: number;
-    followingCount?: number;
+    followersCount: number;
+    followingCount: number;
   };
 }

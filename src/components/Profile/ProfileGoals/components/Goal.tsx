@@ -1,3 +1,4 @@
+import Wrapper from "@/components/common/Wrapper";
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import {
   useDeleteGoal,
@@ -24,12 +25,12 @@ import {
 } from "react-icons/bs";
 import { FaRegComment } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
+import { Link } from "react-router-dom";
 import GoalDetailsDialog from "./GoalDetailsDialog";
 import GoalFormDialog from "./GoalFormDialog";
 
 interface GoalProps {
   goal: GoalType;
-  isCurrentUser: boolean;
 }
 
 // 將 getStatusConfig 移到組件外部
@@ -56,10 +57,11 @@ const getStatusConfig = (status: GoalStatus) => {
   }
 };
 
-// 使用 memo 包裝組件
-const Goal = ({ goal, isCurrentUser }: GoalProps) => {
+const Goal = ({ goal }: GoalProps) => {
   // 使用者資料
   const userInfo = useAppSelector(selectUserProFile);
+  // 是否為當前用戶
+  const isCurrentUser = userInfo.id === goal.user._id;
   // 目前選擇的Tab
   const [activeTab, setActiveTab] = useState<"progress" | "comment">(
     "progress"
@@ -76,14 +78,12 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
   // 此使用者是否已對此目標點讚
   const [isLiked, setIsLiked] = useState(goal.isLiked);
   // 刪除目標query
-  const { mutate: deleteGoal } = useDeleteGoal(userInfo, isCurrentUser);
+  const { mutate: deleteGoal } = useDeleteGoal(userInfo);
   // 更新目標query
-  const { mutate: updateGoal, isPending: isUpdatePending } = useUpdateGoal(
-    userInfo,
-    isCurrentUser
-  );
+  const { mutate: updateGoal, isPending: isUpdatePending } =
+    useUpdateGoal(userInfo);
   // 點讚目標query
-  const { mutate: likeGoal } = useLikeGoal(userInfo, isCurrentUser);
+  const { mutate: likeGoal } = useLikeGoal(userInfo);
   // 狀態配置
   const statusConfig = getStatusConfig(goal.status);
 
@@ -105,11 +105,11 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
 
   // 刪除目標
   const handleDeleteGoal = async () => {
-    const result = await notification.confirm({
+    const isConfirmed = await notification.confirm({
       text: "刪除後將無法恢復！",
     });
 
-    if (result.isConfirmed) {
+    if (isConfirmed) {
       deleteGoal(goal._id);
       setShowMenu(false);
     }
@@ -158,35 +158,26 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
 
   return (
     <>
-      <div
+      <Wrapper
         key={goal._id}
         className="bg-white dark:bg-background-dark rounded-lg p-5 space-y-4 border"
       >
-        {/* 標題和描述 */}
+        {/* 新增的使用者資訊 */}
         <div className="flex justify-between items-start">
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-medium text-foreground-light dark:text-foreground-dark">
-                {goal.title}
-              </h3>
-              <span
-                className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${statusConfig.textColor} ${statusConfig.bgColor}`}
-              >
-                {statusConfig.icon}
-                {goal.status}
-              </span>
-            </div>
-            <p className="text-sm text-gray-500">{goal.description}</p>
-            <div className="flex items-center gap-1 mt-1">
-              <BsCalendarPlus className="text-gray-500 text-sm" />
-              <span className="text-sm text-gray-500">
-                開始時間：{formatDate(goal.startDate)}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 mt-1">
-              <BsCalendarCheck className="text-gray-500 text-sm" />
-              <span className="text-sm text-gray-500">
-                結束時間：{formatDate(goal.endDate)}
+          <div className="flex items-center gap-3">
+            <Link to={`/profile/${goal.user._id}`}>
+              <img
+                src={goal.user.avatar}
+                alt="Avatar"
+                className="w-10 h-10 rounded-full"
+              />
+            </Link>
+            <div>
+              <h4 className="text-sm font-medium text-foreground-light dark:text-foreground-dark">
+                {goal.user.username}
+              </h4>
+              <span className="text-xs text-gray-500">
+                {formatDate(goal.createdAt)}
               </span>
             </div>
           </div>
@@ -238,6 +229,34 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
               )}
             </div>
           )}
+        </div>
+
+        {/* 標題和描述 */}
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-medium text-foreground-light dark:text-foreground-dark">
+              {goal.title}
+            </h3>
+            <span
+              className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${statusConfig.textColor} ${statusConfig.bgColor}`}
+            >
+              {statusConfig.icon}
+              {goal.status}
+            </span>
+          </div>
+          <p className="text-sm text-gray-500">{goal.description}</p>
+          <div className="flex items-center gap-1 mt-1">
+            <BsCalendarPlus className="text-gray-500 text-sm" />
+            <span className="text-sm text-gray-500">
+              開始時間：{formatDate(goal.startDate)}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 mt-1">
+            <BsCalendarCheck className="text-gray-500 text-sm" />
+            <span className="text-sm text-gray-500">
+              預計完成：{formatDate(goal.endDate)}
+            </span>
+          </div>
         </div>
 
         {/* 在非 Dialog 時只顯示 Tab */}
@@ -295,7 +314,7 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
             </button>
           </div>
         </div>
-      </div>
+      </Wrapper>
 
       {/* 更新目標 */}
       <GoalFormDialog
