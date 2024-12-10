@@ -27,7 +27,7 @@ const chatSlice = createSlice({
       if (
         !state.activeChats.find((chat) => chat.recipientId === recipientId)
       ) {
-        state.activeChats.push({ recipientId, recipientName });
+        state.activeChats = [...state.activeChats, { recipientId, recipientName }];
       }
     },
     // 關閉聊天視窗

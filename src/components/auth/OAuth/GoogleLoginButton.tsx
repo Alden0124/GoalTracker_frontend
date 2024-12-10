@@ -19,7 +19,6 @@ const GoogleLoginButton = () => {
   const handleSucess = async (credential: string) => {
     try {
       if (credential) {
-        console.log("credential", credential);
         const resp = await FETCH_AUTH.GoogleLogin({
           token: credential,
         });
@@ -54,7 +53,7 @@ const GoogleLoginButton = () => {
             });
           }}
           locale="zh_TW"
-          ux_mode="redirect"
+          // ux_mode="redirect"
         />
       </GoogleOAuthProvider>
     </div>

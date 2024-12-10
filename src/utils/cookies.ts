@@ -31,12 +31,12 @@ export function SET_COOKIE(value: string) {
     };
 
     REMOVE_COOKIE();
-    console.log("準備設置 cookie，選項：", options);
+    // console.log("準備設置 cookie，選項：", options);
     Cookies.set("GT_ACCESS_TOKEN", value, options);
 
     // 驗證是否設置成功
-    const savedCookie = Cookies.get("GT_ACCESS_TOKEN");
-    if (savedCookie) console.log("Cookie 設置成功:", savedCookie);
+    // const savedCookie = Cookies.get("GT_ACCESS_TOKEN");
+    // if (savedCookie) console.log("Cookie 設置成功:", savedCookie);
   } catch (error) {
     console.error("設置 Cookie 時發生錯誤:", error);
   }
