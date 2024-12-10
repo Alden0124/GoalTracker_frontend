@@ -1,7 +1,7 @@
+import { FETCH_AUTH } from "@/services/api/auth";
+import { notification } from "@/utils/notification";
 import { GoogleLogin } from "@react-oauth/google";
 import { useRef } from "react";
-import { notification } from "@/utils/notification";
-import { FETCH_AUTH } from "@/services/api/auth";
 import { FcGoogle } from "react-icons/fc";
 // 自定義hook
 import { useSignInHandler } from "@/hooks/auth/useSignIn";
@@ -49,6 +49,10 @@ const GoogleLoginButton = () => {
           }}
           useOneTap={false}
           locale="zh_TW"
+          type="standard"  // 新增這行
+          theme="outline"  // 新增這行
+          size="large"     // 新增這行
+          text="signin_with"  // 新增這行
         />
       </div>
 
