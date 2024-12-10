@@ -1,18 +1,19 @@
-import { useAppDispatch } from "@/hooks/common/useAppReduxs";
+import { useAppDispatch, useAppSelector } from "@/hooks/common/useAppReduxs";
+import { queryKeys as profileQueryKeys } from "@/hooks/profile/ProfileInfo/queries/queryKeys";
 import { FETCH_USER_PROFILE } from "@/services/api/Profile/ProfileInfo";
-import { setUserInfo } from "@/stores/slice/userReducer";
+import { selectUserProFile, setUserInfo } from "@/stores/slice/userReducer";
 import { GET_COOKIE } from "@/utils/cookies";
 import { handleError } from "@/utils/errorHandler";
 import { notification } from "@/utils/notification";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "./queryKeys";
+
 
 // 獲取當前用戶資料
 export const useCurrentUser = (options = {}) => {
   const dispatch = useAppDispatch();
   const token = GET_COOKIE();
   return useQuery({
-    queryKey: queryKeys.users.profile(),
+    queryKey: profileQueryKeys.users.profile(),
     queryFn: async () => {
       const response = await FETCH_USER_PROFILE.GetUserProfile();
 
@@ -36,12 +37,13 @@ export const useCurrentUser = (options = {}) => {
 // 公開用戶資料
 export const usePublicUserProfile = (userId: string, options = {}) => {
   return useQuery({
-    queryKey: queryKeys.users.publicProfile(userId),
+    queryKey: profileQueryKeys.users.publicProfile(userId),
     queryFn: async () => {
       const response = await FETCH_USER_PROFILE.GetPublicUserProfile(userId);
       return response;
     },
     enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5分鐘後數據過期
     ...options,
   });
 };
@@ -54,7 +56,7 @@ export const useUpdateProfile = () => {
       FETCH_USER_PROFILE.UpdateProfile(formData),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.users.profile(),
+        queryKey: profileQueryKeys.users.profile(),
       });
       notification.success({ title: "更新成功" });
     },
@@ -75,11 +77,19 @@ export const useFollowUser = () => {
     onSuccess: (_, userId) => {
       // 更新當前用戶資料
       queryClient.invalidateQueries({
-        queryKey: queryKeys.users.profile(),
+        queryKey: profileQueryKeys.users.profile(),
       });
       // 更新目標用戶的公開資料
       queryClient.invalidateQueries({
-        queryKey: queryKeys.users.publicProfile(userId),
+        queryKey: profileQueryKeys.users.publicProfile(userId),
+      });
+       // 更新追蹤者列表
+       queryClient.invalidateQueries({
+        queryKey: profileQueryKeys.users.following(userId),
+      });
+      // 更新粉絲列表
+      queryClient.invalidateQueries({
+        queryKey: profileQueryKeys.users.followers(userId),
       });
     },
     onError: (error: unknown) => {
@@ -91,15 +101,25 @@ export const useFollowUser = () => {
 // 取消追蹤用戶
 export const useUnfollowUser = () => {
   const queryClient = useQueryClient();
-
+  // 獲取當前用戶數據
+  const currentUserProfile = useAppSelector(selectUserProFile); 
   return useMutation({
-    mutationFn: (userId: string) => FETCH_USER_PROFILE.UnfollowUser(userId),
-    onSuccess: (_, userId) => {
+    mutationFn: (cancleFollowUserId: string) =>
+      FETCH_USER_PROFILE.UnfollowUser(cancleFollowUserId),
+    onSuccess: (_, cancleFollowUserId) => {
       // 更新當前用戶資料
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.profile() });
+      queryClient.invalidateQueries({ queryKey: profileQueryKeys.users.profile() });
       // 更新目標用戶的公開資料
       queryClient.invalidateQueries({
-        queryKey: queryKeys.users.publicProfile(userId),
+        queryKey: profileQueryKeys.users.publicProfile(cancleFollowUserId),
+      });
+      // 更新追蹤者列表
+      queryClient.invalidateQueries({
+        queryKey: profileQueryKeys.users.following(currentUserProfile.id),
+      });
+      // 更新粉絲列表
+      queryClient.invalidateQueries({
+        queryKey: profileQueryKeys.users.followers(cancleFollowUserId),
       });
       notification.success({ title: "取消追蹤成功" });
     },
@@ -109,48 +129,36 @@ export const useUnfollowUser = () => {
   });
 };
 
-/**
- * 獲取粉絲列表，每次調用時都會重新獲取數據
- */
+// 獲取粉絲列表，每次調用時都會重新獲取數據
 export const useGetFollowers = (
-  userId: string,
+  paramsUserId: string,
   isOpen: boolean,
   options = {}
 ) => {
   return useQuery({
-    queryKey: [queryKeys.users.followers(userId), isOpen],
+    queryKey: profileQueryKeys.users.followers(paramsUserId),
     queryFn: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const response = await FETCH_USER_PROFILE.GetFollowers(userId);
+      const response = await FETCH_USER_PROFILE.GetFollowers(paramsUserId);
       return response.followers;
     },
-    enabled: !!userId && isOpen,
-    retry: 0,
-    gcTime: 1000 * 60 * 5,
-    staleTime: 0,
+    enabled: !!paramsUserId && isOpen,
     ...options,
   });
 };
 
-/**
- * 獲取追蹤者列表，每次調用時都會重新獲取數據
- */
+// 獲取追蹤者列表，每次調用時都會重新獲取數據
 export const useGetFollowing = (
-  userId: string,
+  paramsUserId: string,
   isOpen: boolean,
   options = {}
 ) => {
   return useQuery({
-    queryKey: [queryKeys.users.following(userId), isOpen],
+    queryKey: profileQueryKeys.users.following(paramsUserId),
     queryFn: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const response = await FETCH_USER_PROFILE.GetFollowing(userId);
+      const response = await FETCH_USER_PROFILE.GetFollowing(paramsUserId);
       return response.following;
     },
-    enabled: !!userId && isOpen,
-    retry: 0,
-    gcTime: 1000 * 60 * 5,
-    staleTime: 0,
+    enabled: !!paramsUserId && isOpen,
     ...options,
   });
 };

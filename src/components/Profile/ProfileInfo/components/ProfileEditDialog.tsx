@@ -3,7 +3,7 @@ import ProfileAvatarUpload from "@/components/Profile/ProfileInfo/components/Pro
 import Input from "@/components/ui/Input";
 import { useUpdateProfile } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 import { profileSchema, type ProfileFormData } from "@/schemas/profileSchema";
-import { UserProfileResponse } from "@/services/api/Profile/ProfileInfo/type";
+import { GetUserProfileResponse } from "@/services/api/Profile/ProfileInfo/type/GetUserProfile.type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 interface ProfileEditDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  initialData: UserProfileResponse["user"];
+  initialData: Partial<GetUserProfileResponse["user"]>;
 }
 
 const ProfileEditDialog = ({
@@ -56,7 +56,7 @@ const ProfileEditDialog = ({
         });
       }
 
-      for (let [key, value] of formData.entries()) {
+      for (const [key, value] of formData.entries()) {
         console.log(`FormData entry - ${key}:`, value);
       }
 

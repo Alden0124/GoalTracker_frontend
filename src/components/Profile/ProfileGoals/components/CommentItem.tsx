@@ -7,7 +7,7 @@ import {
   useUpdateComment,
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
 import { CommentFormData, commentSchema } from "@/schemas/commentSchema";
-import { DEFAULT_COMMENTS_PARAMS } from "@/services/api/Profile/ProfileGoals/common";
+import { DEFAULT_COMMENTS_PARAMS } from "@/services/api/Profile/ProfileGoals/constants";
 import {
   Comment,
   CreateCommentParams,
@@ -57,15 +57,10 @@ const CommentItem = ({
   const userInfo = useAppSelector(selectUserProFile);
 
   // 新增留言或回覆 API hooks
-  const { mutate: createComment } = useCreateComment(
-    goalId,
-    userInfo,
-    isCurrentUser,
-    {
-      ...DEFAULT_COMMENTS_PARAMS,
-      type: activeTab,
-    }
-  );
+  const { mutate: createComment } = useCreateComment(goalId, userInfo, {
+    ...DEFAULT_COMMENTS_PARAMS,
+    type: activeTab,
+  });
 
   // 獲取回覆列表 API hooks
   const { data: repliesData, isLoading: isRepliesLoading } = useGetReplies(
@@ -88,15 +83,10 @@ const CommentItem = ({
   });
 
   // 刪除留言或回覆 API hooks
-  const { mutate: deleteComment } = useDeleteComment(
-    goalId,
-    userInfo.id,
-    isCurrentUser,
-    {
-      ...DEFAULT_COMMENTS_PARAMS,
-      type: activeTab,
-    }
-  );
+  const { mutate: deleteComment } = useDeleteComment(goalId, userInfo.id, {
+    ...DEFAULT_COMMENTS_PARAMS,
+    type: activeTab,
+  });
 
   // 添加點讚評論的 mutation
   const { mutate: likeComment } = useLikeComment(
@@ -203,7 +193,8 @@ const CommentItem = ({
     const confirm = await notification.confirm({
       title: "確定要刪除這則留言嗎？",
     });
-    if (confirm.isConfirmed) {
+
+    if (confirm) {
       deleteComment({
         commentId: comment._id,
         parentId: comment.parentId?._id || "",
@@ -224,7 +215,11 @@ const CommentItem = ({
         {/* 留言 */}
         <div className="border-t dark:border-gray-700 pt-3">
           <div className="flex gap-2">
-            <CommentAvater avatar={comment.user.avatar} size={40} />
+            <CommentAvater
+              userId={comment.user._id}
+              avatar={comment.user.avatar}
+              size={40}
+            />
             {/* 留言內容 */}
             <div className="flex-1">
               <div className="flex justify-between items-start">

@@ -1,0 +1,43 @@
+.confirm-dialog {
+  padding: 8px;
+}
+
+.confirm-dialog h4 {
+  margin: 0 0 8px 0;
+  font-size: 1.1em;
+}
+
+.confirm-dialog p {
+  margin: 0 0 16px 0;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.confirm-button,
+.cancel-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.confirm-button {
+  background-color: #3085d6;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #d33;
+  color: white;
+}
+
+.toast-portal-container {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}

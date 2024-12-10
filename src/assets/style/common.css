@@ -7,11 +7,6 @@
   z-index: 100;
 }
 
-/* Sweetalert2 的容器應該要更高 */
-.swal2-container {
-  z-index: 1000 !important;
-}
-
 @layer components {
   /* 主要按鈕 */
   .btn-primary {

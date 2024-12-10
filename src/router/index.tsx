@@ -16,6 +16,8 @@ const VerifyCode = lazy(() => import("@/pages/Auth/VerifyCode"));
 const ResetPassword = lazy(() => import("@/pages/Auth/ResetPassword"));
 const NotFoundPage = lazy(() => import("@/pages/NotFound"));
 const Profile = lazy(() => import("@/pages/Profile"));
+const Feed = lazy(() => import("@/pages/Feed"));
+const ChatRoom = lazy(() => import("@/pages/ChatRoom"));
 const routes = [
   {
     path: "*",
@@ -52,17 +54,33 @@ const routes = [
             ),
           },
           {
-            path: "/profile/:id",
+            path: "profile/:id",
             element: (
               <Suspense fallback={<ProfileSkeleton />}>
                 <Profile />
               </Suspense>
             ),
           },
+          {
+            path: "feed",
+            element: (
+              <Suspense fallback={<div className="h-screen"></div>}>
+                <Feed />
+              </Suspense>
+            ),
+          },
+          {
+            path: "chatRoom",
+            element: (
+              <Suspense fallback={<div className="h-screen"></div>}>
+                <ChatRoom />
+              </Suspense>
+            ),
+          },  
         ],
       },
       {
-        path: "/auth",
+        path: "auth",
         element: (
           <Suspense fallback={<div className="h-screen"></div>}>
             <AuthLayout />

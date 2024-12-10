@@ -6,7 +6,7 @@ import {
   useGetComments,
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
 import { CommentFormData, commentSchema } from "@/schemas/commentSchema";
-import { DEFAULT_COMMENTS_PARAMS } from "@/services/api/Profile/ProfileGoals/common";
+import { DEFAULT_COMMENTS_PARAMS } from "@/services/api/Profile/ProfileGoals/constants";
 import { CreateCommentParams } from "@/services/api/Profile/ProfileGoals/type";
 import { selectUserProFile } from "@/stores/slice/userReducer";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,14 +33,10 @@ const GoalDetailsDialog = ({
   const userInfo = useAppSelector(selectUserProFile);
 
   // 新增留言或回覆 API hooks
-  const { mutate: createComment } = useCreateComment(
-    goalId,
-    userInfo,
-    isCurrentUser,
-    {
-      ...DEFAULT_COMMENTS_PARAMS,
-      type: activeTab,
-    });
+  const { mutate: createComment } = useCreateComment(goalId, userInfo, {
+    ...DEFAULT_COMMENTS_PARAMS,
+    type: activeTab,
+  });
 
   // 留言或回覆查詢 API hooks
   const { data: commentsData, isLoading: isGetCommentsLoading } =
