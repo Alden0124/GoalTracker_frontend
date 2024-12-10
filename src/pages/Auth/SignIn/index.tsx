@@ -1,30 +1,18 @@
-import { Link, useSearchParams } from "react-router-dom";
-// 欄位驗證
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema, type SignInFormDataType } from "@/schemas/authSchema";
-// 組件
-import Input from "@/components/ui/Input";
 import GoogleLoginButton from "@/components/auth/OAuth/GoogleLoginButton";
 import LineLoginButton from "@/components/auth/OAuth/LineLoginButton";
-// icon
-// import { FcGoogle } from "react-icons/fc";
-// api
-import { FETCH_AUTH } from "@/services/api/auth";
-// 自定義hook
+import Input from "@/components/ui/Input";
 import { useSignInHandler } from "@/hooks/auth/useSignIn";
-// google登入
-import { GoogleOAuthProvider } from "@react-oauth/google";
-// redux
-// import { useAppSelector } from "@/hooks/common/useAppReduxs";
-// import { selectUserProFile } from "@/stores/slice/userReducer";
+import { signInSchema, type SignInFormDataType } from "@/schemas/authSchema";
+import { FETCH_AUTH } from "@/services/api/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useSearchParams } from "react-router-dom";
 
 const SignIn = () => {
   const [searchParam] = useSearchParams();
   const { handelSignInSucess, handleSignInError } = useSignInHandler();
-  // const user = useAppSelector(selectUserProFile);
-  // console.log(user);
+
 
   const code = searchParam.get("code");
   const isLineLoginProcessed = useRef(false);
@@ -76,12 +64,7 @@ const SignIn = () => {
   };
 
   return (
-    <GoogleOAuthProvider
-      clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-      onScriptLoadError={() => {
-        console.log("Google Script 載入失敗");
-      }}
-    >
+    <div>
       <main className="w-full min-h-[calc(100vh-64px)] flex flex-col justify-center items-center dark:bg-background-dark">
         <h1 className="text-center  text-2xl dark:text-foreground-dark">
           登入 GoalTracker
@@ -130,7 +113,7 @@ const SignIn = () => {
             </p>
             <div className={`border-b w-[50%]`}></div>
           </div>
-
+          
           <GoogleLoginButton />
           <LineLoginButton />
 
@@ -156,7 +139,7 @@ const SignIn = () => {
           </div>
         </form>
       </main>
-    </GoogleOAuthProvider>
+    </div>
   );
 };
 
