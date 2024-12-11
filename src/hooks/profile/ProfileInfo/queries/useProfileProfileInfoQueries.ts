@@ -35,9 +35,9 @@ export const useCurrentUser = (options = {}) => {
 };
 
 // 公開用戶資料
-export const usePublicUserProfile = (userId: string, options = {}) => {
+export const usePublicUserProfile = (userId: string | null, options = {}) => {
   return useQuery({
-    queryKey: profileQueryKeys.users.publicProfile(userId),
+    queryKey: profileQueryKeys.users.publicProfile(userId ? userId : null),
     queryFn: async () => {
       const response = await FETCH_USER_PROFILE.GetPublicUserProfile(userId);
       return response;

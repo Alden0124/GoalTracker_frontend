@@ -29,13 +29,13 @@ export const MessageInput = ({ handleSend }: MessageInputProps) => {
   };
 
   return (
-    <div className="border-t p-3 flex items-center space-x-2">
+    <div className="border-t p-3 flex items-center space-x-2 bg-background-light dark:bg-background-dark ">
       <input
         type="text"
         value={inputMessage}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        className="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-dark-input dark:text-dark-text"
         placeholder="輸入訊息..."
       />
       <button

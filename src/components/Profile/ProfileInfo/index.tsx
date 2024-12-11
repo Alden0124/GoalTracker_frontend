@@ -1,7 +1,7 @@
 import Wrapper from "@/components/common/Wrapper";
 import ProfileAvatar from "@/components/Profile/ProfileInfo/components/ProfileAvatar";
 import ProfileEditDialog from "@/components/Profile/ProfileInfo/components/ProfileEditDialog";
-import ProfileInfoSkeleton from '@/components/Profile/ProfileInfo/skeleton/ProfileInfoSkeleton';
+import ProfileInfoSkeleton from "@/components/Profile/ProfileInfo/skeleton/ProfileInfoSkeleton";
 import { useAppDispatch } from "@/hooks/common/useAppReduxs";
 import {
   useFollowUser,
@@ -9,12 +9,12 @@ import {
 } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 import { useProfileData } from "@/hooks/profile/ProfileInfo/useProfile";
 import { socketService } from "@/services/api/SocketService";
-import { openChat } from "@/stores/slice/chatReducer";
+import { openChatRoom, openChatWindow } from "@/stores/slice/chatReducer";
 import { GET_COOKIE } from "@/utils/cookies";
 import { Fragment, useState } from "react";
 import { IoLocationOutline, IoSchoolOutline } from "react-icons/io5";
 import { MdOutlineWork } from "react-icons/md";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FollowListDialog from "./components/FollowListDialog";
 import renderInfoItem from "./components/renderInfoItem";
 
@@ -22,6 +22,7 @@ type DialogType = "followers" | "following" | null;
 
 const ProfileInfo = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   // 獲取用戶ID
   const { id: paramsUserId } = useParams();
   // 獲取token
@@ -59,18 +60,33 @@ const ProfileInfo = () => {
   // 處理開啟聊天
   const handleOpenChat = () => {
     if (userData?.user) {
+      // 取得目前螢幕寬度
+      const screenWidth = window.innerWidth;
+
       const token = GET_COOKIE();
       if (token) {
         // 建立 WebSocket 連線
         socketService.connect(token);
 
-        // 開啟聊天視窗
-        dispatch(
-          openChat({
-            recipientId: userData.user.id,
-            recipientName: userData.user.username,
-          })
-        );
+        if (screenWidth > 1024) {
+          // 開啟小對話框聊天視窗
+          dispatch(
+            openChatWindow({
+              recipientId: userData.user.id,
+              recipientName: userData.user.username,
+            })
+          );
+        } else {
+          // 開啟聊天室
+          dispatch(
+            openChatRoom({
+              recipientId: userData.user.id,
+              recipientName: userData.user.username,
+              avatar: userData.user.avatar,
+            })
+          );
+          navigate(`/chatRoom/${userData.user.id}`);
+        }
       }
     }
   };
@@ -110,7 +126,7 @@ const ProfileInfo = () => {
 
         {/* 操作按鈕區域 */}
         {!isCurrentUser && (
-          <div className="flex gap-2 py-4">
+          <div className="flex gap-2 py-4 ">
             <button
               onClick={() => handleFollowUser(paramsUserId || "")}
               className="flex-1 btn-primary"

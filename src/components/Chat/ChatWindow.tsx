@@ -35,7 +35,8 @@ export const ChatWindow = ({
     socketService.onNewMessage(handleNewMessage);
 
     return () => {
-        socketService.offNewMessage(handleNewMessage);
+      // 移除監聽
+      socketService.offNewMessage(handleNewMessage);
     };
   }, [queryClient, recipientId]);
 
@@ -65,6 +66,7 @@ export const ChatWindow = ({
       <MessageList
         recipientName={recipientName}
         recipientId={recipientId}
+        className="bg-background-secondaryLight border shadow-lg"
       />
 
       {/* 輸入區域 */}

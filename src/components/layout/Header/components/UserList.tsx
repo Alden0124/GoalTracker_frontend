@@ -1,12 +1,17 @@
+import UserListSkeleton from "@/components/layout/Header/skeleton/UserListSkeleton";
 import { useChatRecord } from "@/hooks/ChatRoom/useChatManager";
 import { useAppDispatch } from "@/hooks/common/useAppReduxs";
 import { socketService } from "@/services/api/SocketService";
-import { openChatRoom } from "@/stores/slice/chatReducer";
+import { openChatRoom, openChatWindow } from "@/stores/slice/chatReducer";
 import { GET_COOKIE } from "@/utils/cookies";
 import { useNavigate } from "react-router-dom";
-import UserListSkeleton from "./skeleton/UserListSkeleton";
 
-const UserList = () => {
+interface UserListProps {
+  setShowChatList: (show: boolean) => void;
+  className?: string;
+}
+
+const UserList = ({ setShowChatList, className }: UserListProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { data: chatRecord, isLoading } = useChatRecord();
@@ -15,18 +20,34 @@ const UserList = () => {
   const handleSelectUser = (userId: string, username: string, avatar: string) => {
     const token = GET_COOKIE();
     if (token) {
+      setShowChatList(false);
+      
+      // 取得目前視窗框度
+      const currentWindowWidth = window.innerWidth;
+
       // 建立 WebSocket 連線
       socketService.connect(token);
 
-      // 開啟聊天室
-      dispatch(openChatRoom({
-        recipientId: userId,
-        recipientName: username,
-        avatar: avatar,
-      }));
-      navigate(`/chatRoom/${userId}`);
+      if (currentWindowWidth > 1024) {
+        // 開啟小對話框聊天視窗
+        dispatch(
+          openChatWindow({
+            recipientId: userId,
+            recipientName: username,
+          })
+        );
+      } else {
+        // 開啟聊天室
+        dispatch(
+          openChatRoom({
+            recipientId: userId,
+            recipientName: username,
+            avatar: avatar,
+          })
+        );
+        navigate(`/chatRoom/${userId}`);
+      }
     }
-
   };
 
   // 如果正在加載，顯示加載中
@@ -35,9 +56,9 @@ const UserList = () => {
   // 如果沒有聊天記錄，顯示暫無聊天記錄
   if (!chatRecord?.conversations?.length) {
     return (
-      <div className="w-80 bg-white border-r border-gray-200 p-4">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">聊天列表</h2>
-        <div className="flex flex-col items-center justify-center h-[calc(100vh-8rem)]">
+      <div className={`w-full h-[calc(100vh-64px)] md:h-[400px] md:w-80 bg-background-light dark:bg-background-dark border p-4 ${className}`}>
+        <h2 className=" text-xl font-semibold mb-4 text-foreground-light dark:text-foreground-dark">聊天列表</h2>
+        <div className="flex flex-col items-center justify-center h-[80%]">
           <svg
             className="w-16 h-16 text-gray-400"
             fill="none"
@@ -58,8 +79,8 @@ const UserList = () => {
   }
 
   return (
-    <div className="w-full md:w-20 lg:w-80 bg-background-light dark:bg-background-dark border-r border-light-border dark:border-dark-border p-4">
-      <h2 className="text-xl font-semibold mb-4 text-foreground-light dark:text-foreground-dark md:hidden lg:block ">聊天列表</h2>
+    <div className={`w-full md:w-80 bg-background-light dark:bg-background-dark border-r border-light-border dark:border-dark-border p-4 ${className}`}>
+      <h2 className="text-xl font-semibold mb-4 text-foreground-light dark:text-foreground-dark  ">聊天列表</h2>
       <div className="space-y-2">
         {chatRecord.conversations.map((conversation) => (
           <div
@@ -84,7 +105,7 @@ const UserList = () => {
               )}
               
               {/* 用戶信息部分 - 在大屏幕和超大屏幕顯示 */}
-              <div className="flex-1 md:hidden lg:block">
+              <div className="flex-1">
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-light-text dark:text-dark-text">
                     {conversation.username}

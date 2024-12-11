@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef } from "react";
 interface MessageListProps {
   recipientName: string;
   recipientId: string;
+  className?: string;
 }
 
 // 添加日期格式化工具函數
@@ -27,6 +28,7 @@ const formatDate = (timestamp: string) => {
 export const MessageList = ({
   recipientName,
   recipientId,
+  className,
 }: MessageListProps) => {
   // 訊息結束元素位置
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -162,28 +164,22 @@ export const MessageList = ({
   return (
     <div
       ref={messageContainerRef}
-      className="flex-1 overflow-y-auto p-4 space-y-3"
+      className={`custom-scrollbar flex-1 overflow-y-auto p-4 space-y-3 bg-background-light dark:bg-background-dark ${className}`}
     >
-      {/* 加載更多觸發點 */}
       <div ref={loadTriggerRef} className="h-4">
         {isFetchingNextPage && (
-          <div className="text-center text-gray-500 text-sm">加載更多...</div>
+          <div className="text-center text-foreground-light dark:text-foreground-dark text-sm">加載更多...</div>
         )}
       </div>
-
-      {/* 修改後的消息渲染邏輯 */}
       {Object.entries(groupedMessages).map(([date, messages]) => (
         <div key={date} className="space-y-3">
-          {/* 日期分隔線 */}
           <div className="flex items-center justify-center">
-            <div className="bg-gray-100 px-3 py-1 rounded-full">
-              <span className="text-xs text-gray-500">
+            <div className="bg-light-divider dark:bg-dark-divider px-3 py-1 rounded-full">
+              <span className="text-xs text-foreground-light dark:text-foreground-dark">
                 {formatDate(messages[0].timestamp)}
               </span>
             </div>
           </div>
-
-          {/* 該日期下的消息列表 */}
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -191,7 +187,6 @@ export const MessageList = ({
                 msg.isCurrentUser ? "justify-end" : "justify-start"
               } items-end gap-2`}
             >
-              {/* 訊息發送者頭 */}
               {!msg.isCurrentUser && (
                 <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
                   {msg.sender.avatar ? (
@@ -201,27 +196,25 @@ export const MessageList = ({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                      <span className="text-gray-600 text-sm">
+                    <div className="w-full h-full bg-light-avatar dark:bg-dark-avatar flex items-center justify-center">
+                      <span className="text-light-avatar-text dark:text-dark-avatar-text text-sm">
                         {recipientName[0]}
                       </span>
                     </div>
                   )}
                 </div>
               )}
-
-              {/* 訊息內容 */}
               <div className="flex flex-col max-w-[70%]">
                 <div
                   className={`px-4 py-2 rounded-lg ${
                     !msg.isCurrentUser
-                      ? "bg-gray-100 text-gray-800"
+                      ? "!bg-background-secondaryLight !dark:bg-background-secondaryDark !text-foreground-light !dark:text-foreground-dark"
                       : "bg-blue-600 text-white"
                   }`}
                 >
                   {msg.content}
                 </div>
-                <span className="text-xs text-gray-500 mt-1">
+                <span className="text-xs text-foreground-light dark:text-foreground-dark mt-1">
                   {formatTime(msg.timestamp)}
                 </span>
               </div>
@@ -229,7 +222,6 @@ export const MessageList = ({
           ))}
         </div>
       ))}
-      {/* 訊息結束參考 */}
       <div ref={messagesEndRef} />
     </div>
   );

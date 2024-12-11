@@ -121,36 +121,43 @@ const createSocketService = (): SocketServiceType => {
     socket.emit("join", { userId, username });
   };
 
+  // 監聽用戶列表更新
   const onUserListUpdate = (callback: (users: unknown[]) => void): void => {
     if (!socket) return;
     socket.on("userList", callback);
   };
 
+  // 監聽連接成功
   const onConnect = (callback: () => void): void => {
     if (!socket) return;
     socket.on("connect", callback);
   };
 
+  // 取消監聽連接成功
   const offConnect = (callback: () => void): void => {
     if (!socket) return;
     socket.off("connect", callback);
   };
 
+  // 監聽連接斷開
   const onDisconnect = (callback: () => void): void => {
     if (!socket) return;
     socket.on("disconnect", callback);
   };
 
+  // 取消監聽連接斷開
   const offDisconnect = (callback: () => void): void => {
     if (!socket) return;
     socket.off("disconnect", callback);
   };
 
+  // 監聽連接錯誤
   const onConnectError = (callback: (error: Error) => void): void => {
     if (!socket) return;
     socket.on("connect_error", callback);
   };
 
+  // 取消監聽連接錯誤
   const offConnectError = (callback: (error: Error) => void): void => {
     if (!socket) return;
     socket.off("connect_error", callback);

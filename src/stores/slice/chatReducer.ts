@@ -2,15 +2,21 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // 定義聊天狀態介面
 export interface ChatStateType {
-  activeChats: Array<{
+  chatWindowActiveChats: Array<{
     recipientId: string;
     recipientName: string;
   }>;
+  chatRoomActiveChats: {
+    recipientId: string;
+    recipientName: string;
+    avatar: string;
+  } | null;
 }
 
 // 初始狀態
 const initialState: ChatStateType = {
-  activeChats: [],
+  chatWindowActiveChats: [],
+  chatRoomActiveChats: null,
 };
 
 const chatSlice = createSlice({
@@ -18,33 +24,73 @@ const chatSlice = createSlice({
   initialState,
   reducers: {
     // 開啟聊天視窗
-    openChat: (
+    openChatWindow: (
       state,
-      action: PayloadAction<{ recipientId: string; recipientName: string }>
+      action: PayloadAction<{
+        recipientId: string;
+        recipientName: string;
+      }>
     ) => {
       const { recipientId, recipientName } = action.payload;
-
+      // 如果聊天位置是電腦版小視窗，且聊天對象不在聊天列表中，則將聊天對象加入聊天列表
       if (
-        !state.activeChats.find((chat) => chat.recipientId === recipientId)
+        !state.chatWindowActiveChats.find(
+          (chat) => chat.recipientId === recipientId
+        )
       ) {
-        state.activeChats = [...state.activeChats, { recipientId, recipientName }];
+        state.chatWindowActiveChats = [
+          ...state.chatWindowActiveChats,
+          { recipientId, recipientName },
+        ];
       }
     },
     // 關閉聊天視窗
-    closeChat: (state, action: PayloadAction<string>) => {
-      state.activeChats = state.activeChats.filter(
+    closeChatWindow: (state, action: PayloadAction<string>) => {
+      state.chatWindowActiveChats = state.chatWindowActiveChats.filter(
         (chat) => chat.recipientId !== action.payload
       );
+    },
+
+    // 關閉所有聊天視窗
+    closeAllChatWindow: (state) => {
+      state.chatWindowActiveChats = [];
+    },
+
+    // 開啟聊天室
+    openChatRoom: (
+      state,
+      action: PayloadAction<{
+        recipientId: string;
+        recipientName: string;
+        avatar: string;
+      }>
+    ) => {
+      state.chatRoomActiveChats = action.payload;
+    },
+
+    // 關閉聊天室
+    closeChatRoom: (state) => {
+      state.chatRoomActiveChats = null;
     },
   },
 });
 
 // 導出 actions
-export const { openChat, closeChat } = chatSlice.actions;
+export const {
+  openChatWindow,
+  closeChatWindow,
+  closeAllChatWindow,
+  openChatRoom,
+  closeChatRoom,
+} = chatSlice.actions;
 
 // 選擇器（Selectors）
-export const selectActiveChats = (state: { chat: ChatStateType }) =>
-  state.chat.activeChats;
+export const selectChatWindowActiveChats = (state: { chat: ChatStateType }) =>
+  state.chat.chatWindowActiveChats;
+
+export const selectChatRoomActiveChats = (state: { chat: ChatStateType }) =>
+  state.chat.chatRoomActiveChats;
 
 // 導出 reducer
 export default chatSlice.reducer;
+
