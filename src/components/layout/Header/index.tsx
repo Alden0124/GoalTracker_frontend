@@ -1,7 +1,11 @@
 // icon
 import { AiOutlineGlobal } from "react-icons/ai";
 import { CiDark } from "react-icons/ci";
-import { IoChatbubbleOutline, IoNotificationsOutline, IoSunnyOutline } from "react-icons/io5";
+import {
+  IoChatbubbleOutline,
+  IoNotificationsOutline,
+  IoSunnyOutline,
+} from "react-icons/io5";
 // i18n
 import { useTranslation } from "react-i18next";
 // 自訂一hook
@@ -14,7 +18,9 @@ import { selectIsAuthenticated } from "@/stores/slice/userReducer";
 import UserList from "@/components/layout/Header/components/UserList";
 import UserMenu from "@/components/layout/Header/components/UserMenu";
 import { useEffect, useRef, useState } from "react";
-
+import IconButton from "./components/IconButton";
+import ListWrapper from "./components/ListWrapper";
+import NotificationList from "./components/NotificationList";
 const Header = () => {
   const location = useLocation();
   const isLogin = useAppSelector(selectIsAuthenticated);
@@ -24,6 +30,19 @@ const Header = () => {
   const [showLanguageList, setShowLanguageList] = useState(false);
   const languageListRef = useRef<HTMLDivElement>(null);
   const chatListRef = useRef<HTMLDivElement>(null);
+  const [showNotificationList, setShowNotificationList] = useState(false);
+  const notificationListRef = useRef<HTMLDivElement>(null);
+
+  const currentLanguageList = [
+    {
+      label: "English",
+      value: "en-US",
+    },
+    {
+      label: "繁體中文",
+      value: "zh-TW",
+    },
+  ];
 
   // 切換主題
   const toggleTheme = () => {
@@ -31,131 +50,153 @@ const Header = () => {
   };
 
   // 切換語言
-  const handleLanguageChange = (lang: string) => {
-    i18n.changeLanguage(lang);
-    localStorage.setItem("language", lang);
+  const handleLanguageChange = ( value: string) => {
+    i18n.changeLanguage(value);
+    localStorage.setItem("language", value);
     setShowLanguageList(false);
   };
 
   // 監聽點擊事件
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (chatListRef.current && !chatListRef.current.contains(event.target as Node)) {
+      // 聊天列表
+      if (
+        chatListRef.current &&
+        !chatListRef.current.contains(event.target as Node)
+      ) {
         setShowChatList(false);
       }
-      if (languageListRef.current && !languageListRef.current.contains(event.target as Node)) {
+      // 語言列表
+      if (
+        languageListRef.current &&
+        !languageListRef.current.contains(event.target as Node)
+      ) {
         setShowLanguageList(false);
+      }
+      // 通知列表
+      if (
+        notificationListRef.current &&
+        !notificationListRef.current.contains(event.target as Node)
+      ) {
+        setShowNotificationList(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-
+  
 
   return (
     <header
       className={`
         h-[64px] py-[8px] px-[15px] md:px-[30px] sticky top-0
         flex justify-between items-center border-b shadow-sm 
-        bg-background-light dark:bg-background-dark 
+        bg-background-light dark:bg-background-dark
         text-foreground-light dark:text-foreground-dark z-10
       `}
     >
+      {/* 標題 */}
       <Link to={isLogin ? "/feed" : "/"} className="text-[18px]">
         GoalTracker
       </Link>
+
+      {/* 選單 */}
       <div className="flex items-center justify-between text-[16px] gap-[12px] sm:gap-[6px] ">
         {/* 語言選擇 */}
         <div className="relative" ref={languageListRef}>
-          <button
+          <IconButton
             onClick={() => setShowLanguageList(!showLanguageList)}
-            className="flex w-12 h-12 rounded-full items-center justify-center hover:opacity-80 dark:hover:bg-foreground-darkHover"
-            aria-label={t("changeLanguage")}
+            ariaLabel={t("changeLanguage")}
           >
             <AiOutlineGlobal />
-          </button>
+          </IconButton>
           {showLanguageList && (
-            <div className={`
-              absolute right-0 mt-2 z-50
-              md:w-48 md:right-0 
-              w-full left-0 top-[64px]
-              md:top-[initial] md:mt-2
-              bg-background-light dark:bg-background-dark
-              md:border md:rounded-lg md:shadow-lg
-            `}>
-              <div className="py-2">
+            <ListWrapper className={`md:w-48`}>
+              {currentLanguageList.map((lang) => (
                 <button
-                  onClick={() => handleLanguageChange('en-US')}
+                  key={lang.value}
+                  onClick={() => handleLanguageChange(lang.value)}
                   className={`
                     w-full px-4 py-2 text-left
                     hover:bg-gray-100 dark:hover:bg-gray-800
-                    ${i18n.language === 'en-US' ? 'bg-gray-100 dark:bg-gray-800' : ''}
+                    ${
+                      i18n.language === lang.value
+                        ? "bg-gray-100 dark:bg-gray-800"
+                        : ""
+                    }
                   `}
                 >
-                  English
+                  {lang.label}
                 </button>
-                <button
-                  onClick={() => handleLanguageChange('zh-TW')}
-                  className={`
-                    w-full px-4 py-2 text-left
-                    hover:bg-gray-100 dark:hover:bg-gray-800
-                    ${i18n.language === 'zh-TW' ? 'bg-gray-100 dark:bg-gray-800' : ''}
-                  `}
-                >
-                  繁體中文
-                </button>
-              </div>
-            </div>
+              ))}
+            </ListWrapper>
           )}
         </div>
 
         {/* 主題 */}
-        <button
+        <IconButton
           onClick={toggleTheme}
-          className="flex w-4 h-4 sm:w-12 sm:h-12 rounded-full items-center justify-center hover:opacity-80 dark:hover:bg-foreground-darkHover"
+          ariaLabel={t("changeTheme")}
         >
           {theme === "dark" ? <IoSunnyOutline /> : <CiDark />}
-        </button>
+        </IconButton>
 
+        {/* 登入後的選單 */}
         {isLogin && (
           <>
-            {/* 消息 */}
-            <div ref={chatListRef} className={` ${location.pathname.includes("/chatRoom") ? "hidden" : "block"}`}>
-              <button
+            {/* 聊天列表 */}
+            <div
+              ref={chatListRef}
+              className={` relative ${
+                location.pathname.includes("/chatRoom") ? "hidden" : "block"
+              }`}
+            >
+              <IconButton
                 onClick={() => setShowChatList(!showChatList)}
-                className="flex w-4 h-4 sm:w-12 sm:h-12 rounded-full items-center justify-center hover:opacity-80  dark:hover:bg-foreground-darkHover"
-                aria-label={t("messages")}
+                ariaLabel={t("messages")}
               >
                 <IoChatbubbleOutline />
-              </button>
+              </IconButton>
               {/* 聊天列表彈出層 */}
               {showChatList && (
-                <div 
-                  className={`absolute right-0 top-[64px] w-full z-50 md:w-auto md:right-[160px] md:top-[initial] md:mt-[20px] md:h-auto md:border md:rounded-lg md:shadow-[0_0_10px_rgba(0,0,0,0.2)] md:overflow-hidden`}
-                >
-                  <UserList setShowChatList={setShowChatList} className={`h-[calc(100vh-64px)] md:h-auto`} />
-                </div>
+                <ListWrapper className={`md:w-fit`}>
+                  <UserList
+                    setShowChatList={setShowChatList}
+                    className={`h-[calc(100vh-64px)] md:h-auto `}
+                  />
+                </ListWrapper>
               )}
             </div>
+
             {/* 通知 */}
-            <button
-              className="flex w-4 h-4 sm:w-12 sm:h-12 rounded-full items-center justify-center hover:opacity-80 dark:hover:bg-foreground-darkHover"
-              aria-label={t("notifications")}
-            >
-              <IoNotificationsOutline />
-            </button>
+            <div className="relative" ref={notificationListRef}>
+              <IconButton 
+                onClick={() => setShowNotificationList(!showNotificationList)}
+                ariaLabel={t("notifications")}
+              >
+                <IoNotificationsOutline />
+              </IconButton>
+              {showNotificationList && (
+                <ListWrapper className="md:w-80">
+                  <NotificationList
+                    setShowNotificationList={setShowNotificationList}
+                    className="h-[calc(100vh-64px)] md:h-auto"
+                  />
+                </ListWrapper>
+              )}
+            </div>
           </>
         )}
 
         {isLogin ? (
-          // 登入後的選單
+          // 登入後-選單
           <UserMenu />
         ) : (
-          // 登入-登入前
+          // 登入前-登入
           <Link to={"/auth/signIn"} className={`btn-primary ml-[15px]`}>
             {t("login")}
           </Link>

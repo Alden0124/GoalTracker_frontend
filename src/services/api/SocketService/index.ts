@@ -32,28 +32,34 @@ const createSocketService = (): SocketServiceType => {
       return;
     }
 
+    // 如果 API URL 未設定，則返回
     if (!import.meta.env.VITE_API_URL) {
       console.error("API URL 未設定");
       return;
     }
 
+    // 開始建立 WebSocket 連線
     console.log("開始建立 WebSocket 連線:", import.meta.env.VITE_API_URL);
 
+    // 建立 WebSocket 連線
     socket = socketIO(import.meta.env.VITE_WS_URL, {
       auth: { token },
       transports: ["websocket"],
     });
 
+    // 監聽 WebSocket 連接成功
     socket.on("connect", () => {
       console.log("WebSocket 連接成功");
       connected = true;
     });
 
+    // 監聽 WebSocket 連接失敗
     socket.on("connect_error", (error: unknown) => {
       console.error("WebSocket 連接失敗:", error);
       connected = false;
     });
 
+    // 監聽 WebSocket 連接斷開
     socket.on("disconnect", () => {
       console.log("WebSocket 連接斷開");
       connected = false;
@@ -162,7 +168,6 @@ const createSocketService = (): SocketServiceType => {
     if (!socket) return;
     socket.off("connect_error", callback);
   };
-
 
 
   return {

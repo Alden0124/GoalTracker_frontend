@@ -51,7 +51,7 @@ export const useSignInHandler = () => {
     async (err: unknown, signInFormData?: SignInFormDataType) => {
       if (isApiError(err)) {
         const { errorMessage, respData } = err;
-
+        console.log(err)
         // 尚未驗證信箱
         if (respData?.needVerification && signInFormData?.email) {
           notification.error({

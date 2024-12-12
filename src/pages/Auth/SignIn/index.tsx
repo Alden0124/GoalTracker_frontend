@@ -47,6 +47,7 @@ const SignIn = () => {
   // 非第三方用戶登入
   const handleSignIn = async (signInFormData: SignInFormDataType) => {
     try {
+      console.log(signInFormData)
       const resp = await FETCH_AUTH.SingIn(signInFormData);
       handelSignInSucess(resp);
     } catch (err: unknown) {
