@@ -5,6 +5,7 @@ import { useSignInHandler } from "@/hooks/auth/useSignIn";
 import { signInSchema, type SignInFormDataType } from "@/schemas/authSchema";
 import { FETCH_AUTH } from "@/services/api/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useSearchParams } from "react-router-dom";
@@ -114,8 +115,15 @@ const SignIn = () => {
             </p>
             <div className={`border-b w-[50%]`}></div>
           </div>
-          
+          <GoogleOAuthProvider
+        clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+        onScriptLoadError={() => {
+          console.log("Google Script 載入失敗");
+        }}
+      >
+
           <GoogleLoginButton />
+      </GoogleOAuthProvider>
           <LineLoginButton />
 
           <Link

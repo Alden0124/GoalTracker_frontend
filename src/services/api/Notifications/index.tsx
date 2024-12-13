@@ -11,4 +11,13 @@ export const FETCH_NOTIFICATIONS = {
     axiosInstance.get(`/notifications`, {
       params: { ...DEFAULT_NOTIFICATIONS_PARAMS, ...query },
     }),
+
+  // 標記通知為已讀
+  MarkNotificationAsRead: (notificationId: string) =>
+    axiosInstance.put(`/notifications/read/${notificationId}`),
+
+  // 獲取未讀通知數量
+  GetUnreadNotificationCount: (): Promise<{ unreadCount: number }> =>
+    axiosInstance.get(`/notifications/unread-count`), 
 };
+

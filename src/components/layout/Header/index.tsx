@@ -17,6 +17,7 @@ import { selectIsAuthenticated } from "@/stores/slice/userReducer";
 // utils
 import UserList from "@/components/layout/Header/components/UserList";
 import UserMenu from "@/components/layout/Header/components/UserMenu";
+import { useGetUnreadNotificationCount } from "@/hooks/notifications/Chat/useNotifications";
 import { useEffect, useRef, useState } from "react";
 import IconButton from "./components/IconButton";
 import ListWrapper from "./components/ListWrapper";
@@ -32,6 +33,10 @@ const Header = () => {
   const chatListRef = useRef<HTMLDivElement>(null);
   const [showNotificationList, setShowNotificationList] = useState(false);
   const notificationListRef = useRef<HTMLDivElement>(null);
+
+  const { data: unreadNotificationCount } = useGetUnreadNotificationCount();
+  const unreadCount = unreadNotificationCount?.unreadCount;
+
 
   const currentLanguageList = [
     {
@@ -179,6 +184,9 @@ const Header = () => {
                 ariaLabel={t("notifications")}
               >
                 <IoNotificationsOutline />
+                {unreadCount && unreadCount > 0 && (
+                  <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-red-500 rounded-full"></span>
+                )}
               </IconButton>
               {showNotificationList && (
                 <ListWrapper className="md:w-80">

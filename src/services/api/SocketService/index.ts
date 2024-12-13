@@ -1,5 +1,6 @@
 import type { Socket } from "socket.io-client";
 import socketIO from "socket.io-client";
+import { NewNotifications } from "../Notifications/type/GetNotifications.type";
 import type { ReceiveMessage } from "./type";
 
 
@@ -16,15 +17,21 @@ interface SocketServiceType {
   offConnect: (callback: () => void) => void;
   onDisconnect: (callback: () => void) => void;
   offDisconnect: (callback: () => void) => void;
+  offError: (callback: (error: unknown) => void) => void;
   onConnectError: (callback: (error: Error) => void) => void;
   offConnectError: (callback: (error: Error) => void) => void;
   offNewMessage: (callback: (message: ReceiveMessage) => void) => void;
+  onNewNotification: (callback: (notification: NewNotifications) => void) => void;
+  offNewNotification: (callback: (notification: NewNotifications) => void) => void;
+  onUpdateUnreadNotificationCount: (callback: (unreadCount: number) => void) => void;
+  offUpdateUnreadNotificationCount: (callback: (unreadCount: number) => void) => void;
+
 }
 
 const createSocketService = (): SocketServiceType => {
   let socket: typeof Socket | null = null;
   let connected = false;
-  
+
   // 建立 WebSocket 連線
   const connect = (token: string): void => {
     if (socket) {
@@ -95,7 +102,7 @@ const createSocketService = (): SocketServiceType => {
   const onNewMessage = (callback: (message: ReceiveMessage) => void): void => {
     if (!socket) return;
     socket.on("newMessage", callback);
-    console.log('監聽新訊息');
+    console.log("監聽新訊息");
   };
 
   // 取消監聽新訊息
@@ -104,18 +111,52 @@ const createSocketService = (): SocketServiceType => {
     socket.off("newMessage", callback);
   };
 
+  // 監聽新通知
+  const onNewNotification = (
+    callback: (notification: NewNotifications) => void
+  ): void => {
+    if (!socket) return;
+    socket.on("newNotification", callback);
+    console.log("監聽新通知");
+  };
+
+  // 取消監聽新通知
+  const offNewNotification = (callback: (notification: unknown) => void): void => {
+    if (!socket) return;
+    socket.off("newNotification", callback);
+  };
+
   // 監聽訊息發送
   const onMessageSent = (callback: (status: unknown) => void): void => {
     if (!socket) return;
     socket.on("messageSent", callback);
-    console.log('監聽訊息發送');
+    console.log("監聽訊息發送");
+  };
+
+  // 監聽未讀通知數量
+  const onUpdateUnreadNotificationCount = (callback: (unreadCount: number) => void): void => {
+    if (!socket) return;
+    socket.on("notificationUpdate", callback);
+    console.log("監聽未讀通知數量");
+  };
+
+  // 取消監聽未讀通知數量
+  const offUpdateUnreadNotificationCount = (callback: (unreadCount: number) => void): void => {
+    if (!socket) return;
+    socket.off("notificationUpdate", callback);
   };
 
   // 監聽錯誤
   const onError = (callback: (error: unknown) => void): void => {
     if (!socket) return;
     socket.on("error", callback);
-    console.log('監聽錯誤');
+    console.log("監聽錯誤");
+  };
+
+  // 取消監聽錯誤
+  const offError = (callback: (error: unknown) => void): void => {
+    if (!socket) return;
+    socket.off("error", callback);
   };
 
   // 加入聊天室
@@ -169,7 +210,6 @@ const createSocketService = (): SocketServiceType => {
     socket.off("connect_error", callback);
   };
 
-
   return {
     connect,
     disconnect,
@@ -180,12 +220,17 @@ const createSocketService = (): SocketServiceType => {
     joinChat,
     onUserListUpdate,
     onConnect,
+    onUpdateUnreadNotificationCount,
     offConnect,
     onDisconnect,
     offDisconnect,
     onConnectError,
     offConnectError,
-    offNewMessage, // 添加這行
+    offNewMessage, 
+    onNewNotification,
+    offNewNotification,
+    offUpdateUnreadNotificationCount,
+    offError,
   };
 };
 

@@ -9,21 +9,26 @@ export interface GetNotificationsResponse {
 }
 
 export interface Notification {
-  _id: string;
-  recipient: string;
+  id: string;
+  type: string;
   sender: {
-    _id: string;
+    id: string;
     username: string;
     avatar: string;
   };
-  type: string;
+  goal: {
+    id: string;
+    title: string;
+  };
+  content: string;
   read: boolean;
   createdAt: string;
-  updatedAt: string;
-  __v: number;
-  content: string;
 }
 
+export interface NewNotification {
+  notification: Notification;
+  unreadCount: number;
+}
 export interface GetNotificationsQuery {
   page: number;
   limit: number;

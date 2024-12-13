@@ -1,5 +1,13 @@
-import { GetNotificationsQuery } from "@/services/api/Notifications/type";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  GetNotificationsQuery,
+  GetNotificationsResponse,
+} from "@/services/api/Notifications/type";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import { FETCH_NOTIFICATIONS } from "@/services/api/Notifications";
 
@@ -8,7 +16,7 @@ import { queryKeys as notificationsQueryKeys } from "./queryKeys";
 // 獲取通知
 export const useGetNotifications = (query: GetNotificationsQuery) => {
   return useInfiniteQuery({
-    queryKey: notificationsQueryKeys.notifications.notifications(query),
+    queryKey: notificationsQueryKeys.notifications.notifications(),
     queryFn: ({ pageParam = 1 }) =>
       FETCH_NOTIFICATIONS.GetNotifications({ ...query, page: pageParam }),
     initialPageParam: 1,
@@ -19,6 +27,42 @@ export const useGetNotifications = (query: GetNotificationsQuery) => {
 
       // 如果還有下一頁，返回下一頁的頁碼，否則返回 undefined
       return current < totalPages ? current + 1 : undefined;
+    },
+  });
+};
+
+export const useGetUnreadNotificationCount = () => {
+  return useQuery({
+    queryKey: notificationsQueryKeys.notifications.unreadNotificationCount(),
+    queryFn: () => FETCH_NOTIFICATIONS.GetUnreadNotificationCount(),
+  });
+};
+
+// 標記通知為已讀
+export const useMarkNotificationAsRead = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (notificationId: string) =>
+      FETCH_NOTIFICATIONS.MarkNotificationAsRead(notificationId),
+    onSuccess: (_, notificationId) => {
+      queryClient.setQueryData(
+        notificationsQueryKeys.notifications.notifications(),
+        (oldData: { pages: GetNotificationsResponse[] } | undefined) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              notifications: page.notifications.map((notification) =>
+                notification.id === notificationId
+                  ? { ...notification, read: true }
+                  : notification
+              ),
+            })),
+          };
+        }
+      );
     },
   });
 };

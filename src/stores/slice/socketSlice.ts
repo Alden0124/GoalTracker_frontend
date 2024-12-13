@@ -18,9 +18,11 @@ const socketSlice = createSlice({
     setConnected: (state: SocketState, action: PayloadAction<boolean>) => {
       state.isConnected = action.payload;
     },
+    // 設定錯誤
     setError: (state: SocketState, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
+    // 發送私密訊息
     sendPrivateMessage: (
       _state: SocketState,
       action: PayloadAction<{ recipientId: string; content: string }>
@@ -28,6 +30,7 @@ const socketSlice = createSlice({
       const { recipientId, content } = action.payload;
       socketService.sendPrivateMessage(recipientId, content);
     },
+    // 連接socket
     connectSocket: (_state: SocketState, action: PayloadAction<string>) => {
       socketService.connect(action.payload);
     },
