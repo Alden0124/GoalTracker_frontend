@@ -48,7 +48,7 @@ const routes = [
         ),
         children: [
           {
-            path: "/",
+            path: "/home",
             element: (
               <Suspense fallback={<div className="h-screen"></div>}>
                 <Home />

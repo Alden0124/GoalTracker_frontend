@@ -11,6 +11,7 @@ import {
 
 import { FETCH_NOTIFICATIONS } from "@/services/api/Notifications";
 
+import { GET_COOKIE } from "@/utils/cookies";
 import { queryKeys as notificationsQueryKeys } from "./queryKeys";
 
 // 獲取通知
@@ -32,9 +33,11 @@ export const useGetNotifications = (query: GetNotificationsQuery) => {
 };
 
 export const useGetUnreadNotificationCount = () => {
+  const token = GET_COOKIE()
   return useQuery({
     queryKey: notificationsQueryKeys.notifications.unreadNotificationCount(),
     queryFn: () => FETCH_NOTIFICATIONS.GetUnreadNotificationCount(),
+    enabled: !!token,
   });
 };
 

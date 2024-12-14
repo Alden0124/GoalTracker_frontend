@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import { FETCH_AUTH } from "@/services/api/auth";
-import { notification } from "@/utils/notification";
 import { handleError } from "@/utils/errorHandler";
+import { notification } from "@/utils/notification";
 import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const useEmail = () => {
   const navigate = useNavigate();

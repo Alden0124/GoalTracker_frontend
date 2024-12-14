@@ -14,6 +14,7 @@ export const useSocketListener = () => {
   const queryClient = useQueryClient();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const token = GET_COOKIE();
+  
 
   useEffect(() => {
     // 確保用戶已登入且有 token 才建立連接

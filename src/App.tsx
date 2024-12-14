@@ -12,7 +12,7 @@ function App() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   // 監聽新訊息
   useSocketListener();
-  
+
   return (
     <ThemeProvider>
       <ToastProvider>

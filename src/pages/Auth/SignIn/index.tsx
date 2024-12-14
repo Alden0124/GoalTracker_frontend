@@ -2,21 +2,24 @@ import GoogleLoginButton from "@/components/auth/OAuth/GoogleLoginButton";
 import LineLoginButton from "@/components/auth/OAuth/LineLoginButton";
 import Input from "@/components/ui/Input";
 import { useSignInHandler } from "@/hooks/auth/useSignIn";
-import { signInSchema, type SignInFormDataType } from "@/schemas/authSchema";
+import { getSignInSchema, SignInFormDataType } from "@/schemas/authSchema";
 import { FETCH_AUTH } from "@/services/api/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 
 const SignIn = () => {
   const [searchParam] = useSearchParams();
   const { handelSignInSucess, handleSignInError } = useSignInHandler();
-
-
+  const { t } = useTranslation(["auth"]);
   const code = searchParam.get("code");
   const isLineLoginProcessed = useRef(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  // 取得登入表單驗證
+  const signInSchema = useMemo(() => getSignInSchema(), []);
 
   const {
     register,
@@ -32,15 +35,18 @@ const SignIn = () => {
     if (code && !isLineLoginProcessed.current) {
       const handleLineLogin = async () => {
         try {
+          setIsSubmitting(true);
           isLineLoginProcessed.current = true;
           const resp = await FETCH_AUTH.LineLogin({ code });
           handelSignInSucess(resp);
         } catch (err: unknown) {
-          console.log('Line登入錯誤:', err);
+          console.log("Line登入錯誤:", err);
           handleSignInError(err);
+        } finally {
+          setIsSubmitting(false);
         }
       };
-      
+
       handleLineLogin();
     }
   }, [code, handelSignInSucess, handleSignInError]);
@@ -48,7 +54,6 @@ const SignIn = () => {
   // 非第三方用戶登入
   const handleSignIn = async (signInFormData: SignInFormDataType) => {
     try {
-      console.log(signInFormData)
       const resp = await FETCH_AUTH.SingIn(signInFormData);
       handelSignInSucess(resp);
     } catch (err: unknown) {
@@ -69,12 +74,12 @@ const SignIn = () => {
     <div>
       <main className="w-full min-h-[calc(100vh-64px)] flex flex-col justify-center items-center dark:bg-background-dark">
         <h1 className="text-center  text-2xl dark:text-foreground-dark">
-          登入 GoalTracker
+          {t("auth:login")}
         </h1>
         <p
           className={`text-sm text-foreground-light/40 dark:text-foreground-dark mt-[10px]`}
         >
-          登入或建立帳號以開始使用
+          {t("auth:loginOrCreateAccountToStartUsing")}
         </p>
 
         <form
@@ -86,8 +91,8 @@ const SignIn = () => {
             {...register("email")}
             id="email"
             type="email"
-            label="電子信箱"
-            placeholder="電子郵件"
+            label={t("auth:email")}
+            placeholder={t("auth:email")}
             autoComplete="email"
             error={errors.email?.message}
           />
@@ -96,14 +101,22 @@ const SignIn = () => {
             {...register("password")}
             id="password"
             type="password"
-            label="密碼"
-            placeholder="密碼"
+            label={t("password")}
+            placeholder={t("password")}
             autoComplete="current-password"
             error={errors.password?.message}
           />
 
-          <button type="submit" className="btn-primary w-full hover:opacity-90">
-            登入
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full  ${
+              isSubmitting
+                ? "opacity-50 cursor-not-allowed"
+                : "btn-primary hover:opacity-90"
+            }`}
+          >
+            {t("signIn")}
           </button>
 
           <div className={`w-full flex items-center justify-center`}>
@@ -111,38 +124,58 @@ const SignIn = () => {
             <p
               className={`text-sm break-keep text-foreground-light/50 dark:text-foreground-dark`}
             >
-              或
+              {t("or")}
             </p>
             <div className={`border-b w-[50%]`}></div>
           </div>
           <GoogleOAuthProvider
-        clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-        onScriptLoadError={() => {
-          console.log("Google Script 載入失敗");
-        }}
-      >
-
-          <GoogleLoginButton />
-      </GoogleOAuthProvider>
-          <LineLoginButton />
+            clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+            onScriptLoadError={() => {
+              console.log("Google Script 載入失敗");
+            }}
+          >
+            <GoogleLoginButton
+              setIsSubmitting={setIsSubmitting}
+              className={`${
+                isSubmitting
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-[gray]/10 dark:text-foreground-dark "
+              }`}
+            />
+          </GoogleOAuthProvider>
+          <LineLoginButton
+            className={`${
+              isSubmitting
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-[gray]/10"
+            }`}
+          />
 
           <Link
             to={"/auth/forget"}
-            className={`block text-center text-[blue]/60 dark:text-[#58c4dc]`}
+            className={`block text-[14px] text-center   ${
+              isSubmitting
+                ? " cursor-not-allowed text-foreground-light/50 dark:text-foreground-dark"
+                : "text-[blue]/60 dark:text-[#58c4dc] hover:text-[blue]/80 dark:hover:text-[#58c4dc]/80"
+            }`}
           >
-            忘記密碼?
+            {t("forgotPassword")}
           </Link>
 
           <div>
             <p
-              className={`text-center text-foreground-light/50 dark:text-foreground-dark`}
+              className={`text-center text-[14px] text-foreground-light/50 dark:text-foreground-dark`}
             >
-              還沒有帳號?
+              {t("noAccount")}
               <Link
                 to={"/auth/signUp"}
-                className={`pl-[4px] text-[blue]/60 dark:text-[#58c4dc]`}
+                className={`pl-[4px]   ${
+                  isSubmitting
+                    ? "cursor-not-allowed text-foreground-light/50 dark:text-foreground-dark"
+                    : "text-[blue]/60 dark:text-[#58c4dc] hover:text-[blue]/80 dark:hover:text-[#58c4dc]/80"
+                }`}
               >
-                立即註冊
+                {t("signUp")}
               </Link>
             </p>
           </div>

@@ -1,11 +1,11 @@
-import { useRef, useEffect, useState } from "react";
-import { IoPersonOutline, IoChevronDownOutline } from "react-icons/io5";
-import { useTranslation } from "react-i18next";
-import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/hooks/common/useAppReduxs";
-import { selectUserProFile, signOut } from "@/stores/slice/userReducer";
 import { FETCH_AUTH } from "@/services/api/auth";
-import { handleSuccess } from "@/utils/sucessHandler";
+import { selectUserProFile, signOut } from "@/stores/slice/userReducer";
+import { notification } from "@/utils/notification";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { IoChevronDownOutline, IoPersonOutline } from "react-icons/io5";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const UserMenu = () => {
   const dispatch = useAppDispatch(); // 用於派發 Redux actions
@@ -41,7 +41,9 @@ const UserMenu = () => {
 
       // 再執行登出 API
       await FETCH_AUTH.signOut();
-      handleSuccess(null, "登出成功");
+      notification.success({
+        title: "登出成功",
+      });
 
       // 最後導航到登入頁
       navigate("/auth/signIn");

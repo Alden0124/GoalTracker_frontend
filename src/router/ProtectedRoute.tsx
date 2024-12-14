@@ -9,6 +9,8 @@ import { notification } from "@/utils/notification";
 import { useCurrentUser } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 // cookies
 import { GET_COOKIE } from "@/utils/cookies";
+// react query
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ProtectedRouteProps {
   children?: React.ReactNode;
@@ -17,6 +19,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const { isError, isLoading } = useCurrentUser();
 
@@ -24,6 +27,8 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const token = GET_COOKIE();
 
     if (!token) {
+      // 清空所有快取
+      queryClient.clear();
       dispatch(signOut());
     }
 
@@ -38,7 +43,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       "/auth/sendCode",
       "/auth/verifyCode",
       "/auth/resetPassword",
-      "/",
+      "/home",
     ];
 
     // 有登入沒登入都可以訪問的頁面列表
@@ -51,7 +56,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const isAuthOnlyPath = authOnlyPaths.some(
       (path) => location.pathname.toLowerCase() === path.toLowerCase()
     );
-
+    console.log(location.pathname);
     // 判斷只有登入才能訪問的頁面
     const isProtectedPath = protectedPaths.some(
       (path) => location.pathname.toLowerCase().startsWith(path.toLowerCase()) // 修改這裡
@@ -62,6 +67,8 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       notification.error({
         title: "請重新登入",
       });
+      // 清空所有快取
+      queryClient.clear();
       navigate("/auth/signIn", { replace: true });
       return;
     }
@@ -74,6 +81,9 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
     // 未登入用戶訪問需要會員權限的頁面
     if (!isAuthenticated && isProtectedPath) {
+      // 清空所有快取
+      queryClient.clear();
+      // 重定向到登入頁面
       navigate("/auth/signIn", {
         // state: { from: location.pathname },
         replace: true,
@@ -92,6 +102,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     isLoading,
     location.pathname,
     navigate,
+    queryClient,
   ]);
 
   // 使用全局 loading 狀態

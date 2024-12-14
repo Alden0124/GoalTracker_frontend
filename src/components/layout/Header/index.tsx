@@ -22,10 +22,12 @@ import { useEffect, useRef, useState } from "react";
 import IconButton from "./components/IconButton";
 import ListWrapper from "./components/ListWrapper";
 import NotificationList from "./components/NotificationList";
+
+
 const Header = () => {
   const location = useLocation();
   const isLogin = useAppSelector(selectIsAuthenticated);
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(["translation", "auth"]);
   const { theme, setTheme } = useTheme();
   const [showChatList, setShowChatList] = useState(false);
   const [showLanguageList, setShowLanguageList] = useState(false);
@@ -36,7 +38,6 @@ const Header = () => {
 
   const { data: unreadNotificationCount } = useGetUnreadNotificationCount();
   const unreadCount = unreadNotificationCount?.unreadCount;
-
 
   const currentLanguageList = [
     {
@@ -55,11 +56,12 @@ const Header = () => {
   };
 
   // 切換語言
-  const handleLanguageChange = ( value: string) => {
+  const handleLanguageChange = (value: string) => {
     i18n.changeLanguage(value);
     localStorage.setItem("language", value);
     setShowLanguageList(false);
   };
+
 
   // 監聽點擊事件
   useEffect(() => {
@@ -93,8 +95,6 @@ const Header = () => {
     };
   }, []);
 
-  
-
   return (
     <header
       className={`
@@ -105,7 +105,7 @@ const Header = () => {
       `}
     >
       {/* 標題 */}
-      <Link to={isLogin ? "/feed" : "/"} className="text-[18px]">
+      <Link to={isLogin ? "/feed" : "/home"} className="text-[18px]">
         GoalTracker
       </Link>
 
@@ -143,10 +143,7 @@ const Header = () => {
         </div>
 
         {/* 主題 */}
-        <IconButton
-          onClick={toggleTheme}
-          ariaLabel={t("changeTheme")}
-        >
+        <IconButton onClick={toggleTheme} ariaLabel={t("changeTheme")}>
           {theme === "dark" ? <IoSunnyOutline /> : <CiDark />}
         </IconButton>
 
@@ -179,7 +176,7 @@ const Header = () => {
 
             {/* 通知 */}
             <div className="relative" ref={notificationListRef}>
-              <IconButton 
+              <IconButton
                 onClick={() => setShowNotificationList(!showNotificationList)}
                 ariaLabel={t("notifications")}
               >
