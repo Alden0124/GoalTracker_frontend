@@ -27,7 +27,7 @@ import NotificationList from "./components/NotificationList";
 const Header = () => {
   const location = useLocation();
   const isLogin = useAppSelector(selectIsAuthenticated);
-  const { t, i18n } = useTranslation(["translation", "auth"]);
+  const { t, i18n } = useTranslation(["common", "auth"]);
   const { theme, setTheme } = useTheme();
   const [showChatList, setShowChatList] = useState(false);
   const [showLanguageList, setShowLanguageList] = useState(false);
@@ -61,7 +61,6 @@ const Header = () => {
     localStorage.setItem("language", value);
     setShowLanguageList(false);
   };
-
 
   // 監聽點擊事件
   useEffect(() => {
@@ -110,12 +109,12 @@ const Header = () => {
       </Link>
 
       {/* 選單 */}
-      <div className="flex items-center justify-between text-[16px] gap-[12px] sm:gap-[6px] ">
+      <div className="flex items-center justify-between text-[16px] gap-[12px] xs:gap-[24px] sm:gap-[12px] ">
         {/* 語言選擇 */}
         <div className="relative" ref={languageListRef}>
           <IconButton
             onClick={() => setShowLanguageList(!showLanguageList)}
-            ariaLabel={t("changeLanguage")}
+            ariaLabel={t("common:language")}
           >
             <AiOutlineGlobal />
           </IconButton>
@@ -143,7 +142,7 @@ const Header = () => {
         </div>
 
         {/* 主題 */}
-        <IconButton onClick={toggleTheme} ariaLabel={t("changeTheme")}>
+        <IconButton onClick={toggleTheme} ariaLabel={t("common:theme")}>
           {theme === "dark" ? <IoSunnyOutline /> : <CiDark />}
         </IconButton>
 
@@ -203,7 +202,7 @@ const Header = () => {
         ) : (
           // 登入前-登入
           <Link to={"/auth/signIn"} className={`btn-primary ml-[15px]`}>
-            {t("login")}
+            {t("auth:login")}
           </Link>
         )}
       </div>

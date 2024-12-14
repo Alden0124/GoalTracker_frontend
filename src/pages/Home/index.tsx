@@ -1,67 +1,73 @@
-import { FaBell, FaChartBar, FaChartLine } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
+import { FaBullseye, FaLightbulb, FaUsers } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import { Fragment } from "react/jsx-runtime";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const { t } = useTranslation(["home"]);
   const secondSectionList = [
     {
       id: 1,
-      title: "目標設定與追蹤",
-      description: "輕鬆創建和管理您的個人目標，設定里程碑，並實時追蹤進度。",
+      title: t("home:secondSectionTitle1"),
+      description: t("home:secondSectionDescription1"),
     },
     {
       id: 2,
-      title: "數據分析與洞察",
-      description: "通過直觀的圖表和報告，深入了解您的目標達成情況和效率提升。",
+      title: t("home:secondSectionTitle2"),
+      description: t("home:secondSectionDescription2"),
     },
     {
       id: 3,
-      title: "智能提醒系統",
-      description: "根據您的目標和進度，接收個性化的提醒和建議，保持動力。",
+      title: t("home:secondSectionTitle3"),
+      description: t("home:secondSectionDescription3"),
     },
   ];
 
   return (
-    <div>
+    <div className="dark:bg-background-dark">
       {/* 第一部分 */}
-      <section
-        className={`text-center px-[15px] bg-gradient-to-b from-blue-50 to-white dark:bg-background-dark h-[700px] pt-[200px]`}
-      >
-        <h1 className={`text-[35px] md:text-[50px] dark:text-foreground-dark`}>
-          追蹤你的目標，實現你的夢想
+      <section className="text-center px-[15px] bg-gradient-to-b from-blue-50 to-white dark:from-background-dark dark:to-background-dark h-[600px] pt-[200px] md:h-[700px] md:pt-[200px]">
+        <h1 className="text-[35px] w md:text-[50px] dark:text-foreground-dark">
+          {t("home:title")}
         </h1>
-        <p
-          className={`text-[18px] md:text-[20px] text-gray-600 dark:text-foreground-dark pt-[20px]`}
-        >
-          GoalTracker
-          幫助你設定、追蹤並實現你的目標。利用我們的智能系統，輕鬆管理進度，提高效率。
+        <p className="text-[18px] max-w-[1000px] mx-auto md:text-[20px] text-gray-600 dark:text-foreground-dark pt-[20px]">
+          {t("home:description")}
         </p>
-        <button className="btn-primary w-[100px] md:w-[140px] mt-[20px] hover:bg-bg-button-light/90 transform hover:scale-105 transition-all">
-          立即開始
+        <button
+          onClick={() => {
+            navigate("/auth/signIn");
+          }}
+          className="btn-primary w-[100px] md:w-[140px] mt-[20px] hover:bg-bg-button-light/90 dark:hover:bg-bg-button-dark/90 transform hover:scale-105 transition-all"
+        >
+          {t("home:firstSectionButton")}
         </button>
       </section>
 
       {/* 第二部分 */}
-      <section className="text-center px-[15px] py-[100px]">
+      <section className="text-center px-[15px] py-[100px] md:py-[300px] dark:bg-background-dark">
         <h1 className="text-[35px] md:text-[50px] dark:text-foreground-dark mb-[60px]">
-          GoalTracker 核心功能
+          {t("home:secondSectionTitle")}
         </h1>
 
-        <div className=" mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {secondSectionList.map((item) => (
             <Fragment key={item.id}>
-              <div className="p-8 rounded-lg border border-gray-200 shadow-sm">
+              <div className="p-8 rounded-lg border border-gray-200 dark:border-gray-700 shadow-[0_0_10px_rgba(0,0,0,0.1)] dark:bg-card-dark">
                 <div className="flex justify-center mb-6">
                   {item.id === 1 && (
-                    <FaChartLine className="w-12 h-12 text-blue-500" />
+                    <FaBullseye className="w-12 h-12 text-blue-500 dark:text-blue-400" />
                   )}
                   {item.id === 2 && (
-                    <FaChartBar className="w-12 h-12 text-blue-500" />
+                    <FaUsers className="w-12 h-12 text-blue-500 dark:text-blue-400" />
                   )}
                   {item.id === 3 && (
-                    <FaBell className="w-12 h-12 text-blue-500" />
+                    <FaLightbulb className="w-12 h-12 text-blue-500 dark:text-blue-400" />
                   )}
                 </div>
-                <h3 className="text-xl font-semibold mb-4">{item.title}</h3>
+                <h3 className="text-xl font-semibold mb-4 dark:text-foreground-dark">
+                  {item.title}
+                </h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   {item.description}
                 </p>
@@ -72,30 +78,36 @@ const Home = () => {
       </section>
 
       {/* 第三部分 */}
-      <section className="min-h-[700px] w-full py-20 bg-blue-50 flex items-center">
+      <section className="min-h-[700px] w-full py-20 bg-blue-50 dark:bg-background-dark flex justify-center items-center">
         <div className="container px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">
-            準備好開始您的目標追蹤之旅了嗎？
+          <h2 className="text-3xl font-bold mb-6 dark:text-foreground-dark">
+            {t("home:thirdSectionTitle")}
           </h2>
-          <p className="mx-auto max-w-[700px] text-gray-600 text-xl mb-8">
-            加入
-            GoalTracker，讓我們一起將您的夢想變為現實。無論是個人成長、職業發展還是健康目標，我們都在這裡支持您。
+          <p className="mx-auto max-w-[700px] text-gray-600 dark:text-gray-300 text-xl mb-8">
+            {t("home:thirdSectionDescription")}
           </p>
-          <button className="btn-primary w-[100px] md:w-[140px] mt-[20px] hover:bg-bg-button-light/90 transform hover:scale-105 transition-all">
-            立即註冊
+          <button
+            onClick={() => {
+              navigate("/auth/signIn");
+            }}
+            className="btn-primary w-[100px] md:w-[140px] mt-[20px] hover:bg-bg-button-light/90 dark:hover:bg-bg-button-dark/90 transform hover:scale-105 transition-all"
+          >
+            {t("home:thirdSectionButton")}
           </button>
         </div>
       </section>
 
-      <footer className="w-full bg-gray-900 text-gray-100 py-12">
-        <div className="  px-[50px]">
+      <footer className="w-full bg-gray-900 text-gray-100 py-14">
+        <div className="px-[50px]">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <h3 className="text-xl font-bold">GoalTracker</h3>
-              <p className="text-sm text-gray-400">追蹤目標，實現夢想</p>
+            <div className="mb-4 md:mb-0 text-center md:text-left space-y-2">
+              <h3 className="text-xl font-bold">{t("home:footerTitle")}</h3>
+              <p className="text-sm text-gray-400">
+                {t("home:footerDescription")}
+              </p>
             </div>
-            <div className="text-center md:text-right">
-              <h4 className="font-medium mb-2">聯絡我們</h4>
+            <div className="text-center md:text-right space-y-2">
+              <h4 className="font-medium ">{t("home:footerContactTitle")}</h4>
               <div className="text-sm text-gray-400">
                 Email: h0989541162@gmail.com
               </div>
