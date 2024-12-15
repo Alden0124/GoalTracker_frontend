@@ -19,6 +19,7 @@ import { notification } from "@/utils/notification";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { FiEdit2, FiHeart, FiMoreVertical, FiTrash2 } from "react-icons/fi";
 import { IoSend } from "react-icons/io5";
 import CommentAvater from "../../ProfileInfo/components/CommentAvater";
@@ -37,6 +38,8 @@ const CommentItem = ({
   activeTab,
   isCurrentUser,
 }: CommentItemProps) => {
+  // 語言
+  const { t } = useTranslation(["profileGoals"]);
   // 選單參考
   const menuRef = useRef<HTMLDivElement>(null);
   // 文字框參考
@@ -209,6 +212,19 @@ const CommentItem = ({
     setIsReplying(!isReplying);
   };
 
+  // 按下 Enter 鍵提交表單
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey && isReplying) {
+      event.preventDefault();
+      onReplySubmit();
+    }
+
+    if (event.key === "Enter" && !event.shiftKey && isEditing) {
+      event.preventDefault();
+      handleEdit();
+    }
+  };
+
   return (
     <>
       <div>
@@ -231,6 +247,7 @@ const CommentItem = ({
                         <textarea
                           ref={textareaRef}
                           value={editContent}
+                          onKeyDown={handleKeyDown}
                           onChange={(e) => setEditContent(e.target.value)}
                           className="w-full p-2 pr-12 border rounded-lg overflow-hidden resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-background-dark dark:border-gray-700 dark:text-foreground-dark"
                           rows={1}
@@ -240,7 +257,7 @@ const CommentItem = ({
                             onClick={handleCancel}
                             className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                           >
-                            取消
+                            {t("profileGoals:cancel")}
                           </button>
                           <button
                             onClick={handleEdit}
@@ -253,9 +270,15 @@ const CommentItem = ({
                     </div>
                   ) : (
                     // 顯示留言內容
-                    <p className="text-foreground-light dark:text-foreground-dark whitespace-pre-wrap">
-                      {JSON.parse(comment.content).content}
-                    </p>
+                    <div>
+                      {/* 添加用戶名稱 */}
+                      <p className="font-medium text-sm text-foreground-light dark:text-foreground-dark">
+                        {comment.user.username}
+                      </p>
+                      <p className="font-sans text-foreground-light dark:text-foreground-dark whitespace-pre-wrap">
+                        {JSON.parse(comment.content).content}
+                      </p>
+                    </div>
                   )}
 
                   {/* 顯示留言時間 */}
@@ -271,8 +294,8 @@ const CommentItem = ({
                         className="text-sm break-keep text-gray-500 hover:text-foreground-light/80 dark:hover:text-foreground-dark/80"
                       >
                         {comment.replyCount
-                          ? `${comment.replyCount} 則回覆`
-                          : "回覆"}
+                          ? `${comment.replyCount} ${t("profileGoals:reply")}`
+                          : t("profileGoals:reply")}
                       </button>
                       {/* 添加愛心按鈕 */}
                       <button
@@ -291,7 +314,7 @@ const CommentItem = ({
                       </button>
                     </div>
                   ) : (
-                    <div className="flex gap-4 items-center">
+                    <div className="flex gap-4 items-center mb-[2px]">
                       <p className="text-sm text-gray-500 break-keep">
                         {formatDate(comment.createdAt)}{" "}
                         {formatTime(comment.createdAt)}
@@ -327,20 +350,20 @@ const CommentItem = ({
                     </button>
 
                     {showMenu && (
-                      <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10">
+                      <div className="absolute right-[20px] top-0 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10">
                         <button
                           onClick={handleEditClick}
                           className="flex items-center w-full px-4 py-2 text-sm gap-2 text-foreground-light/80 dark:text-foreground-dark/80 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                           <FiEdit2 />
-                          編輯
+                          {t("profileGoals:edit")}
                         </button>
                         <button
                           onClick={handleDelete}
                           className="flex items-center w-full px-4 py-2 text-sm gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
                         >
                           <FiTrash2 />
-                          刪除
+                          {t("profileGoals:delete")}
                         </button>
                       </div>
                     )}
@@ -376,12 +399,13 @@ const CommentItem = ({
                   <div className="relative">
                     <textarea
                       {...register("content")}
-                      placeholder="回覆..."
+                      placeholder={t("profileGoals:reply")}
+                      onKeyDown={handleKeyDown}
                       className="w-full p-3 pr-12 border rounded-lg resize-none min-h-[60px] text-foreground-light/80 dark:text-foreground-dark/80 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-background-dark dark:border-gray-700"
                     />
                     <button
                       className="absolute right-3 bottom-3 text-blue-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      aria-label="發送回覆"
+                      aria-label={t("profileGoals:sendReply")}
                     >
                       <IoSend className="text-xl" />
                     </button>

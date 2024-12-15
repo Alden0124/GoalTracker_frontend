@@ -177,12 +177,12 @@ const Header = () => {
             <div className="relative" ref={notificationListRef}>
               <IconButton
                 onClick={() => setShowNotificationList(!showNotificationList)}
-                ariaLabel={t("notifications")}
+                ariaLabel={t("common:notifications")}
               >
                 <IoNotificationsOutline />
-                {unreadCount && unreadCount > 0 && (
+                {unreadCount && unreadCount > 0 ? (
                   <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-red-500 rounded-full"></span>
-                )}
+                ) : null}
               </IconButton>
               {showNotificationList && (
                 <ListWrapper className="md:w-80">

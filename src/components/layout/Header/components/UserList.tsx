@@ -4,6 +4,7 @@ import { useAppDispatch } from "@/hooks/common/useAppReduxs";
 import { socketService } from "@/services/api/SocketService";
 import { openChatRoom, openChatWindow } from "@/stores/slice/chatReducer";
 import { GET_COOKIE } from "@/utils/cookies";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 interface UserListProps {
@@ -15,13 +16,17 @@ const UserList = ({ setShowChatList, className }: UserListProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { data: chatRecord, isLoading } = useChatRecord();
-
+  const { t } = useTranslation(["common"]);
   // 選擇聊天對象
-  const handleSelectUser = (userId: string, username: string, avatar: string) => {
+  const handleSelectUser = (
+    userId: string,
+    username: string,
+    avatar: string
+  ) => {
     const token = GET_COOKIE();
     if (token) {
       setShowChatList(false);
-      
+
       // 取得目前視窗框度
       const currentWindowWidth = window.innerWidth;
 
@@ -56,8 +61,12 @@ const UserList = ({ setShowChatList, className }: UserListProps) => {
   // 如果沒有聊天記錄，顯示暫無聊天記錄
   if (!chatRecord?.conversations?.length) {
     return (
-      <div className={`w-full h-[calc(100vh-64px)] md:h-[400px] md:w-80 bg-background-light dark:bg-background-dark border p-4 ${className}`}>
-        <h2 className=" text-xl font-semibold mb-4 text-foreground-light dark:text-foreground-dark">聊天列表</h2>
+      <div
+        className={`w-full h-[calc(100vh-64px)] md:h-[400px] md:w-80 bg-background-light dark:bg-background-dark border p-4 ${className}`}
+      >
+        <h2 className=" text-xl font-semibold mb-4 text-foreground-light dark:text-foreground-dark">
+          聊天列表
+        </h2>
         <div className="flex flex-col items-center justify-center h-[80%]">
           <svg
             className="w-16 h-16 text-gray-400"
@@ -79,13 +88,23 @@ const UserList = ({ setShowChatList, className }: UserListProps) => {
   }
 
   return (
-    <div className={`w-full md:w-80 bg-background-light dark:bg-background-dark border-r border-light-border dark:border-dark-border p-4 ${className}`}>
-      <h2 className="text-xl font-semibold mb-4 text-foreground-light dark:text-foreground-dark  ">聊天列表</h2>
+    <div
+      className={`w-full md:w-80 bg-background-light dark:bg-background-dark border-r border-light-border dark:border-dark-border p-4 ${className}`}
+    >
+      <h2 className="text-xl font-semibold mb-4 text-foreground-light dark:text-foreground-dark  ">
+        {t("common:chatList")}
+      </h2>
       <div className="space-y-2">
         {chatRecord.conversations.map((conversation) => (
           <div
             key={conversation.userId}
-            onClick={() => handleSelectUser(conversation.userId, conversation.username, conversation.avatar)}
+            onClick={() =>
+              handleSelectUser(
+                conversation.userId,
+                conversation.username,
+                conversation.avatar
+              )
+            }
             className="p-3 md:px-0 md:py-2 lg:p-3 rounded-lg cursor-pointer md:hover:bg-[#f0f0f0] md:hover:dark:bg-[#202020]/50 text-foreground-light dark:text-foreground-dark"
           >
             <div className="flex items-center justify-center space-x-3">
@@ -103,7 +122,7 @@ const UserList = ({ setShowChatList, className }: UserListProps) => {
                   </span>
                 </div>
               )}
-              
+
               {/* 用戶信息部分 - 在大屏幕和超大屏幕顯示 */}
               <div className="flex-1">
                 <div className="flex justify-between items-center">
@@ -111,7 +130,9 @@ const UserList = ({ setShowChatList, className }: UserListProps) => {
                     {conversation.username}
                   </span>
                   <span className="text-xs text-light-subtext dark:text-dark-subtext">
-                    {new Date(conversation.lastMessage.timestamp).toLocaleDateString()}
+                    {new Date(
+                      conversation.lastMessage.timestamp
+                    ).toLocaleDateString()}
                   </span>
                 </div>
                 <div className="flex justify-between items-center mt-1">

@@ -12,6 +12,7 @@ import { socketService } from "@/services/api/SocketService";
 import { openChatRoom, openChatWindow } from "@/stores/slice/chatReducer";
 import { GET_COOKIE } from "@/utils/cookies";
 import { Fragment, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { IoLocationOutline, IoSchoolOutline } from "react-icons/io5";
 import { MdOutlineWork } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
@@ -37,7 +38,7 @@ const ProfileInfo = () => {
   const { mutate: followUser } = useFollowUser();
   // 取消追蹤用戶
   const { mutate: unfollowUser } = useUnfollowUser();
-
+  const { t } = useTranslation(["profileInfo"]);
   if (isLoading) return <ProfileInfoSkeleton />;
 
   if (error || !userData?.user) return null;
@@ -97,19 +98,19 @@ const ProfileInfo = () => {
       id: 1,
       icon: <IoLocationOutline className="text-xl" />,
       value: location,
-      placeholder: "新增居住地",
+      placeholder: t("profileInfo:addLocation"),
     },
     {
       id: 2,
       icon: <MdOutlineWork className="text-xl" />,
       value: occupation,
-      placeholder: "新增職稱",
+      placeholder: t("profileInfo:addOccupation"),
     },
     {
       id: 3,
       icon: <IoSchoolOutline className="text-xl" />,
       value: education,
-      placeholder: "新增學歷",
+      placeholder: t("profileInfo:addEducation"),
     },
   ];
 
@@ -131,10 +132,12 @@ const ProfileInfo = () => {
               onClick={() => handleFollowUser(paramsUserId || "")}
               className="flex-1 btn-primary"
             >
-              {userData.user.isFollowing ? "取消追蹤" : "關注"}
+              {userData.user.isFollowing
+                ? t("profileInfo:unfollow")
+                : t("profileInfo:follow")}
             </button>
             <button onClick={handleOpenChat} className="flex-1 btn-secondary">
-              發送訊息
+              {t("profileInfo:sendMessage")}
             </button>
           </div>
         )}
@@ -146,7 +149,7 @@ const ProfileInfo = () => {
               className="w-[200px] btn-secondary"
               onClick={() => setShowEditDialog(true)}
             >
-              編輯個人資料
+              {t("profileInfo:editProfile")}
             </button>
           </div>
         )}
@@ -178,7 +181,7 @@ const ProfileInfo = () => {
               {userData.user.followersCount}
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-300">
-              粉絲數
+              {t("profileInfo:followers")}
             </div>
           </div>
           <div
@@ -191,7 +194,7 @@ const ProfileInfo = () => {
               {userData.user.followingCount}
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-300">
-              追蹤中
+              {t("profileInfo:following")}
             </div>
           </div>
         </div>

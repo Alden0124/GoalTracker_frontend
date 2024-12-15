@@ -2,5 +2,9 @@
   "language": "語言",
   "theme": "主題",
   "logout": "登出",
-  "profile": "個人資料"
+  "profile": "個人資料",
+  "notifications": "通知",
+  "loading": "加載中",
+  "noMoreNotifications": "沒有更多通知",
+  "chatList": "聊天列表"
 }

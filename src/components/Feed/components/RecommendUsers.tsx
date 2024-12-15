@@ -6,6 +6,7 @@ import {
   useGetRecommendUsers,
 } from "@/hooks/feed/useFeedQueries";
 import { DEFAULT_RECOMMENDED_USERS_QUERY } from "@/services/api/Feed/constants";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 interface RecommendUsersProps {
@@ -14,6 +15,9 @@ interface RecommendUsersProps {
 }
 
 const RecommendUsers = ({ className, title = true }: RecommendUsersProps) => {
+  // 多語系
+  const { t } = useTranslation(["feed"]);
+
   // 獲取推薦用戶數據
   const {
     data: recommendedUsers,
@@ -34,7 +38,7 @@ const RecommendUsers = ({ className, title = true }: RecommendUsersProps) => {
       <>
         {title && (
           <h3 className="text-lg font-medium mb-4 dark:text-gray-100">
-            推薦用戶
+            {t("feed:recommendUsers")}
           </h3>
         )}
         <div className={`space-y-4 `}>
@@ -67,7 +71,7 @@ const RecommendUsers = ({ className, title = true }: RecommendUsersProps) => {
                       {recommendedUser.username}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {recommendedUser.goalCount} 個進行中的目標
+                      {recommendedUser.goalCount} {t("feed:goals")}
                     </p>
                   </div>
                 </Link>
@@ -76,7 +80,7 @@ const RecommendUsers = ({ className, title = true }: RecommendUsersProps) => {
                     className="px-4 py-1 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-100"
                     onClick={() => handleFollow(recommendedUser._id)}
                   >
-                    關注
+                    {t("feed:follow")}
                   </button>
                 )}
               </div>

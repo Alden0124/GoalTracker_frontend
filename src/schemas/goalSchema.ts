@@ -1,30 +1,46 @@
+import i18n from "@/plugin/i18n";
 import { z } from "zod";
 
-export const goalSchema = z.object({
-  title: z.string()
-    .min(1, "請輸入目標標題")
-    .max(100, "標題不能超過 100 個字"),
-  description: z.string()
-    .min(1, "請輸入目標描述")
-    .max(500, "描述不能超過 500 個字"),
-  startDate: z.string()
-    .min(1, "請選擇開始日期")
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "日期格式不正確"),
-  endDate: z.string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "日期格式不正確")
-    .optional(),
-  isPublic: z.boolean({
-    required_error: "請選擇是否公開",
-    invalid_type_error: "請選擇是否公開",
-  }),
-}).refine((data) => {
-  if (data.endDate && data.startDate > data.endDate) {
-    return false;
-  }
-  return true;
-}, {
-  message: "結束日期必須在開始日期之後",
-  path: ["endDate"]
-});
+// 動態獲取驗證消息
+const getValidationMessages = () =>
+  i18n.getResourceBundle(i18n.language, "validate");
 
-export type GoalFormData = z.infer<typeof goalSchema>;
+export const getGoalSchema = () => {
+  const validationMessages = getValidationMessages();
+  return z
+    .object({
+      title: z
+        .string()
+        .min(1, validationMessages.title.required)
+        .max(20, validationMessages.title.max),
+      description: z
+        .string()
+        .min(1, validationMessages.description.required)
+        .max(20, validationMessages.description.max),
+      startDate: z
+        .string()
+        .min(1, validationMessages.startDate.required)
+        .regex(/^\d{4}-\d{2}-\d{2}$/, validationMessages.startDate.regex),
+      endDate: z
+        .string()
+        .min(1, validationMessages.endDate.required)
+        .regex(/^\d{4}-\d{2}-\d{2}$/, validationMessages.endDate.regex),
+      isPublic: z.boolean().refine((data) => data === true, {
+        message: validationMessages.isPublic.required,
+      }),
+    })
+    .refine(
+      (data) => {
+        if (data.endDate && data.startDate > data.endDate) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: validationMessages.endDate.afterStartDate,
+        path: ["endDate"],
+      }
+    );
+};
+
+export type GoalFormData = z.infer<ReturnType<typeof getGoalSchema>>;

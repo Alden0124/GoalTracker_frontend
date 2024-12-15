@@ -16,5 +16,34 @@
     "required": "請輸入驗證碼",
     "length": "驗證碼必須是6位數",
     "regex": "驗證碼只能包含數字"
+  },
+  "location": {
+    "required": "請輸入您的位置"
+  },
+  "occupation": {
+    "required": "請輸入您的職業"
+  },
+  "education": {
+    "required": "請輸入您的學歷"
+  },
+  "title": {
+    "required": "請輸入目標標題",
+    "max": "標題不能超過20個字元"
+  },
+  "description": {
+    "required": "請輸入您的描述",
+    "max": "描述不能超過20個字元"
+  },
+  "startDate": {
+    "required": "請輸入您的開始日期",
+    "regex": "日期格式不正確"
+  },
+  "endDate": {
+    "required": "請輸入您的結束日期",
+    "regex": "日期格式不正確",
+    "afterStartDate": "結束日期必須在開始日期之後"
+  },
+  "isPublic": {
+    "required": "請選擇是否公開"
   }
 }

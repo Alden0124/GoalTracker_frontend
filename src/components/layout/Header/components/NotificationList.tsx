@@ -118,45 +118,54 @@ const NotificationList = ({
         <h3 className="font-medium">{t("notifications")}</h3>
       </div>
 
-      <div ref={scrollContainerRef} className="custom-scrollbar overflow-y-auto max-h-[400px]">
+      <div
+        ref={scrollContainerRef}
+        className="custom-scrollbar overflow-y-auto max-h-[400px]"
+      >
         {notificationList.map((notification) => (
-           <button
-           key={notification.id}
-           onClick={() => handleNotificationClick(notification)}
-           className={`
+          <button
+            key={notification.id}
+            onClick={() => handleNotificationClick(notification)}
+            className={`
              w-full p-4 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer border-b
            `}
-         >
-           <div className="flex gap-2 text-sm">
-             <div className="relative">
-               <img
-                 src={notification.sender.avatar}
-                 alt={notification.sender.username}
-                 className="w-12 h-12 rounded-full"
-               />
-               {!notification.read && (
-                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full" />
-               )}
-             </div>
-             <div className="w-fit">
-               <p className={`text-start ${!notification.read ? 'font-medium' : ''}`}>
-                 {notification.content}
-               </p>
-               <p className="text-gray-500 w-fit">
-                 {new Date(notification.createdAt).toLocaleDateString()}
-               </p>
-             </div>
-           </div>
-         </button>
+          >
+            <div className="flex gap-2 text-sm">
+              <div className="relative">
+                <img
+                  src={notification.sender.avatar}
+                  alt={notification.sender.username}
+                  className="w-12 h-12 rounded-full"
+                />
+                {!notification.read && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full" />
+                )}
+              </div>
+              <div className="w-fit">
+                <p
+                  className={`text-start ${
+                    !notification.read ? "font-medium" : ""
+                  }`}
+                >
+                  {notification.content}
+                </p>
+                <p className="text-gray-500 w-fit">
+                  {new Date(notification.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+          </button>
         ))}
 
         {isFetchingNextPage && (
-          <div className="p-4 text-center text-gray-500">{t("loading")}...</div>
+          <div className="p-4 text-center text-gray-500">
+            {t("common:loading")}...
+          </div>
         )}
 
         {!hasNextPage && (
           <div className="p-4 text-center text-gray-500">
-            {t("noMoreNotifications")}
+            {t("common:noMoreNotifications")}
           </div>
         )}
       </div>

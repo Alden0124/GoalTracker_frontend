@@ -2,5 +2,9 @@
   "language": "Language",
   "theme": "Theme",
   "logout": "Logout",
-  "profile": "Profile"
+  "profile": "Profile",
+  "notifications": "Notifications",
+  "loading": "Loading",
+  "noMoreNotifications": "No more notifications",
+  "chatList": "message"
 }

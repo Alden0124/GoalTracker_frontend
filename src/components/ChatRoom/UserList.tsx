@@ -3,6 +3,7 @@ import { useAppDispatch } from "@/hooks/common/useAppReduxs";
 import { socketService } from "@/services/api/SocketService";
 import { openChatRoom } from "@/stores/slice/chatReducer";
 import { GET_COOKIE } from "@/utils/cookies";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import UserListSkeleton from "./skeleton/UserListSkeleton";
 
@@ -10,23 +11,29 @@ const UserList = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { data: chatRecord, isLoading } = useChatRecord();
+  const { t } = useTranslation(["common"]);
 
   // 選擇聊天對象
-  const handleSelectUser = (userId: string, username: string, avatar: string) => {
+  const handleSelectUser = (
+    userId: string,
+    username: string,
+    avatar: string
+  ) => {
     const token = GET_COOKIE();
     if (token) {
       // 建立 WebSocket 連線
       socketService.connect(token);
 
       // 開啟聊天室
-      dispatch(openChatRoom({
-        recipientId: userId,
-        recipientName: username,
-        avatar: avatar,
-      }));
+      dispatch(
+        openChatRoom({
+          recipientId: userId,
+          recipientName: username,
+          avatar: avatar,
+        })
+      );
       navigate(`/chatRoom/${userId}`);
     }
-
   };
 
   // 如果正在加載，顯示加載中
@@ -36,7 +43,9 @@ const UserList = () => {
   if (!chatRecord?.conversations?.length) {
     return (
       <div className="w-80 bg-white border-r border-gray-200 p-4">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">聊天列表</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">
+          {t("common:chatList")}
+        </h2>
         <div className="flex flex-col items-center justify-center h-[calc(100vh-8rem)]">
           <svg
             className="w-16 h-16 text-gray-400"
@@ -59,12 +68,20 @@ const UserList = () => {
 
   return (
     <div className="w-full md:w-20 lg:w-80 bg-background-light dark:bg-background-dark border-r border-light-border dark:border-dark-border p-4">
-      <h2 className="text-xl font-semibold mb-4 text-foreground-light dark:text-foreground-dark md:hidden lg:block ">聊天列表</h2>
+      <h2 className="text-xl font-semibold mb-4 text-foreground-light dark:text-foreground-dark md:hidden lg:block ">
+        聊天列表
+      </h2>
       <div className="space-y-2">
         {chatRecord.conversations.map((conversation) => (
           <div
             key={conversation.userId}
-            onClick={() => handleSelectUser(conversation.userId, conversation.username, conversation.avatar)}
+            onClick={() =>
+              handleSelectUser(
+                conversation.userId,
+                conversation.username,
+                conversation.avatar
+              )
+            }
             className="p-3 md:px-0 md:py-2 lg:p-3 rounded-lg cursor-pointer md:hover:bg-[#f0f0f0] md:hover:dark:bg-[#202020]/50 text-foreground-light dark:text-foreground-dark"
           >
             <div className="flex items-center justify-center space-x-3">
@@ -82,7 +99,7 @@ const UserList = () => {
                   </span>
                 </div>
               )}
-              
+
               {/* 用戶信息部分 - 在大屏幕和超大屏幕顯示 */}
               <div className="flex-1 md:hidden lg:block">
                 <div className="flex justify-between items-center">
@@ -90,7 +107,9 @@ const UserList = () => {
                     {conversation.username}
                   </span>
                   <span className="text-xs text-light-subtext dark:text-dark-subtext">
-                    {new Date(conversation.lastMessage.timestamp).toLocaleDateString()}
+                    {new Date(
+                      conversation.lastMessage.timestamp
+                    ).toLocaleDateString()}
                   </span>
                 </div>
                 <div className="flex justify-between items-center mt-1">

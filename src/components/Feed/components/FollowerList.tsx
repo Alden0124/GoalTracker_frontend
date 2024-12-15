@@ -3,6 +3,7 @@ import FollowListDialogSkeleton from "@/components/Profile/ProfileInfo/skeleton/
 import { FollowList } from "@/components/Profile/ProfileInfo/type";
 import { useUnfollowUser } from "@/hooks/feed/useFeedQueries";
 import { notification } from "@/utils/notification";
+import { useTranslation } from "react-i18next";
 import { IoPersonOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 
@@ -19,12 +20,15 @@ const FollowerList = ({
   title,
   isFetching,
 }: FollowerListProps) => {
+  // 多語系
+  const { t } = useTranslation(["feed"]);
   // 取消追蹤
   const { mutate: unfollowUser } = useUnfollowUser();
-
   // 取消追蹤
   const handleUnfollow = async (followerId: string) => {
-    const confirm = await notification.confirm({ title: "確認取消追蹤" });
+    const confirm = await notification.confirm({
+      title: t("feed:confirmUnfollow"),
+    });
     if (confirm) {
       unfollowUser(followerId);
     }
@@ -58,12 +62,12 @@ const FollowerList = ({
                   {follower.username}
                 </span>
               </Link>
-              {title === "追蹤中" && (
+              {title === t("feed:following") && (
                 <button
                   onClick={() => handleUnfollow(follower.id)}
                   className="text-blue-500 hover:text-blue-600 break-keep"
                 >
-                  取消追蹤
+                  {t("feed:unfollow")}
                 </button>
               )}
             </div>
@@ -72,7 +76,7 @@ const FollowerList = ({
       ) : (
         <div className="flex flex-col items-center justify-center py-10 text-gray-500">
           <IoPersonOutline className="text-4xl mb-2" />
-          <p>目前還沒有{title}</p>
+          <p>{t("feed:noFollowers")}</p>
         </div>
       )}
     </>

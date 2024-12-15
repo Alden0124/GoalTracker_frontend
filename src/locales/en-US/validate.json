@@ -16,5 +16,34 @@
     "required": "Please enter the verification code",
     "length": "The verification code must be 6 digits",
     "regex": "The verification code can only contain numbers"
+  },
+  "location": {
+    "required": "Please enter your location"
+  },
+  "occupation": {
+    "required": "Please enter your occupation"
+  },
+  "education": {
+    "required": "Please enter your education"
+  },
+  "title": {
+    "required": "Please enter your goal title",
+    "max": "Title cannot exceed 20 characters"
+  },
+  "description": {
+    "required": "Please enter your description",
+    "max": "Description cannot exceed 20 characters"
+  },
+  "startDate": {
+    "required": "Please enter your start date",
+    "regex": "Date format is incorrect"
+  },
+  "endDate": {
+    "required": "Please enter your end date",
+    "regex": "Date format is incorrect",
+    "afterStartDate": "End date must be after start date"
+  },
+  "isPublic": {
+    "required": "Please select whether to make it public"
   }
 }

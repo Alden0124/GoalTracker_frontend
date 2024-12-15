@@ -2,11 +2,15 @@ import Dialog from "@/components/common/Dialog";
 import ProfileAvatarUpload from "@/components/Profile/ProfileInfo/components/ProfileAvatarUpload";
 import Input from "@/components/ui/Input";
 import { useUpdateProfile } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
-import { profileSchema, type ProfileFormData } from "@/schemas/profileSchema";
+import {
+  getProfileSchema,
+  type ProfileFormData,
+} from "@/schemas/profileSchema";
 import { GetUserProfileResponse } from "@/services/api/Profile/ProfileInfo/type/GetUserProfile.type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 interface ProfileEditDialogProps {
   isOpen: boolean;
@@ -21,13 +25,14 @@ const ProfileEditDialog = ({
 }: ProfileEditDialogProps) => {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const updateProfile = useUpdateProfile();
+  const { t } = useTranslation(["profile"]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
+    resolver: zodResolver(getProfileSchema()),
     defaultValues: {
       username: initialData.username || "",
       location: initialData.location || "",
@@ -71,7 +76,11 @@ const ProfileEditDialog = ({
   };
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title="編輯個人資料">
+    <Dialog
+      isOpen={isOpen}
+      onClose={updateProfile.isPending ? () => {} : onClose}
+      title={t("profileInfo:editProfile")}
+    >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* 頭像上傳區域 */}
         <div className="flex flex-col items-center gap-2 mb-4">
@@ -79,30 +88,32 @@ const ProfileEditDialog = ({
             currentAvatar={initialData.avatar}
             onFileSelect={setAvatarFile}
           />
-          <span className="text-sm text-gray-500">點擊更換頭像</span>
+          <span className="text-sm text-gray-500">
+            {t("profileInfo:clickToChangeAvatar")}
+          </span>
         </div>
 
         <Input
           {...register("username")}
-          label="姓名"
+          label={t("profileInfo:username")}
           error={errors.username?.message}
         />
 
         <Input
           {...register("location")}
-          label="居住地"
+          label={t("profileInfo:location")}
           error={errors.location?.message}
         />
 
         <Input
           {...register("occupation")}
-          label="職稱"
+          label={t("profileInfo:occupation")}
           error={errors.occupation?.message}
         />
 
         <Input
           {...register("education")}
-          label="學歷"
+          label={t("profileInfo:education")}
           error={errors.education?.message}
         />
 
@@ -110,17 +121,23 @@ const ProfileEditDialog = ({
           <button
             type="button"
             onClick={onClose}
-            className="btn-secondary"
             disabled={updateProfile.isPending}
+            className={` ${
+              updateProfile.isPending ? "btn-loading" : "btn-secondary"
+            }`}
           >
-            取消
+            {t("profileInfo:cancel")}
           </button>
           <button
             type="submit"
-            className="btn-primary"
             disabled={updateProfile.isPending}
+            className={` ${
+              updateProfile.isPending ? "btn-loading" : "btn-primary"
+            }`}
           >
-            {updateProfile.isPending ? "更新中..." : "保存更改"}
+            {updateProfile.isPending
+              ? t("profileInfo:updating")
+              : t("profileInfo:save")}
           </button>
         </div>
       </form>

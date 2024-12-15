@@ -56,7 +56,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const isAuthOnlyPath = authOnlyPaths.some(
       (path) => location.pathname.toLowerCase() === path.toLowerCase()
     );
-    console.log(location.pathname);
+
     // 判斷只有登入才能訪問的頁面
     const isProtectedPath = protectedPaths.some(
       (path) => location.pathname.toLowerCase().startsWith(path.toLowerCase()) // 修改這裡
