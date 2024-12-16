@@ -58,15 +58,21 @@ export const MessageList = ({
 
   // 合併所有頁面的目標數據
   const historyMessages = useMemo(() => {
-    // 創建一個新數組來避免修改原始數據
     const reversedPages = [...(historyMessagesData?.pages || [])].reverse();
-    return reversedPages.flatMap((page) => page.messages);
+    const messages = reversedPages.flatMap((page) => page.messages);
+
+    // 使用 Set 去重
+    const uniqueMessages = Array.from(
+      new Map(messages.map((msg) => [msg.id, msg])).values()
+    );
+
+    return uniqueMessages;
   }, [historyMessagesData?.pages]);
 
   // 按日期對消息進行分組
   const groupedMessages = useMemo(() => {
     const groups: { [key: string]: typeof historyMessages } = {};
-    
+
     historyMessages.forEach((msg) => {
       const date = new Date(msg.timestamp).toDateString();
       if (!groups[date]) {
@@ -74,7 +80,7 @@ export const MessageList = ({
       }
       groups[date].push(msg);
     });
-    
+
     return groups;
   }, [historyMessages]);
 
@@ -161,6 +167,7 @@ export const MessageList = ({
     };
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  console.log(groupedMessages);
   return (
     <div
       ref={messageContainerRef}
@@ -168,7 +175,9 @@ export const MessageList = ({
     >
       <div ref={loadTriggerRef} className="h-4">
         {isFetchingNextPage && (
-          <div className="text-center text-foreground-light dark:text-foreground-dark text-sm">加載更多...</div>
+          <div className="text-center text-foreground-light dark:text-foreground-dark text-sm">
+            加載更多...
+          </div>
         )}
       </div>
       {Object.entries(groupedMessages).map(([date, messages]) => (

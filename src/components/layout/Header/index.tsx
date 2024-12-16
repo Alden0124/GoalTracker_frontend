@@ -17,12 +17,12 @@ import { selectIsAuthenticated } from "@/stores/slice/userReducer";
 // utils
 import UserList from "@/components/layout/Header/components/UserList";
 import UserMenu from "@/components/layout/Header/components/UserMenu";
+import { useUnreadMessageCount } from "@/hooks/ChatRoom/useChatManager";
 import { useGetUnreadNotificationCount } from "@/hooks/notifications/Chat/useNotifications";
 import { useEffect, useRef, useState } from "react";
 import IconButton from "./components/IconButton";
 import ListWrapper from "./components/ListWrapper";
 import NotificationList from "./components/NotificationList";
-
 
 const Header = () => {
   const location = useLocation();
@@ -36,8 +36,13 @@ const Header = () => {
   const [showNotificationList, setShowNotificationList] = useState(false);
   const notificationListRef = useRef<HTMLDivElement>(null);
 
+  // 未讀通知數量
   const { data: unreadNotificationCount } = useGetUnreadNotificationCount();
   const unreadCount = unreadNotificationCount?.unreadCount;
+
+  // 未讀聊天訊息數量
+  const { data: unreadMessageData } = useUnreadMessageCount();
+  const unreadMessageCount = unreadMessageData?.unreadMessageCount;
 
   const currentLanguageList = [
     {
@@ -158,9 +163,12 @@ const Header = () => {
             >
               <IconButton
                 onClick={() => setShowChatList(!showChatList)}
-                ariaLabel={t("messages")}
+                ariaLabel={t("common:messages")}
               >
                 <IoChatbubbleOutline />
+                {unreadMessageCount && unreadMessageCount > 0 ? (
+                  <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-red-500 rounded-full"></span>
+                ) : null}
               </IconButton>
               {/* 聊天列表彈出層 */}
               {showChatList && (

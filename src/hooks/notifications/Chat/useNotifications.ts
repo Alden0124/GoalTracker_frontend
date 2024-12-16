@@ -32,6 +32,7 @@ export const useGetNotifications = (query: GetNotificationsQuery) => {
   });
 };
 
+// 獲取未讀通知數量
 export const useGetUnreadNotificationCount = () => {
   const token = GET_COOKIE()
   return useQuery({

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IoSend } from "react-icons/io5";
 
 interface MessageInputProps {
-  handleSend: (inputMessage: string) => Promise<void>;
+  handleSend: (inputMessage: string) => void;
 }
 
 export const MessageInput = ({ handleSend }: MessageInputProps) => {
@@ -10,15 +10,15 @@ export const MessageInput = ({ handleSend }: MessageInputProps) => {
   const [inputMessage, setInputMessage] = useState("");
 
   // 處理輸入
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputMessage(e.target.value);
   };
 
   // 處理按鍵
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      setInputMessage('')
+      setInputMessage("");
       handleSend(inputMessage);
     }
   };
@@ -30,13 +30,13 @@ export const MessageInput = ({ handleSend }: MessageInputProps) => {
 
   return (
     <div className="border-t p-3 flex items-center space-x-2 bg-background-light dark:bg-background-dark ">
-      <input
-        type="text"
+      <textarea
         value={inputMessage}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        className="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-dark-input dark:text-dark-text"
+        className="flex-1 border rounded-full px-4 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-dark-input dark:text-dark-text"
         placeholder="輸入訊息..."
+        rows={1}
       />
       <button
         onClick={handleSendMessage}

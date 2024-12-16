@@ -1,15 +1,14 @@
 import type { Socket } from "socket.io-client";
 import socketIO from "socket.io-client";
-import { NewNotifications } from "../Notifications/type/GetNotifications.type";
+import type { NewNotification } from "../Notifications/type/GetNotifications.type";
 import type { ReceiveMessage } from "./type";
-
 
 interface SocketServiceType {
   connect: (token: string) => void;
   disconnect: () => void;
   sendPrivateMessage: (recipientId: string, content: string) => void;
   onNewMessage: (callback: (message: ReceiveMessage) => void) => void;
-  onMessageSent: (callback: (status: unknown) => void) => void;
+  onMessageSent: (callback: (status: { status: "success" }) => void) => void;
   onError: (callback: (error: unknown) => void) => void;
   joinChat: (userId: string, username: string) => void;
   onUserListUpdate: (callback: (users: unknown[]) => void) => void;
@@ -21,11 +20,14 @@ interface SocketServiceType {
   onConnectError: (callback: (error: Error) => void) => void;
   offConnectError: (callback: (error: Error) => void) => void;
   offNewMessage: (callback: (message: ReceiveMessage) => void) => void;
-  onNewNotification: (callback: (notification: NewNotifications) => void) => void;
-  offNewNotification: (callback: (notification: NewNotifications) => void) => void;
-  onUpdateUnreadNotificationCount: (callback: (unreadCount: number) => void) => void;
-  offUpdateUnreadNotificationCount: (callback: (unreadCount: number) => void) => void;
-
+  onNewNotification: (callback: (notification: NewNotification) => void) => void;
+  offNewNotification: (callback: (notification: NewNotification) => void) => void;
+  onUpdateUnreadNotificationCount: (
+    callback: (unreadCount: number) => void
+  ) => void;
+  offUpdateUnreadNotificationCount: (
+    callback: (unreadCount: number) => void
+  ) => void;
 }
 
 const createSocketService = (): SocketServiceType => {
@@ -98,6 +100,14 @@ const createSocketService = (): SocketServiceType => {
     });
   };
 
+  // 監聽訊息發送
+  const onMessageSent = (
+    callback: (status: { status: "success" }) => void
+  ): void => {
+    if (!socket) return;
+    socket.on("messageSent", callback);
+  };
+
   // 監聽新訊息
   const onNewMessage = (callback: (message: ReceiveMessage) => void): void => {
     if (!socket) return;
@@ -113,7 +123,7 @@ const createSocketService = (): SocketServiceType => {
 
   // 監聽新通知
   const onNewNotification = (
-    callback: (notification: NewNotifications) => void
+    callback: (notification: NewNotification) => void
   ): void => {
     if (!socket) return;
     socket.on("newNotification", callback);
@@ -121,27 +131,26 @@ const createSocketService = (): SocketServiceType => {
   };
 
   // 取消監聽新通知
-  const offNewNotification = (callback: (notification: unknown) => void): void => {
+  const offNewNotification = (
+    callback: (notification: NewNotification) => void
+  ): void => {
     if (!socket) return;
     socket.off("newNotification", callback);
   };
 
-  // 監聽訊息發送
-  const onMessageSent = (callback: (status: unknown) => void): void => {
-    if (!socket) return;
-    socket.on("messageSent", callback);
-    console.log("監聽訊息發送");
-  };
-
   // 監聽未讀通知數量
-  const onUpdateUnreadNotificationCount = (callback: (unreadCount: number) => void): void => {
+  const onUpdateUnreadNotificationCount = (
+    callback: (unreadCount: number) => void
+  ): void => {
     if (!socket) return;
     socket.on("notificationUpdate", callback);
     console.log("監聽未讀通知數量");
   };
 
   // 取消監聽未讀通知數量
-  const offUpdateUnreadNotificationCount = (callback: (unreadCount: number) => void): void => {
+  const offUpdateUnreadNotificationCount = (
+    callback: (unreadCount: number) => void
+  ): void => {
     if (!socket) return;
     socket.off("notificationUpdate", callback);
   };
@@ -150,7 +159,6 @@ const createSocketService = (): SocketServiceType => {
   const onError = (callback: (error: unknown) => void): void => {
     if (!socket) return;
     socket.on("error", callback);
-    console.log("監聽錯誤");
   };
 
   // 取消監聽錯誤
@@ -226,7 +234,7 @@ const createSocketService = (): SocketServiceType => {
     offDisconnect,
     onConnectError,
     offConnectError,
-    offNewMessage, 
+    offNewMessage,
     onNewNotification,
     offNewNotification,
     offUpdateUnreadNotificationCount,

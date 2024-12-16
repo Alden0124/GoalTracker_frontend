@@ -6,5 +6,6 @@
   "notifications": "通知",
   "loading": "加載中",
   "noMoreNotifications": "沒有更多通知",
-  "chatList": "聊天列表"
+  "messages": "聊天訊息",
+  "chatList": "訊息"
 }

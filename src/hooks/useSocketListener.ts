@@ -5,7 +5,7 @@ import { selectIsAuthenticated } from "@/stores/slice/userReducer";
 import { GET_COOKIE } from "@/utils/cookies";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { queryKeys as chatQueryKeys } from "./Chat/queryKeys";
+import { useReceiveMessage } from "./Chat/useChatManager";
 import { queryKeys as chatRoomQueryKeys } from "./ChatRoom/queryKeys";
 import { useAppSelector } from "./common/useAppReduxs";
 import { queryKeys as notificationsQueryKeys } from "./notifications/Chat/queryKeys";
@@ -14,7 +14,7 @@ export const useSocketListener = () => {
   const queryClient = useQueryClient();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const token = GET_COOKIE();
-  
+  const { handleReceiveMessageToUpdateCache } = useReceiveMessage();
 
   useEffect(() => {
     // 確保用戶已登入且有 token 才建立連接
@@ -27,11 +27,8 @@ export const useSocketListener = () => {
 
     // 收到新訊息
     const handleNewMessage = async (message: ReceiveMessage) => {
-      console.log("收到新訊息:", message);
-      // 使該聊天室的快取失效
-      await queryClient.invalidateQueries({
-        queryKey: chatQueryKeys.chat.messages(message.sender.id),
-      });
+      // 樂觀更新聊天用戶紀錄列表
+      await handleReceiveMessageToUpdateCache(message);
 
       // 使該聊天室用戶列表的快取失效，觸發重新獲取
       await queryClient.invalidateQueries({
@@ -106,7 +103,9 @@ export const useSocketListener = () => {
     socketService.onNewMessage(handleNewMessage);
     socketService.onError(handleError);
     socketService.onNewNotification(handleNewNotification);
-    socketService.onUpdateUnreadNotificationCount(handleUpdateUnreadNotificationCount);
+    socketService.onUpdateUnreadNotificationCount(
+      handleUpdateUnreadNotificationCount
+    );
     // 清理函數
     return () => {
       socketService.offConnect(handleConnect);
@@ -114,8 +113,10 @@ export const useSocketListener = () => {
       socketService.offNewMessage(handleNewMessage);
       socketService.offNewNotification(handleNewNotification);
       socketService.offError(handleError);
-      socketService.offUpdateUnreadNotificationCount(handleUpdateUnreadNotificationCount);
+      socketService.offUpdateUnreadNotificationCount(
+        handleUpdateUnreadNotificationCount
+      );
       socketService.disconnect();
     };
-  }, [queryClient, isAuthenticated, token]);
+  }, [queryClient, isAuthenticated, token, handleReceiveMessageToUpdateCache]);
 };

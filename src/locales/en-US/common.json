@@ -6,5 +6,6 @@
   "notifications": "Notifications",
   "loading": "Loading",
   "noMoreNotifications": "No more notifications",
-  "chatList": "message"
+  "messages": "Messages",
+  "chatList": "Message"
 }

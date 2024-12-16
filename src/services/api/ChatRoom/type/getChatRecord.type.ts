@@ -13,3 +13,9 @@ export interface GetChatRecordConversation {
   };
   unreadCount: number;
 }
+
+export interface updateMessageReadStatusResponse {
+  success: boolean;
+  message: string;
+  unreadCount: number;
+}
