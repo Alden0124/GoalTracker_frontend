@@ -18,6 +18,7 @@ const GoalList = () => {
   const currentUserProfile = useAppSelector(selectUserProFile);
   // 判斷是否為當前用戶的個人頁面
   const isCurrentUser = urlUserId === currentUserProfile.id;
+
   // 使用 infinite query 獲取目標列表
   const {
     data: userGoalsPages,

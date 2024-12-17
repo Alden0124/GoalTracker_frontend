@@ -38,7 +38,7 @@ const GoogleLoginButton = ({
       <button
         type="button"
         onClick={() => login()}
-        className={`w-full border text-center text-[16px] rounded-[5px] dark:border-gray-600 p-[6px] flex items-center justify-center gap-2 ${className}`}
+        className={`w-full border text-center text-[16px] rounded-[5px] text-foreground-light dark:border-gray-600 dark:text-foreground-dark p-[6px] flex items-center justify-center gap-2 ${className}`}
       >
         <FcGoogle size={24} />
         {t("auth:googleLogin")}

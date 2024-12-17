@@ -2,28 +2,24 @@ import Wrapper from "@/components/common/Wrapper";
 import ProfileAvatar from "@/components/Profile/ProfileInfo/components/ProfileAvatar";
 import ProfileEditDialog from "@/components/Profile/ProfileInfo/components/ProfileEditDialog";
 import ProfileInfoSkeleton from "@/components/Profile/ProfileInfo/skeleton/ProfileInfoSkeleton";
-import { useAppDispatch } from "@/hooks/common/useAppReduxs";
+import { useSelectUser } from "@/hooks/Chat/useSelectUser";
 import {
   useFollowUser,
   useUnfollowUser,
 } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 import { useProfileData } from "@/hooks/profile/ProfileInfo/useProfile";
-import { socketService } from "@/services/api/SocketService";
-import { openChatRoom, openChatWindow } from "@/stores/slice/chatReducer";
 import { GET_COOKIE } from "@/utils/cookies";
 import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IoLocationOutline, IoSchoolOutline } from "react-icons/io5";
 import { MdOutlineWork } from "react-icons/md";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import FollowListDialog from "./components/FollowListDialog";
 import renderInfoItem from "./components/renderInfoItem";
 
 type DialogType = "followers" | "following" | null;
 
 const ProfileInfo = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   // 獲取用戶ID
   const { id: paramsUserId } = useParams();
   // 獲取token
@@ -39,6 +35,9 @@ const ProfileInfo = () => {
   // 取消追蹤用戶
   const { mutate: unfollowUser } = useUnfollowUser();
   const { t } = useTranslation(["profileInfo"]);
+  // 選擇聊天對象
+  const { handleSelectUser } = useSelectUser();
+
   if (isLoading) return <ProfileInfoSkeleton />;
 
   if (error || !userData?.user) return null;
@@ -58,64 +57,30 @@ const ProfileInfo = () => {
     }
   };
 
-  // 處理開啟聊天
-  const handleOpenChat = () => {
-    if (userData?.user) {
-      // 取得目前螢幕寬度
-      const screenWidth = window.innerWidth;
-
-      const token = GET_COOKIE();
-      if (token) {
-        // 建立 WebSocket 連線
-        socketService.connect(token);
-
-        if (screenWidth > 1024) {
-          // 開啟小對話框聊天視窗
-          dispatch(
-            openChatWindow({
-              recipientId: userData.user.id,
-              recipientName: userData.user.username,
-            })
-          );
-        } else {
-          // 開啟聊天室
-          dispatch(
-            openChatRoom({
-              recipientId: userData.user.id,
-              recipientName: userData.user.username,
-              avatar: userData.user.avatar,
-            })
-          );
-          navigate(`/chatRoom/${userData.user.id}`);
-        }
-      }
-    }
-  };
-
   // 用戶資訊項目
   const userInfoItems = [
     {
       id: 1,
       icon: <IoLocationOutline className="text-xl" />,
-      value: location,
+      value: location || "暫無資料",
       placeholder: t("profileInfo:addLocation"),
     },
     {
       id: 2,
       icon: <MdOutlineWork className="text-xl" />,
-      value: occupation,
+      value: occupation || "暫無資料",
       placeholder: t("profileInfo:addOccupation"),
     },
     {
       id: 3,
       icon: <IoSchoolOutline className="text-xl" />,
-      value: education,
+      value: education || "暫無資料",
       placeholder: t("profileInfo:addEducation"),
     },
   ];
 
   return (
-    <div className="custom-scrollbar w-full md:h-[calc(100vh-64px)] md:overflow-y-auto  md:w-[40%] lg:w-[30%] md:sticky md:top-[64px] ">
+    <div className="custom-scrollbar w-full md:h-[calc(100vh-64px)] md:overflow-y-auto  md:w-[40%] lg:w-[30%] md:sticky md:top-[64px]  ">
       <Wrapper className=" py-[30px] md:px-[10px] md:h-fit lg:px-[30px] z-0">
         {/* 頭像和用戶名區域 */}
         <div className="flex flex-col items-center pb-6 ">
@@ -136,7 +101,17 @@ const ProfileInfo = () => {
                 ? t("profileInfo:unfollow")
                 : t("profileInfo:follow")}
             </button>
-            <button onClick={handleOpenChat} className="flex-1 btn-secondary">
+            <button
+              onClick={() => {
+                handleSelectUser(
+                  userData.user.id,
+                  userData.user.username,
+                  userData.user.avatar,
+                  1
+                );
+              }}
+              className="flex-1 btn-secondary"
+            >
               {t("profileInfo:sendMessage")}
             </button>
           </div>

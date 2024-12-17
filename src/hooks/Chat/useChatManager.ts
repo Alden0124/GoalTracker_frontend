@@ -1,10 +1,16 @@
+import { queryKeys as chatRoomQueryKeys } from "@/hooks/ChatRoom/queryKeys";
 import { FETCH_CHAT } from "@/services/api/Chat";
 import {
   GetChatHistoryQuery,
   GetChatHistoryResponse,
 } from "@/services/api/Chat/type/getChatHistory.type";
+import { GetChatRecordResponse } from "@/services/api/ChatRoom/type";
 import { socketService } from "@/services/api/SocketService";
 import { ReceiveMessage } from "@/services/api/SocketService/type";
+import {
+  selectChatRoomActiveChats,
+  selectChatWindowActiveChats,
+} from "@/stores/slice/chatReducer";
 import { selectUserProFile } from "@/stores/slice/userReducer";
 import { notification } from "@/utils/notification";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
@@ -163,11 +169,13 @@ export const useSendMessage = () => {
 
 // 接收訊息
 export const useReceiveMessage = () => {
+  const chatWindowActiveChats = useAppSelector(selectChatWindowActiveChats);
+  const chatRoomActiveChats = useAppSelector(selectChatRoomActiveChats);
   const queryClient = useQueryClient();
 
   // 收到新訊息
   const handleReceiveMessageToUpdateCache = async (message: ReceiveMessage) => {
-    // 樂觀更新聊天用戶紀錄列表
+    // 樂觀更新聊天用戶紀錄訊息列表
     queryClient.setQueryData(
       chatQueryKeys.chat.messages(message.sender.id),
       (oldData: { pageParams: number[]; pages: GetChatHistoryResponse[] }) => {
@@ -199,6 +207,42 @@ export const useReceiveMessage = () => {
         };
       }
     );
+    // 如果聊天視窗關閉中，或是正在聊天室內，則不更新未讀訊息數量
+    if (
+      !chatWindowActiveChats.some(
+        (chat) => chat.recipientId === message.sender.id
+      ) &&
+      chatRoomActiveChats?.recipientId !== message.sender.id
+    ) {
+      // 樂觀更新聊天室用戶列表未讀訊息數量(如果聊天視窗關閉中)
+      queryClient.setQueryData(
+        chatRoomQueryKeys.chatRoom.unreadMessageCount,
+        (oldData: { unreadMessageCount: number }) => {
+          return {
+            ...oldData,
+            unreadMessageCount: oldData.unreadMessageCount + 1,
+          };
+        }
+      );
+
+      // 樂觀更新指定用戶未讀訊息數量(如果聊天視窗關閉中)
+      queryClient.setQueryData(
+        chatRoomQueryKeys.chatRoom.record,
+        (oldData: GetChatRecordResponse) => {
+          return {
+            ...oldData,
+            conversations: oldData.conversations.map((conversation) =>
+              conversation.userId === message.sender.id
+                ? {
+                    ...conversation,
+                    unreadCount: conversation.unreadCount + 1,
+                  }
+                : conversation
+            ),
+          };
+        }
+      );
+    }
   };
 
   return { handleReceiveMessageToUpdateCache };

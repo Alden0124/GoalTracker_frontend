@@ -7,5 +7,6 @@
   "goals": "goals",
   "recommendUsers": "Recommend Users",
   "follow": "Follow",
-  "followSuccess": "Follow Success"
+  "followSuccess": "Follow Success",
+  "sendMessage": "message"
 }

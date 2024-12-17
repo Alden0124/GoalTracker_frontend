@@ -6,6 +6,8 @@ import type { ReceiveMessage } from "./type";
 interface SocketServiceType {
   connect: (token: string) => void;
   disconnect: () => void;
+  enterChat: (recipientId: string) => void;
+  leaveChat: (recipientId?: string) => void;
   sendPrivateMessage: (recipientId: string, content: string) => void;
   onNewMessage: (callback: (message: ReceiveMessage) => void) => void;
   onMessageSent: (callback: (status: { status: "success" }) => void) => void;
@@ -20,8 +22,12 @@ interface SocketServiceType {
   onConnectError: (callback: (error: Error) => void) => void;
   offConnectError: (callback: (error: Error) => void) => void;
   offNewMessage: (callback: (message: ReceiveMessage) => void) => void;
-  onNewNotification: (callback: (notification: NewNotification) => void) => void;
-  offNewNotification: (callback: (notification: NewNotification) => void) => void;
+  onNewNotification: (
+    callback: (notification: NewNotification) => void
+  ) => void;
+  offNewNotification: (
+    callback: (notification: NewNotification) => void
+  ) => void;
   onUpdateUnreadNotificationCount: (
     callback: (unreadCount: number) => void
   ) => void;
@@ -84,6 +90,28 @@ const createSocketService = (): SocketServiceType => {
     }
   };
 
+  // 當用戶進入聊天室時
+  const enterChat = (recipientId: string): void => {
+    if (!socket || !connected) {
+      console.error("WebSocket 未連接，無法進入聊天室");
+      return;
+    }
+    socket.emit("enterChat", { recipientId });
+  };
+
+  // 當用戶離開聊天室時
+  const leaveChat = (recipientId?: string): void => {
+    if (!socket || !connected) {
+      console.error("WebSocket 未連接，無法離開聊天室");
+      return;
+    }
+    if (recipientId) {
+      socket.emit("leaveChat", { recipientId });
+    } else {
+      socket.emit("leaveChat");
+    }
+  };
+
   // 發送私人訊息
   const sendPrivateMessage = (recipientId: string, content: string): void => {
     if (!socket || !connected) {
@@ -112,7 +140,7 @@ const createSocketService = (): SocketServiceType => {
   const onNewMessage = (callback: (message: ReceiveMessage) => void): void => {
     if (!socket) return;
     socket.on("newMessage", callback);
-    console.log("監聽新訊息");
+    // console.log("監聽新訊息");
   };
 
   // 取消監聽新訊息
@@ -127,7 +155,7 @@ const createSocketService = (): SocketServiceType => {
   ): void => {
     if (!socket) return;
     socket.on("newNotification", callback);
-    console.log("監聽新通知");
+    // console.log("監聽新通知");
   };
 
   // 取消監聽新通知
@@ -144,7 +172,7 @@ const createSocketService = (): SocketServiceType => {
   ): void => {
     if (!socket) return;
     socket.on("notificationUpdate", callback);
-    console.log("監聽未讀通知數量");
+    // console.log("監聽未讀通知數量");
   };
 
   // 取消監聽未讀通知數量
@@ -225,6 +253,8 @@ const createSocketService = (): SocketServiceType => {
     onNewMessage,
     onMessageSent,
     onError,
+    enterChat,
+    leaveChat,
     joinChat,
     onUserListUpdate,
     onConnect,

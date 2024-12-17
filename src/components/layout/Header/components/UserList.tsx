@@ -1,12 +1,7 @@
 import UserListSkeleton from "@/components/layout/Header/skeleton/UserListSkeleton";
-import {
-  useChatRecord,
-  useUpdateMessageReadStatus,
-} from "@/hooks/ChatRoom/useChatManager";
-import { useAppDispatch } from "@/hooks/common/useAppReduxs";
-import { openChatRoom, openChatWindow } from "@/stores/slice/chatReducer";
+import { useSelectUser } from "@/hooks/Chat/useSelectUser";
+import { useChatRecord } from "@/hooks/ChatRoom/useChatManager";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 
 interface UserListProps {
   setShowChatList: (show: boolean) => void;
@@ -14,51 +9,10 @@ interface UserListProps {
 }
 
 const UserList = ({ setShowChatList, className }: UserListProps) => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const { data: chatRecord, isLoading } = useChatRecord();
   const { t } = useTranslation(["common"]);
-  const { mutate: updateMessageReadStatus } = useUpdateMessageReadStatus();
-
   // 選擇聊天對象
-  const handleSelectUser = (
-    userId: string,
-    username: string,
-    avatar: string,
-    unreadCount: number
-  ) => {
-    // 如果未讀訊息數量 > 0，更新未讀訊息已讀狀態
-    if (unreadCount > 0) {
-      // 更新未讀訊息已讀狀態
-      updateMessageReadStatus(userId);
-    }
-
-    // 關閉聊天列表
-    setShowChatList(false);
-
-    // 取得目前視窗框度
-    const currentWindowWidth = window.innerWidth;
-
-    if (currentWindowWidth > 1024) {
-      // 開啟小對話框聊天視窗
-      dispatch(
-        openChatWindow({
-          recipientId: userId,
-          recipientName: username,
-        })
-      );
-    } else {
-      // 開啟聊天室
-      dispatch(
-        openChatRoom({
-          recipientId: userId,
-          recipientName: username,
-          avatar: avatar,
-        })
-      );
-      navigate(`/chatRoom/${userId}`);
-    }
-  };
+  const { handleSelectUser } = useSelectUser();
 
   // 如果正在加載，顯示加載中
   if (isLoading) return <UserListSkeleton />;
@@ -103,14 +57,15 @@ const UserList = ({ setShowChatList, className }: UserListProps) => {
         {chatRecord.conversations.map((conversation) => (
           <div
             key={conversation.userId}
-            onClick={() =>
+            onClick={() => {
               handleSelectUser(
                 conversation.userId,
                 conversation.username,
                 conversation.avatar,
                 conversation.unreadCount
-              )
-            }
+              );
+              setShowChatList(false);
+            }}
             className="p-3 md:px-0 md:py-2 lg:p-3 rounded-lg cursor-pointer md:hover:bg-[#f0f0f0] md:hover:dark:bg-[#202020]/50 text-foreground-light dark:text-foreground-dark"
           >
             <div className="flex items-center justify-center space-x-3">

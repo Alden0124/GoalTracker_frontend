@@ -57,6 +57,15 @@ export const useUpdateProfile = () => {
       queryClient.invalidateQueries({
         queryKey: profileQueryKeys.users.profile(),
       });
+      console.log("更新成功");
+      queryClient.invalidateQueries({
+        queryKey: ["goals"],
+        exact: false,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["feed"],
+        exact: false,
+      });
       notification.success({ title: "更新成功" });
     },
     onError: () => {

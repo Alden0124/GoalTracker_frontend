@@ -1,3 +1,4 @@
+import { socketService } from "@/services/api/SocketService";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // 定義聊天狀態介面
@@ -38,22 +39,30 @@ const chatSlice = createSlice({
           (chat) => chat.recipientId === recipientId
         )
       ) {
+        // 將聊天對象加入聊天列表
         state.chatWindowActiveChats = [
           ...state.chatWindowActiveChats,
           { recipientId, recipientName },
         ];
+        // 進入聊天室
+        socketService.enterChat(recipientId);
       }
     },
     // 關閉聊天視窗
     closeChatWindow: (state, action: PayloadAction<string>) => {
+      // 將聊天對象從聊天列表中移除
       state.chatWindowActiveChats = state.chatWindowActiveChats.filter(
         (chat) => chat.recipientId !== action.payload
       );
+      // 離開聊天室
+      socketService.leaveChat(action.payload);
     },
 
     // 關閉所有聊天視窗
     closeAllChatWindow: (state) => {
       state.chatWindowActiveChats = [];
+      // 離開所有聊天室
+      socketService.leaveChat();
     },
 
     // 開啟聊天室
@@ -66,11 +75,15 @@ const chatSlice = createSlice({
       }>
     ) => {
       state.chatRoomActiveChats = action.payload;
+      // 進入聊天室
+      socketService.enterChat(action.payload.recipientId);
     },
 
     // 關閉聊天室
     closeChatRoom: (state) => {
       state.chatRoomActiveChats = null;
+      // 離開聊天室
+      socketService.leaveChat();
     },
   },
 });
@@ -93,4 +106,3 @@ export const selectChatRoomActiveChats = (state: { chat: ChatStateType }) =>
 
 // 導出 reducer
 export default chatSlice.reducer;
-

@@ -53,12 +53,12 @@ const ProfileEditDialog = ({
       if (avatarFile) {
         formData.append("avatar", avatarFile);
 
-        console.log("Avatar file details:", {
-          name: avatarFile.name,
-          type: avatarFile.type,
-          size: avatarFile.size,
-          lastModified: avatarFile.lastModified,
-        });
+        // console.log("Avatar file details:", {
+        //   name: avatarFile.name,
+        //   type: avatarFile.type,
+        //   size: avatarFile.size,
+        //   lastModified: avatarFile.lastModified,
+        // });
       }
 
       for (const [key, value] of formData.entries()) {

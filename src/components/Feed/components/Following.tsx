@@ -33,7 +33,7 @@ const Following = memo(({ className }: FollowingProps) => {
   } = useGetFollowing(userData.id || "", activeTab === "following");
 
   return (
-    <Wrapper className={`flex flex-col gap-4 ${className}`}>
+    <Wrapper className={`flex flex-col gap-4 ${className} !p-0 md:!p-4`}>
       {/* Tab 切換 */}
       <div className="flex justify-around border-b dark:border-gray-700">
         <button

@@ -2,39 +2,27 @@ import { MessageInput } from "@/components/Chat/MessageInput";
 import { MessageList } from "@/components/Chat/MessageList";
 import ChatRoomIdSkeleton from "@/components/ChatRoom/skeleton/ChatRoomIdSkeleton";
 import NoUserIdskeleton from "@/components/ChatRoom/skeleton/NoUserIdskeleton";
-import { queryKeys as chatQueryKeys } from "@/hooks/Chat/queryKeys";
-import { queryKeys as chatRoomQueryKeys } from "@/hooks/ChatRoom/queryKeys";
+import { useSendMessage } from "@/hooks/Chat/useChatManager";
 import { usePublicUserProfile } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
-import { socketService } from "@/services/api/SocketService";
-import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 
 const ChatRoomId = () => {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   // 獲取聊天對象id
   const { id: recipientId } = useParams();
+
   // 獲取聊天對象資料
   const { data: currentChat, isLoading: isLoadingCurrentChat } =
     usePublicUserProfile(recipientId ? recipientId : null);
 
   // 發送訊息
-  const handleSend = async (inputMessage: string) => {
+  const { sendMessage } = useSendMessage();
+
+  // 發送訊息
+  const handleSend = (inputMessage: string) => {
     if (!inputMessage.trim() || !recipientId) return;
-
     try {
-      // 發送訊息
-      socketService.sendPrivateMessage(recipientId, inputMessage);
-
-      // 使該聊天室的快取失效，觸發重新獲取
-      await queryClient.invalidateQueries({
-        queryKey: chatQueryKeys.chat.messages(recipientId),
-      });
-
-      // 使該聊天室用戶列表的快取失效，觸發重新獲取
-      await queryClient.invalidateQueries({
-        queryKey: chatRoomQueryKeys.chatRoom.record,
-      });
+      sendMessage(recipientId, inputMessage);
     } catch (error) {
       console.error("發送訊息失敗:", error);
     }

@@ -1,12 +1,15 @@
-import { GetNotificationsResponse, NewNotification } from "@/services/api/Notifications/type";
+import {
+  GetNotificationsResponse,
+  NewNotification,
+} from "@/services/api/Notifications/type";
 import { socketService } from "@/services/api/SocketService";
 import type { ReceiveMessage } from "@/services/api/SocketService/type";
+import { selectChatWindowActiveChats } from "@/stores/slice/chatReducer";
 import { selectIsAuthenticated } from "@/stores/slice/userReducer";
 import { GET_COOKIE } from "@/utils/cookies";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useReceiveMessage } from "./Chat/useChatManager";
-import { queryKeys as chatRoomQueryKeys } from "./ChatRoom/queryKeys";
 import { useAppSelector } from "./common/useAppReduxs";
 import { queryKeys as notificationsQueryKeys } from "./notifications/Chat/queryKeys";
 
@@ -15,6 +18,7 @@ export const useSocketListener = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const token = GET_COOKIE();
   const { handleReceiveMessageToUpdateCache } = useReceiveMessage();
+  const chatWindowActiveChats = useAppSelector(selectChatWindowActiveChats);
 
   useEffect(() => {
     // 確保用戶已登入且有 token 才建立連接
@@ -27,13 +31,8 @@ export const useSocketListener = () => {
 
     // 收到新訊息
     const handleNewMessage = async (message: ReceiveMessage) => {
-      // 樂觀更新聊天用戶紀錄列表
+      // 樂觀更新聊天用戶紀錄訊息列表
       await handleReceiveMessageToUpdateCache(message);
-
-      // 使該聊天室用戶列表的快取失效，觸發重新獲取
-      await queryClient.invalidateQueries({
-        queryKey: chatRoomQueryKeys.chatRoom.record,
-      });
     };
 
     // 收到新通知
@@ -89,7 +88,7 @@ export const useSocketListener = () => {
 
     // 連接成功的處理
     const handleConnect = () => {
-      console.log("Socket 連接成功");
+      // console.log("Socket 連接成功");
     };
 
     // 連接斷開的處理
@@ -118,5 +117,11 @@ export const useSocketListener = () => {
       );
       socketService.disconnect();
     };
-  }, [queryClient, isAuthenticated, token, handleReceiveMessageToUpdateCache]);
+  }, [
+    queryClient,
+    isAuthenticated,
+    token,
+    handleReceiveMessageToUpdateCache,
+    chatWindowActiveChats,
+  ]);
 };

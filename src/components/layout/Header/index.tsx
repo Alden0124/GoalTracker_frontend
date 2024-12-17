@@ -43,7 +43,6 @@ const Header = () => {
   // 未讀聊天訊息數量
   const { data: unreadMessageData } = useUnreadMessageCount();
   const unreadMessageCount = unreadMessageData?.unreadMessageCount;
-
   const currentLanguageList = [
     {
       label: "English",

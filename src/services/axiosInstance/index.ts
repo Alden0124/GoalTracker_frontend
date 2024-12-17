@@ -66,6 +66,16 @@ instance.interceptors.response.use(
   },
   async (error) => {
     if (error.response) {
+      const token = GET_COOKIE() || false;
+      if (!token) {
+        store.dispatch(signOut());
+        return Promise.reject<ApiError>({
+          respData: error.response?.data,
+          errorMessage: error.response?.data?.message,
+          status: error.response?.status,
+        });
+      }
+
       switch (error.response.status) {
         case 401:
           try {
@@ -75,9 +85,9 @@ instance.interceptors.response.use(
             const originalRequest = error.config;
             originalRequest.headers.Authorization = `Bearer ${resp.accessToken}`;
             return instance(originalRequest);
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (error) {
             store.dispatch(signOut());
+            return Promise.reject(error);
           }
           break;
         // ... 其他錯誤處理 ...

@@ -1,8 +1,9 @@
-import { useChatRecord } from "@/hooks/ChatRoom/useChatManager";
+import {
+  useChatRecord,
+  useUpdateMessageReadStatus,
+} from "@/hooks/ChatRoom/useChatManager";
 import { useAppDispatch } from "@/hooks/common/useAppReduxs";
-import { socketService } from "@/services/api/SocketService";
 import { openChatRoom } from "@/stores/slice/chatReducer";
-import { GET_COOKIE } from "@/utils/cookies";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import UserListSkeleton from "./skeleton/UserListSkeleton";
@@ -12,28 +13,29 @@ const UserList = () => {
   const dispatch = useAppDispatch();
   const { data: chatRecord, isLoading } = useChatRecord();
   const { t } = useTranslation(["common"]);
-
+  const { mutate: updateMessageReadStatus } = useUpdateMessageReadStatus();
   // 選擇聊天對象
   const handleSelectUser = (
     userId: string,
     username: string,
-    avatar: string
+    avatar: string,
+    unreadCount: number
   ) => {
-    const token = GET_COOKIE();
-    if (token) {
-      // 建立 WebSocket 連線
-      socketService.connect(token);
-
-      // 開啟聊天室
-      dispatch(
-        openChatRoom({
-          recipientId: userId,
-          recipientName: username,
-          avatar: avatar,
-        })
-      );
-      navigate(`/chatRoom/${userId}`);
+    // 如果未讀訊息數量 > 0，更新未讀訊息已讀狀態
+    if (unreadCount > 0) {
+      // 更新未讀訊息已讀狀態
+      updateMessageReadStatus(userId);
     }
+
+    // 開啟聊天室
+    dispatch(
+      openChatRoom({
+        recipientId: userId,
+        recipientName: username,
+        avatar: avatar,
+      })
+    );
+    navigate(`/chatRoom/${userId}`);
   };
 
   // 如果正在加載，顯示加載中
@@ -79,12 +81,13 @@ const UserList = () => {
               handleSelectUser(
                 conversation.userId,
                 conversation.username,
-                conversation.avatar
+                conversation.avatar,
+                conversation.unreadCount
               )
             }
-            className="p-3 md:px-0 md:py-2 lg:p-3 rounded-lg cursor-pointer md:hover:bg-[#f0f0f0] md:hover:dark:bg-[#202020]/50 text-foreground-light dark:text-foreground-dark"
+            className="relative p-3 md:px-0 md:py-2 lg:p-3 rounded-lg cursor-pointer md:hover:bg-[#f0f0f0] md:hover:dark:bg-[#202020]/50 text-foreground-light dark:text-foreground-dark "
           >
-            <div className="flex items-center justify-center space-x-3">
+            <div className="flex items-center justify-center space-x-3 ">
               {/* 頭像部分 */}
               {conversation.avatar ? (
                 <img
@@ -98,6 +101,12 @@ const UserList = () => {
                     {conversation.username[0]}
                   </span>
                 </div>
+              )}
+
+              {conversation.unreadCount > 0 && (
+                <span className="absolute top-[-8px] right-[-8px] bg-red-500 text-white text-xs rounded-full px-2 py-1 hidden md:block lg:hidden">
+                  {conversation.unreadCount}
+                </span>
               )}
 
               {/* 用戶信息部分 - 在大屏幕和超大屏幕顯示 */}

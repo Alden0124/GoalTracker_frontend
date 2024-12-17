@@ -3,6 +3,7 @@ import {
   GetChatRecordConversation,
   GetChatRecordResponse,
 } from "@/services/api/ChatRoom/type/getChatRecord.type";
+import { GET_COOKIE } from "@/utils/cookies";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys as chatRoomQueryKeys } from "./queryKeys";
 
@@ -17,10 +18,12 @@ export const useChatRecord = () => {
 
 // 獲取未讀聊天訊息數量
 export const useUnreadMessageCount = () => {
+  const token = GET_COOKIE();
   return useQuery({
     queryKey: chatRoomQueryKeys.chatRoom.unreadMessageCount,
     queryFn: () => FETCH_CHATROOM.GetUnreadMessageCount(),
     staleTime: 1000 * 60 * 5,
+    enabled: !!token,
   });
 };
 
