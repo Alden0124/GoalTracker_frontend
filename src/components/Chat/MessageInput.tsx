@@ -29,7 +29,7 @@ export const MessageInput = ({ handleSend }: MessageInputProps) => {
   };
 
   return (
-    <div className="border-t p-3 flex items-center space-x-2 bg-background-light dark:bg-background-dark ">
+    <div className=" border-t p-3 flex items-center space-x-2 bg-background-light dark:bg-background-dark">
       <textarea
         value={inputMessage}
         onChange={handleInputChange}
