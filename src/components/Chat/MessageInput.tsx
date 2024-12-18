@@ -34,7 +34,7 @@ export const MessageInput = ({ handleSend }: MessageInputProps) => {
         value={inputMessage}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        className="flex-1 border rounded-full px-4 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-dark-input dark:text-dark-text"
+        className="flex-1 border rounded-[10px] px-4 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-dark-input overflow-hidden dark:text-dark-text"
         placeholder="輸入訊息..."
         rows={1}
       />

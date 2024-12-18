@@ -229,6 +229,7 @@ export const useReceiveMessage = () => {
       queryClient.setQueryData(
         chatRoomQueryKeys.chatRoom.record,
         (oldData: GetChatRecordResponse) => {
+          if (!oldData) return oldData;
           return {
             ...oldData,
             conversations: oldData.conversations.map((conversation) =>

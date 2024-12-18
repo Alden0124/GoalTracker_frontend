@@ -27,7 +27,7 @@ export const ChatWindow = ({
   };
 
   return (
-    <div className="w-[320px] h-[450px] bg-white rounded-t-lg shadow-lg flex flex-col">
+    <div className="w-[320px] max-h-[450px] bg-white rounded-t-lg shadow-lg flex flex-col">
       {/* 聊天窗標題 */}
       <ChatHeader recipientName={recipientName} onClose={onClose} />
 

@@ -38,7 +38,7 @@ const Header = () => {
 
   // 未讀通知數量
   const { data: unreadNotificationCount } = useGetUnreadNotificationCount();
-  const unreadCount = unreadNotificationCount?.unreadCount;
+
 
   // 未讀聊天訊息數量
   const { data: unreadMessageData } = useUnreadMessageCount();
@@ -187,7 +187,8 @@ const Header = () => {
                 ariaLabel={t("common:notifications")}
               >
                 <IoNotificationsOutline />
-                {unreadCount && unreadCount > 0 ? (
+                {unreadNotificationCount &&
+                unreadNotificationCount.unreadCount > 0 ? (
                   <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-red-500 rounded-full"></span>
                 ) : null}
               </IconButton>

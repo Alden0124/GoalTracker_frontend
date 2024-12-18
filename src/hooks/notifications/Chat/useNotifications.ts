@@ -34,11 +34,12 @@ export const useGetNotifications = (query: GetNotificationsQuery) => {
 
 // 獲取未讀通知數量
 export const useGetUnreadNotificationCount = () => {
-  const token = GET_COOKIE()
+  const token = GET_COOKIE();
   return useQuery({
     queryKey: notificationsQueryKeys.notifications.unreadNotificationCount(),
     queryFn: () => FETCH_NOTIFICATIONS.GetUnreadNotificationCount(),
     enabled: !!token,
+    staleTime: 1000 * 60 * 5,
   });
 };
 
@@ -49,6 +50,7 @@ export const useMarkNotificationAsRead = () => {
     mutationFn: (notificationId: string) =>
       FETCH_NOTIFICATIONS.MarkNotificationAsRead(notificationId),
     onSuccess: (_, notificationId) => {
+      // 樂觀更新通知列表
       queryClient.setQueryData(
         notificationsQueryKeys.notifications.notifications(),
         (oldData: { pages: GetNotificationsResponse[] } | undefined) => {
@@ -67,6 +69,12 @@ export const useMarkNotificationAsRead = () => {
           };
         }
       );
+
+      // 更新未讀通知數量
+      queryClient.invalidateQueries({
+        queryKey:
+          notificationsQueryKeys.notifications.unreadNotificationCount(),
+      });
     },
   });
 };

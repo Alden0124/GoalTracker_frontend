@@ -74,6 +74,11 @@ export const useSocketListener = () => {
           return newData;
         }
       );
+      // 更新未讀通知數量
+      queryClient.invalidateQueries({
+        queryKey:
+          notificationsQueryKeys.notifications.unreadNotificationCount(),
+      });
     };
 
     // 監聽未讀通知數量
