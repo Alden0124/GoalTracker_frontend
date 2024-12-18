@@ -167,7 +167,6 @@ export const MessageList = ({
     };
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  console.log(groupedMessages);
   return (
     <div
       ref={messageContainerRef}
