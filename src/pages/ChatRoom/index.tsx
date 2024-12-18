@@ -9,9 +9,16 @@ const ChatRoom = () => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
 
-  // 離開聊天室
+  // 進入聊天室時禁用外層滾動條，離開時恢復
   useEffect(() => {
+    // 儲存原始的 overflow 值
+    const originalOverflow = document.body.style.overflow;
+    // 禁用滾動
+    document.body.style.overflow = "hidden";
+
     return () => {
+      // 組件卸載時恢復原始設置
+      document.body.style.overflow = originalOverflow;
       dispatch(closeChatRoom());
     };
   }, [dispatch]);
@@ -23,7 +30,7 @@ const ChatRoom = () => {
         {id ? <Outlet /> : <UserList />}
       </div>
 
-      <div className=" h-[calc(100dvh-64px)] bg-light-background dark:bg-dark-background hidden md:flex overflow-hidden">
+      <div className="h-[calc(100dvh-64px)] bg-light-background dark:bg-dark-background hidden md:flex overflow-hidden">
         <UserList />
         {!id ? <NoUserIdskeleton /> : <Outlet />}
       </div>
