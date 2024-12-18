@@ -105,7 +105,6 @@ export const MessageList = ({
 
   // 修改 Intersection Observer 邏輯
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
     const currentTrigger = loadTriggerRef.current;
     // 創建 Intersection Observer
     const observer = new IntersectionObserver(
@@ -121,15 +120,9 @@ export const MessageList = ({
           return;
         }
 
-        // 清除之前的計時器
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-
         // 保存當前滾動位置
         const oldScrollHeight = messageContainerRef.current?.scrollHeight;
 
-        // 設置新的延遲執行
         fetchNextPage().then(() => {
           requestAnimationFrame(() => {
             if (messageContainerRef.current && oldScrollHeight) {
@@ -154,10 +147,6 @@ export const MessageList = ({
 
     // 返回清理函數
     return () => {
-      // 清除超時
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
       // 斷開 Intersection Observer
       if (currentTrigger) {
         observer.unobserve(currentTrigger);

@@ -19,11 +19,11 @@ const ChatRoom = () => {
   // 桌面版顯示
   return (
     <>
-      <div className="flex h-[calc(100vh-64px)] bg-light-background dark:bg-dark-background md:hidden">
+      <div className="flex h-[calc(100dvh-64px)] bg-light-background dark:bg-dark-background md:hidden">
         {id ? <Outlet /> : <UserList />}
       </div>
 
-      <div className=" h-[calc(100vh-64px)] bg-light-background dark:bg-dark-background hidden md:flex">
+      <div className=" h-[calc(100dvh-64px)] bg-light-background dark:bg-dark-background hidden md:flex">
         <UserList />
         {!id ? <NoUserIdskeleton /> : <Outlet />}
       </div>
