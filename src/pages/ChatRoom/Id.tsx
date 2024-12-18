@@ -35,9 +35,9 @@ const ChatRoomId = () => {
   if (!currentChat) return <NoUserIdskeleton />;
 
   return (
-    <div className="relative flex-1 flex flex-col overflow-hidden">
+    <div className="absolute top-[64px] w-full h-[calc(100dvh-64px)] flex-1 flex flex-col overflow-hidden ">
       {/* 聊天標題 */}
-      <div className="sticky top-0 h-16 border-b border-light-border dark:border-dark-border flex items-center justify-between px-6 bg-background-light dark:bg-background-dark">
+      <div className=" w-full  h-16 border-b border-light-border dark:border-dark-border flex items-center justify-between px-6 bg-background-light dark:bg-background-dark">
         <div className="flex items-center space-x-3">
           <button
             onClick={() => navigate("/chatRoom")}
@@ -84,7 +84,7 @@ const ChatRoomId = () => {
       />
 
       {/* 輸入區域 */}
-      <div className="sticky bottom-0 border-t border-light-border dark:border-dark-border bg-light-surface dark:bg-dark-surface h-fit">
+      <div className=" w-full overflow-hidden border-y border-border-light dark:border-border-border bg-light-surface dark:bg-dark-surface">
         <MessageInput handleSend={handleSend} />
       </div>
     </div>
