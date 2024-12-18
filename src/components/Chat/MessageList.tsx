@@ -101,11 +101,16 @@ export const MessageList = ({
     } else if (historyMessages[historyMessages.length - 1]?.isCurrentUser) {
       messagesEndRef.current?.scrollIntoView();
     }
+
+    if (currentPage !== 1) {
+      initialScrollPosition.current = true;
+    }
   }, [currentPage, historyMessages]);
 
   // 修改 Intersection Observer 邏輯
   useEffect(() => {
     const currentTrigger = loadTriggerRef.current;
+    console.log(initialScrollPosition.current);
     // 創建 Intersection Observer
     const observer = new IntersectionObserver(
       (entries) => {
@@ -151,6 +156,7 @@ export const MessageList = ({
       if (currentTrigger) {
         observer.unobserve(currentTrigger);
       }
+      initialScrollPosition.current = true;
       // 斷開 Intersection Observer
       observer.disconnect();
     };
