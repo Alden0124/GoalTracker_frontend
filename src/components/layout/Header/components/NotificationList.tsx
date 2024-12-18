@@ -1,4 +1,8 @@
-import { useGetNotifications, useMarkNotificationAsRead } from "@/hooks/notifications/Chat/useNotifications";
+import CommentAvater from "@/components/Profile/ProfileInfo/components/CommentAvater";
+import {
+  useGetNotifications,
+  useMarkNotificationAsRead,
+} from "@/hooks/notifications/Chat/useNotifications";
 import { Notification } from "@/services/api/Notifications/type";
 import { handleError } from "@/utils/errorHandler";
 import { throttle } from "@/utils/throttle";
@@ -100,8 +104,8 @@ const NotificationList = ({
   // 點擊通知
   const handleNotificationClick = async (notification: Notification) => {
     setShowNotificationList(false);
-    console.log(notification)
-    if(!notification.read){ 
+    console.log(notification);
+    if (!notification.read) {
       // 標記通知為已讀
       try {
         markNotificationAsRead(notification.id);
@@ -109,7 +113,7 @@ const NotificationList = ({
         handleError(error, "標記通知為已讀失敗");
       }
     }
-    navigate(`/profile/${notification.sender.id}`);
+    // navigate(`/profile/${notification.sender.id}`);
   };
 
   return (
@@ -132,10 +136,10 @@ const NotificationList = ({
           >
             <div className="flex gap-2 text-sm">
               <div className="relative">
-                <img
-                  src={notification.sender.avatar}
-                  alt={notification.sender.username}
-                  className="w-12 h-12 rounded-full"
+                <CommentAvater
+                  avatar={notification.sender.avatar}
+                  userId={notification.sender.id}
+                  size={40}
                 />
                 {!notification.read && (
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full" />
