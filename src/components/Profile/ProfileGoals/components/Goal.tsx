@@ -15,6 +15,7 @@ import { formatDate } from "@/utils/dateFormat";
 import { debounce } from "@/utils/debounce";
 import { notification } from "@/utils/notification";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   BsCalendarCheck,
   BsCalendarPlus,
@@ -25,7 +26,7 @@ import {
 } from "react-icons/bs";
 import { FaRegComment } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import CommentAvater from "../../ProfileInfo/components/CommentAvater";
 import GoalDetailsDialog from "./GoalDetailsDialog";
 import GoalFormDialog from "./GoalFormDialog";
 
@@ -58,6 +59,8 @@ const getStatusConfig = (status: GoalStatus) => {
 };
 
 const Goal = ({ goal }: GoalProps) => {
+  // 獲取語言
+  const { t } = useTranslation(["profileGoals"]);
   // 使用者資料
   const userInfo = useAppSelector(selectUserProFile);
   // 是否為當前用戶
@@ -165,13 +168,11 @@ const Goal = ({ goal }: GoalProps) => {
         {/* 新增的使用者資訊 */}
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-3">
-            <Link to={`/profile/${goal.user._id}`}>
-              <img
-                src={goal.user.avatar}
-                alt="Avatar"
-                className="w-10 h-10 rounded-full"
+              <CommentAvater
+                userId={goal.user._id}
+                avatar={goal.user.avatar}
+                size={40}
               />
-            </Link>
             <div>
               <h4 className="text-sm font-medium text-foreground-light dark:text-foreground-dark">
                 {goal.user.username}
@@ -198,31 +199,31 @@ const Goal = ({ goal }: GoalProps) => {
                       className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
                       onClick={() => handleUpdateStatus(GoalStatus.COMPLETED)}
                     >
-                      標記為完成
+                      {t("profileGoals:markAsCompleted")}
                     </button>
                     <button
                       className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
                       onClick={() => handleUpdateStatus(GoalStatus.ABANDONED)}
                     >
-                      標記為未完成
+                      {t("profileGoals:markAsUncompleted")}
                     </button>
                     <button
                       className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
                       onClick={() => handleUpdateStatus(GoalStatus.IN_PROGRESS)}
                     >
-                      標記為進行中
+                      {t("profileGoals:markAsInProgress")}
                     </button>
                     <button
                       className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
                       onClick={() => setShowUpdateDialog(true)}
                     >
-                      編輯目標
+                      {t("profileGoals:editGoal")}
                     </button>
                     <button
                       className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
                       onClick={handleDeleteGoal}
                     >
-                      刪除目標
+                      {t("profileGoals:deleteGoal")}
                     </button>
                   </div>
                 </div>
@@ -248,13 +249,13 @@ const Goal = ({ goal }: GoalProps) => {
           <div className="flex items-center gap-1 mt-1">
             <BsCalendarPlus className="text-gray-500 text-sm" />
             <span className="text-sm text-gray-500">
-              開始時間：{formatDate(goal.startDate)}
+              {t("profileGoals:goalStartDate")}：{formatDate(goal.startDate)}
             </span>
           </div>
           <div className="flex items-center gap-1 mt-1">
             <BsCalendarCheck className="text-gray-500 text-sm" />
             <span className="text-sm text-gray-500">
-              預計完成：{formatDate(goal.endDate)}
+              {t("profileGoals:goalEndDate")}：{formatDate(goal.endDate)}
             </span>
           </div>
         </div>
@@ -270,7 +271,7 @@ const Goal = ({ goal }: GoalProps) => {
             }`}
             onClick={() => setActiveTab("progress")}
           >
-            進度記錄
+            {t("profileGoals:goalProgress")}
           </button>
           {/* 留言 */}
           <button
@@ -281,7 +282,7 @@ const Goal = ({ goal }: GoalProps) => {
             }`}
             onClick={() => setActiveTab("comment")}
           >
-            留言
+            {t("profileGoals:goalComment")}
           </button>
         </div>
 
@@ -325,6 +326,7 @@ const Goal = ({ goal }: GoalProps) => {
         goal={goal}
       />
 
+      {/* 詳細資訊 */}
       {showDetailsDialog && (
         <GoalDetailsDialog
           goalId={goal._id}

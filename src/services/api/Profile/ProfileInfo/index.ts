@@ -12,7 +12,7 @@ export const FETCH_USER_PROFILE = {
 
   // 公開用戶資料
   GetPublicUserProfile: (
-    userId: string
+    userId: string | null
   ): Promise<GetPublicUserProfileResponse> =>
     axiosInstance.get(`/users/profile/${userId}`),
 

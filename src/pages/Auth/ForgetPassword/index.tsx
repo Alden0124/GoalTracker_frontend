@@ -1,8 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 // 欄位驗證
-import { useForm } from "react-hook-form";
+import { ForgetFormData, getForgetSchema } from "@/schemas/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { forgetSchema, type ForgetFormData } from "@/schemas/authSchema";
+import { useForm } from "react-hook-form";
 // 組件
 import Input from "@/components/ui/Input";
 // icon
@@ -13,9 +14,16 @@ import { FETCH_AUTH } from "@/services/api/auth";
 import { handleError } from "@/utils/errorHandler";
 // alert
 import { notification } from "@/utils/notification";
+// 多國語言
+import { useTranslation } from "react-i18next";
 
 const Forget = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  // 取得忘記密碼表單驗證
+  const forgetSchema = useMemo(() => getForgetSchema(), []);
+  // 是否正在提交
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -28,15 +36,18 @@ const Forget = () => {
 
   const handleForgotPassword = async (email: string) => {
     try {
+      setIsSubmitting(true); // 開始發送時設置為 true
       const resp = await FETCH_AUTH["Forgot-password"]({ email });
       console.log(resp);
       notification.success({
-        title: "成功",
+        title: t("auth:success"),
         text: resp.message,
       });
-      navigate(`/auth/resetPassword/?email=${email}`);
+      navigate(`/auth/resetPassword?email=${email}`);
     } catch (err: unknown) {
-      handleError(err, "錯誤");
+      handleError(err, t("auth:error"));
+    } finally {
+      setIsSubmitting(false); // 無論成功或失敗都設置為 false
     }
   };
 
@@ -53,7 +64,7 @@ const Forget = () => {
   return (
     <main className="w-full min-h-[calc(100vh-64px)] flex flex-col justify-center items-center dark:bg-background-dark">
       <h1 className="text-center  text-2xl dark:text-foreground-dark">
-        忘記密碼
+        {t("auth:forgotPassword")}
       </h1>
 
       <form
@@ -65,14 +76,22 @@ const Forget = () => {
           {...register("email")}
           id="email"
           type="email"
-          label="電子信箱"
-          placeholder="電子郵件"
+          label={t("auth:email")}
+          placeholder={t("auth:email")}
           autoComplete="email"
           error={errors.email?.message}
         />
 
-        <button type="submit" className="btn-primary w-full hover:opacity-90">
-          寄送Email驗證碼
+        <button
+          type="submit"
+          className={`btn-primary w-full  ${
+            isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
+          }`}
+          disabled={isSubmitting}
+        >
+          {isSubmitting
+            ? t("auth:sendingVerificationCode")
+            : t("auth:sendEmailVerificationCode")}
         </button>
 
         <div className={`w-full flex items-center justify-center`}>
@@ -80,22 +99,32 @@ const Forget = () => {
           <p
             className={`text-sm break-keep text-foreground-light/50 dark:text-foreground-dark`}
           >
-            或
+            {t("auth:or")}
           </p>
           <div className={`border-b w-[50%]`}></div>
         </div>
 
         <div>
-          <Link
-            to={"/auth/signIn"}
-            className="group text-center text-foreground-light/50 dark:text-foreground-dark hover:text-gray-700 dark:hover:text-gray-300 flex items-center justify-center gap-2"
+          <button
+            onClick={() => navigate("/auth/signIn")}
+            type="button"
+            disabled={isSubmitting}
+            className={`group w-full text-center text-foreground-light/50 dark:text-foreground-dark  flex items-center justify-center gap-2 ${
+              isSubmitting
+                ? "cursor-not-allowed "
+                : "hover:text-gray-700 dark:hover:text-gray-300"
+            }`}
           >
             <FaArrowLeft
               size={14}
-              className=" transition-transform duration-300 group-hover:-translate-x-[4px]"
+              className={` transition-transform duration-300 ${
+                isSubmitting
+                  ? "cursor-not-allowed"
+                  : " group-hover:-translate-x-[4px]"
+              }`}
             />
-            返回登入頁面
-          </Link>
+            {t("auth:backToSignIn")}
+          </button>
         </div>
       </form>
     </main>

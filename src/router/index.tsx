@@ -18,6 +18,8 @@ const NotFoundPage = lazy(() => import("@/pages/NotFound"));
 const Profile = lazy(() => import("@/pages/Profile"));
 const Feed = lazy(() => import("@/pages/Feed"));
 const ChatRoom = lazy(() => import("@/pages/ChatRoom"));
+const ChatRoomId = lazy(() => import("@/pages/ChatRoom/Id"));
+
 const routes = [
   {
     path: "*",
@@ -46,7 +48,7 @@ const routes = [
         ),
         children: [
           {
-            path: "/",
+            path: "/home",
             element: (
               <Suspense fallback={<div className="h-screen"></div>}>
                 <Home />
@@ -76,7 +78,17 @@ const routes = [
                 <ChatRoom />
               </Suspense>
             ),
-          },  
+            children: [
+              {
+                path: ":id",
+                element: (
+                  <Suspense fallback={<div className="h-screen"></div>}>
+                    <ChatRoomId />
+                  </Suspense>
+                ),
+              },
+            ],
+          },
         ],
       },
       {

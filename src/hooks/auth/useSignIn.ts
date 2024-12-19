@@ -51,7 +51,7 @@ export const useSignInHandler = () => {
     async (err: unknown, signInFormData?: SignInFormDataType) => {
       if (isApiError(err)) {
         const { errorMessage, respData } = err;
-
+        console.log(err);
         // 尚未驗證信箱
         if (respData?.needVerification && signInFormData?.email) {
           notification.error({
@@ -66,10 +66,10 @@ export const useSignInHandler = () => {
           title: "登入失敗",
           text: errorMessage,
         });
-        navigate("/auth/signIn");
+        // navigate("/auth/signIn");
       }
     },
-    [handleSendVerificationCode, navigate]
+    [handleSendVerificationCode]
   );
 
   return { handelSignInSucess, handleSignInError };

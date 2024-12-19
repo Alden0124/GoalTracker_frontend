@@ -1,6 +1,6 @@
 export interface ReceiveMessage {
   content: string;
-  messageId: string;
+  id: string;
   sender: {
     id: string;
     username: string;

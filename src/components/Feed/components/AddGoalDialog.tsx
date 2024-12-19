@@ -1,10 +1,8 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { goalSchema } from "@/schemas/goalSchema";
-import type { GoalFormData } from "@/schemas/goalSchema";
-import Input from "@/components/ui/Input";
 import Dialog from "@/components/common/Dialog";
-
+import Input from "@/components/ui/Input";
+import { getGoalSchema, GoalFormData } from "@/schemas/goalSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 interface AddGoalDialogProps {
   isOpen: boolean;
@@ -13,26 +11,28 @@ interface AddGoalDialogProps {
   onSubmit: (data: GoalFormData) => void;
 }
 
-const AddGoalDialog = ({ isOpen, isPending, onClose, onSubmit }: AddGoalDialogProps) => {
-
+const AddGoalDialog = ({
+  isOpen,
+  isPending,
+  onClose,
+  onSubmit,
+}: AddGoalDialogProps) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<GoalFormData>({
-    resolver: zodResolver(goalSchema),
+    resolver: zodResolver(getGoalSchema()),
   });
 
   // 提交表單
   const handleFormSubmit = async (data: GoalFormData) => {
-    console.log('提交的表單數據:', data);
+    console.log("提交的表單數據:", data);
     onSubmit(data);
     reset();
     onClose();
   };
-
-
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="新增目標">

@@ -1,17 +1,16 @@
 import Wrapper from "@/components/common/Wrapper";
 import ProfileAvatar from "@/components/Profile/ProfileInfo/components/ProfileAvatar";
 import ProfileEditDialog from "@/components/Profile/ProfileInfo/components/ProfileEditDialog";
-import ProfileInfoSkeleton from '@/components/Profile/ProfileInfo/skeleton/ProfileInfoSkeleton';
-import { useAppDispatch } from "@/hooks/common/useAppReduxs";
+import ProfileInfoSkeleton from "@/components/Profile/ProfileInfo/skeleton/ProfileInfoSkeleton";
+import { useSelectUser } from "@/hooks/Chat/useSelectUser";
 import {
   useFollowUser,
   useUnfollowUser,
 } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 import { useProfileData } from "@/hooks/profile/ProfileInfo/useProfile";
-import { socketService } from "@/services/api/SocketService";
-import { openChat } from "@/stores/slice/chatReducer";
 import { GET_COOKIE } from "@/utils/cookies";
 import { Fragment, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { IoLocationOutline, IoSchoolOutline } from "react-icons/io5";
 import { MdOutlineWork } from "react-icons/md";
 import { useParams } from "react-router-dom";
@@ -21,7 +20,6 @@ import renderInfoItem from "./components/renderInfoItem";
 type DialogType = "followers" | "following" | null;
 
 const ProfileInfo = () => {
-  const dispatch = useAppDispatch();
   // 獲取用戶ID
   const { id: paramsUserId } = useParams();
   // 獲取token
@@ -36,6 +34,9 @@ const ProfileInfo = () => {
   const { mutate: followUser } = useFollowUser();
   // 取消追蹤用戶
   const { mutate: unfollowUser } = useUnfollowUser();
+  const { t } = useTranslation(["profileInfo"]);
+  // 選擇聊天對象
+  const { handleSelectUser } = useSelectUser();
 
   if (isLoading) return <ProfileInfoSkeleton />;
 
@@ -56,49 +57,30 @@ const ProfileInfo = () => {
     }
   };
 
-  // 處理開啟聊天
-  const handleOpenChat = () => {
-    if (userData?.user) {
-      const token = GET_COOKIE();
-      if (token) {
-        // 建立 WebSocket 連線
-        socketService.connect(token);
-
-        // 開啟聊天視窗
-        dispatch(
-          openChat({
-            recipientId: userData.user.id,
-            recipientName: userData.user.username,
-          })
-        );
-      }
-    }
-  };
-
   // 用戶資訊項目
   const userInfoItems = [
     {
       id: 1,
       icon: <IoLocationOutline className="text-xl" />,
-      value: location,
-      placeholder: "新增居住地",
+      value: location || "暫無資料",
+      placeholder: t("profileInfo:addLocation"),
     },
     {
       id: 2,
       icon: <MdOutlineWork className="text-xl" />,
-      value: occupation,
-      placeholder: "新增職稱",
+      value: occupation || "暫無資料",
+      placeholder: t("profileInfo:addOccupation"),
     },
     {
       id: 3,
       icon: <IoSchoolOutline className="text-xl" />,
-      value: education,
-      placeholder: "新增學歷",
+      value: education || "暫無資料",
+      placeholder: t("profileInfo:addEducation"),
     },
   ];
 
   return (
-    <div className="custom-scrollbar w-full md:h-[calc(100vh-64px)] md:overflow-y-auto  md:w-[40%] lg:w-[30%] md:sticky md:top-[64px] ">
+    <div className="custom-scrollbar w-full md:h-[calc(100vh-64px)] md:overflow-y-auto  md:w-[40%] lg:w-[30%] md:sticky md:top-[64px]  ">
       <Wrapper className=" py-[30px] md:px-[10px] md:h-fit lg:px-[30px] z-0">
         {/* 頭像和用戶名區域 */}
         <div className="flex flex-col items-center pb-6 ">
@@ -110,15 +92,27 @@ const ProfileInfo = () => {
 
         {/* 操作按鈕區域 */}
         {!isCurrentUser && (
-          <div className="flex gap-2 py-4">
+          <div className="flex gap-2 py-4 ">
             <button
               onClick={() => handleFollowUser(paramsUserId || "")}
               className="flex-1 btn-primary"
             >
-              {userData.user.isFollowing ? "取消追蹤" : "關注"}
+              {userData.user.isFollowing
+                ? t("profileInfo:unfollow")
+                : t("profileInfo:follow")}
             </button>
-            <button onClick={handleOpenChat} className="flex-1 btn-secondary">
-              發送訊息
+            <button
+              onClick={() => {
+                handleSelectUser(
+                  userData.user.id,
+                  userData.user.username,
+                  userData.user.avatar,
+                  1
+                );
+              }}
+              className="flex-1 btn-secondary"
+            >
+              {t("profileInfo:sendMessage")}
             </button>
           </div>
         )}
@@ -130,7 +124,7 @@ const ProfileInfo = () => {
               className="w-[200px] btn-secondary"
               onClick={() => setShowEditDialog(true)}
             >
-              編輯個人資料
+              {t("profileInfo:editProfile")}
             </button>
           </div>
         )}
@@ -162,7 +156,7 @@ const ProfileInfo = () => {
               {userData.user.followersCount}
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-300">
-              粉絲數
+              {t("profileInfo:followers")}
             </div>
           </div>
           <div
@@ -175,7 +169,7 @@ const ProfileInfo = () => {
               {userData.user.followingCount}
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-300">
-              追蹤中
+              {t("profileInfo:following")}
             </div>
           </div>
         </div>

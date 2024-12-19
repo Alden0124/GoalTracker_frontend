@@ -32,7 +32,7 @@ const ErrorPage = () => {
   }
 
   const handleBackHome = () => {
-    navigate(isLogin ? "/feed" : "/");
+    navigate(isLogin ? "/feed" : "/home");
   };
 
   return (

@@ -1,0 +1,3 @@
+export * from "./GetNotifications.type";
+
+

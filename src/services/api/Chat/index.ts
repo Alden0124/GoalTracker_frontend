@@ -8,8 +8,8 @@ export const FETCH_CHAT = {
     recipientId: string,
     query?: GetChatHistoryQuery
   ): Promise<GetChatHistoryResponse> =>
-    axiosInstance.get(`/chat/history/${recipientId}`, {
-      params: { ...DEFAULT_CHAT_PARAMS, ...query },
-    }),
+  axiosInstance.get(`/chat/history/${recipientId}`, {
+    params: { ...DEFAULT_CHAT_PARAMS, ...query },
+  }),
 };
 

@@ -1,0 +1,22 @@
+{
+  "editProfile": "Edit Profile",
+  "clickToChangeAvatar": "Click to change avatar",
+  "username": "Username",
+  "location": "Location",
+  "occupation": "Occupation",
+  "education": "Education",
+  "cancel": "Cancel",
+  "updating": "Updating",
+  "save": "Save",
+  "changeAvatar": "Change Avatar",
+  "uploadAvatar": "Upload Avatar",
+  "addLocation": "Add Location",
+  "addOccupation": "Add Occupation",
+  "addEducation": "Add Education",
+  "followers": "Followers",
+  "following": "Following",
+  "unfollow": "Unfollow",
+  "noFollowers": "No",
+  "sendMessage": "Send Message",
+  "follow": "Follow"
+}

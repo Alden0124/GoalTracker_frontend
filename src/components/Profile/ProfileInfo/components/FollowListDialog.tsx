@@ -1,5 +1,6 @@
 import Dialog from "@/components/common/Dialog";
 import { useGetFollowers, useGetFollowing, useUnfollowUser } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
+import { useTranslation } from "react-i18next";
 import { IoPersonOutline } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import FollowListDialogSkeleton from "../skeleton/FollowListDialogSkeleton";
@@ -18,27 +19,29 @@ const FollowListDialog = ({
   title,
   isCurrentUser,
 }: FollowListDialogProps) => {
-  // 導航 
+  // 導航
   const navigate = useNavigate();
   // 取消追蹤
   const { mutate: unfollowUser } = useUnfollowUser();
   // 獲取用戶ID
   const { id: paramsUserId } = useParams();
+  // 獲取語言
+  const { t } = useTranslation(["profileInfo"]);
 
   // 獲取粉絲列表
-    const {
-      data: followersList,
-      isLoading: isLoadingFollowers,
+  const {
+    data: followersList,
+    isLoading: isLoadingFollowers,
     isRefetching: isRefetchingFollowers,
   } = useGetFollowers(paramsUserId || "", title === "followers");
 
   // 獲取追蹤列表
-    const {
-      data: followingList,
-      isLoading: isLoadingFollowing,
+  const {
+    data: followingList,
+    isLoading: isLoadingFollowing,
     isRefetching: isRefetchingFollowing,
   } = useGetFollowing(paramsUserId || "", title === "following");
- 
+
   // 取消追蹤
   const handleUnfollow = async (followerId: string) => {
     if (title === "following") {
@@ -56,14 +59,24 @@ const FollowListDialog = ({
   // 粉絲/追蹤列表
   const followers = title === "followers" ? followersList : followingList;
   // 粉絲/追蹤列表是否正在加載
-  const isLoading = title === "followers" ? isLoadingFollowers : isLoadingFollowing;
+  const isLoading =
+    title === "followers" ? isLoadingFollowers : isLoadingFollowing;
   // 粉絲/追蹤列表是否正在重新加載
-  const isRefetching = title === "followers" ? isRefetchingFollowers : isRefetchingFollowing;
+  const isRefetching =
+    title === "followers" ? isRefetchingFollowers : isRefetchingFollowing;
   // 如果粉絲/追蹤列表不存在，則返回null
-  if(!followers) return null;
+  if (!followers) return null;
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} title={title === 'followers' ? '粉絲' : '追蹤中'}>
+    <Dialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title={
+        title === "followers"
+          ? t("profileInfo:followers")
+          : t("profileInfo:following")
+      }
+    >
       {isLoading || isRefetching ? (
         <FollowListDialogSkeleton />
       ) : followers?.length > 0 ? (
@@ -94,7 +107,9 @@ const FollowListDialog = ({
                 onClick={() => handleUnfollow(follower.id)}
                 className="text-blue-500 hover:text-blue-600 break-keep"
               >
-                {(title === "following" && isCurrentUser) && "取消追蹤"}
+                {title === "following" &&
+                  isCurrentUser &&
+                  t("profileInfo:unfollow")}
               </button>
             </div>
           ))}
@@ -102,7 +117,12 @@ const FollowListDialog = ({
       ) : (
         <div className="flex flex-col items-center justify-center py-10 text-gray-500">
           <IoPersonOutline className="text-4xl mb-2" />
-          <p>目前還沒有{title === 'followers' ? '粉絲' : '追蹤中'}</p>
+          <p>
+            {t("profileInfo:noFollowers")}
+            {title === "followers"
+              ? t("profileInfo:followers")
+              : t("profileInfo:following")}
+          </p>
         </div>
       )}
     </Dialog>

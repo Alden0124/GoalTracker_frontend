@@ -3,6 +3,7 @@ import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { useGetFollowers, useGetFollowing } from "@/hooks/feed/useFeedQueries";
 import { selectUserProFile } from "@/stores/slice/userReducer";
 import { memo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import FollowerList from "./FollowerList";
 
 interface FollowingProps {
@@ -10,6 +11,8 @@ interface FollowingProps {
 }
 
 const Following = memo(({ className }: FollowingProps) => {
+  // 翻譯
+  const { t } = useTranslation(["feed"]);
   // 粉絲/追蹤中切換
   const [activeTab, setActiveTab] = useState("followers");
   // 使用者資料
@@ -30,7 +33,7 @@ const Following = memo(({ className }: FollowingProps) => {
   } = useGetFollowing(userData.id || "", activeTab === "following");
 
   return (
-    <Wrapper className={`flex flex-col gap-4 ${className}`}>
+    <Wrapper className={`flex flex-col gap-4 ${className} !p-0 md:!p-4`}>
       {/* Tab 切換 */}
       <div className="flex justify-around border-b dark:border-gray-700">
         <button
@@ -42,7 +45,7 @@ const Following = memo(({ className }: FollowingProps) => {
             }`}
           onClick={() => setActiveTab("followers")}
         >
-          粉絲
+          {t("feed:followers")}
         </button>
         <button
           className={`py-2 px-4 text-foreground-light dark:text-foreground-dark
@@ -53,14 +56,18 @@ const Following = memo(({ className }: FollowingProps) => {
             }`}
           onClick={() => setActiveTab("following")}
         >
-          追蹤中
+          {t("feed:following")}
         </button>
       </div>
 
       {/* 根據選中的標籤顯示內容 */}
       <div className="text-foreground-light dark:text-foreground-dark">
         <FollowerList
-          title={activeTab === "followers" ? "粉絲" : "追蹤中"}
+          title={
+            activeTab === "followers"
+              ? t("feed:followers")
+              : t("feed:following")
+          }
           followers={
             activeTab === "followers"
               ? followersList || []
@@ -70,7 +77,9 @@ const Following = memo(({ className }: FollowingProps) => {
             activeTab === "followers" ? isLoadingFollowers : isLoadingFollowing
           }
           isFetching={
-            activeTab === "followers" ? isFetchingFollowers : isFetchingFollowing
+            activeTab === "followers"
+              ? isFetchingFollowers
+              : isFetchingFollowing
           }
         />
       </div>

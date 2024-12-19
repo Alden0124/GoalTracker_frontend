@@ -1,74 +1,216 @@
 // icon
 import { AiOutlineGlobal } from "react-icons/ai";
 import { CiDark } from "react-icons/ci";
-import { IoSunnyOutline } from "react-icons/io5";
+import {
+  IoChatbubbleOutline,
+  IoNotificationsOutline,
+  IoSunnyOutline,
+} from "react-icons/io5";
 // i18n
 import { useTranslation } from "react-i18next";
 // 自訂一hook
 import { useTheme } from "@/hooks/style/useTheme";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 // redux
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { selectIsAuthenticated } from "@/stores/slice/userReducer";
 // utils
+import UserList from "@/components/layout/Header/components/UserList";
 import UserMenu from "@/components/layout/Header/components/UserMenu";
+import { useUnreadMessageCount } from "@/hooks/ChatRoom/useChatManager";
+import { useGetUnreadNotificationCount } from "@/hooks/notifications/Chat/useNotifications";
+import { useEffect, useRef, useState } from "react";
+import IconButton from "./components/IconButton";
+import ListWrapper from "./components/ListWrapper";
+import NotificationList from "./components/NotificationList";
 
 const Header = () => {
+  const location = useLocation();
   const isLogin = useAppSelector(selectIsAuthenticated);
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(["common", "auth"]);
   const { theme, setTheme } = useTheme();
+  const [showChatList, setShowChatList] = useState(false);
+  const [showLanguageList, setShowLanguageList] = useState(false);
+  const languageListRef = useRef<HTMLDivElement>(null);
+  const chatListRef = useRef<HTMLDivElement>(null);
+  const [showNotificationList, setShowNotificationList] = useState(false);
+  const notificationListRef = useRef<HTMLDivElement>(null);
 
+  // 未讀通知數量
+  const { data: unreadNotificationCount } = useGetUnreadNotificationCount();
+
+
+  // 未讀聊天訊息數量
+  const { data: unreadMessageData } = useUnreadMessageCount();
+  const unreadMessageCount = unreadMessageData?.unreadMessageCount;
+  const currentLanguageList = [
+    {
+      label: "English",
+      value: "en-US",
+    },
+    {
+      label: "繁體中文",
+      value: "zh-TW",
+    },
+  ];
+
+  // 切換主題
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const toggleLanguage = () => {
-    const newLang = i18n.language === "en-US" ? "zh-TW" : "en-US";
-    i18n.changeLanguage(newLang);
-    localStorage.setItem("language", newLang);
+  // 切換語言
+  const handleLanguageChange = (value: string) => {
+    i18n.changeLanguage(value);
+    localStorage.setItem("language", value);
+    setShowLanguageList(false);
   };
+
+  // 監聽點擊事件
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // 聊天列表
+      if (
+        chatListRef.current &&
+        !chatListRef.current.contains(event.target as Node)
+      ) {
+        setShowChatList(false);
+      }
+      // 語言列表
+      if (
+        languageListRef.current &&
+        !languageListRef.current.contains(event.target as Node)
+      ) {
+        setShowLanguageList(false);
+      }
+      // 通知列表
+      if (
+        notificationListRef.current &&
+        !notificationListRef.current.contains(event.target as Node)
+      ) {
+        setShowNotificationList(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <header
       className={`
-        h-[64px]
-        py-[8px] px-[15px] md:px-[30px] 
-        sticky top-0 
-        flex justify-between items-center 
-        border-b 
-        shadow-sm 
-        bg-background-light dark:bg-background-dark 
-        text-foreground-light dark:text-foreground-dark
-        z-10
+        h-[64px] py-[8px] px-[15px] md:px-[30px] sticky top-0
+        flex justify-between items-center border-b shadow-sm 
+        bg-background-light dark:bg-background-dark
+        text-foreground-light dark:text-foreground-dark z-10
       `}
     >
-      <Link to={isLogin ? "/feed" : "/"} className="text-[18px]">
+      {/* 標題 */}
+      <Link to={isLogin ? "/feed" : "/home"} className="text-[18px]">
         GoalTracker
       </Link>
-      <div className="flex items-center text-[16px] gap-[10px]">
-        <button
-          onClick={toggleLanguage}
-          className="flex w-12 h-12 rounded-full items-center justify-center hover:opacity-80 dark:hover:bg-foreground-darkHover"
-          aria-label={t("changeLanguage")}
-        >
-          <AiOutlineGlobal />
-          <span className="sr-only">
-            {i18n.language === "zh-TW" ? "EN" : "中"}
-          </span>
-        </button>
 
-        <button
-          onClick={toggleTheme}
-          className="flex md:w-12 md:h-12 rounded-full items-center justify-center hover:opacity-80 dark:hover:bg-foreground-darkHover"
-        >
+      {/* 選單 */}
+      <div className="flex items-center justify-between text-[16px] gap-[12px] xs:gap-[24px] sm:gap-[12px] ">
+        {/* 語言選擇 */}
+        <div className="relative" ref={languageListRef}>
+          <IconButton
+            onClick={() => setShowLanguageList(!showLanguageList)}
+            ariaLabel={t("common:language")}
+          >
+            <AiOutlineGlobal />
+          </IconButton>
+          {showLanguageList && (
+            <ListWrapper className={`md:w-48`}>
+              {currentLanguageList.map((lang) => (
+                <button
+                  key={lang.value}
+                  onClick={() => handleLanguageChange(lang.value)}
+                  className={`
+                    w-full px-4 py-2 text-left
+                    hover:bg-gray-100 dark:hover:bg-gray-800
+                    ${
+                      i18n.language === lang.value
+                        ? "bg-gray-100 dark:bg-gray-800"
+                        : ""
+                    }
+                  `}
+                >
+                  {lang.label}
+                </button>
+              ))}
+            </ListWrapper>
+          )}
+        </div>
+
+        {/* 主題 */}
+        <IconButton onClick={toggleTheme} ariaLabel={t("common:theme")}>
           {theme === "dark" ? <IoSunnyOutline /> : <CiDark />}
-        </button>
+        </IconButton>
+
+        {/* 登入後的選單 */}
+        {isLogin && (
+          <>
+            {/* 聊天列表 */}
+            <div
+              ref={chatListRef}
+              className={` relative ${
+                location.pathname.includes("/chatRoom") ? "hidden" : "block"
+              }`}
+            >
+              <IconButton
+                onClick={() => setShowChatList(!showChatList)}
+                ariaLabel={t("common:messages")}
+              >
+                <IoChatbubbleOutline />
+                {unreadMessageCount && unreadMessageCount > 0 ? (
+                  <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-red-500 rounded-full"></span>
+                ) : null}
+              </IconButton>
+              {/* 聊天列表彈出層 */}
+              {showChatList && (
+                <ListWrapper className={`md:w-fit`}>
+                  <UserList
+                    setShowChatList={setShowChatList}
+                    className={`h-[calc(100vh-64px)] md:h-auto `}
+                  />
+                </ListWrapper>
+              )}
+            </div>
+
+            {/* 通知 */}
+            <div className="relative" ref={notificationListRef}>
+              <IconButton
+                onClick={() => setShowNotificationList(!showNotificationList)}
+                ariaLabel={t("common:notifications")}
+              >
+                <IoNotificationsOutline />
+                {unreadNotificationCount &&
+                unreadNotificationCount.unreadCount > 0 ? (
+                  <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-red-500 rounded-full"></span>
+                ) : null}
+              </IconButton>
+              {showNotificationList && (
+                <ListWrapper className="md:w-80">
+                  <NotificationList
+                    setShowNotificationList={setShowNotificationList}
+                    className="h-[calc(100vh-64px)] md:h-auto"
+                  />
+                </ListWrapper>
+              )}
+            </div>
+          </>
+        )}
 
         {isLogin ? (
+          // 登入後-選單
           <UserMenu />
         ) : (
+          // 登入前-登入
           <Link to={"/auth/signIn"} className={`btn-primary ml-[15px]`}>
-            {t("login")}
+            {t("auth:login")}
           </Link>
         )}
       </div>
