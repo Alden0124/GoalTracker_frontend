@@ -1,0 +1,12 @@
+{
+  "following": "Following",
+  "followers": "Followers",
+  "confirmUnfollow": "Confirm Unfollow",
+  "unfollow": "Unfollow",
+  "noFollowers": "No data yet",
+  "goals": "goals",
+  "recommendUsers": "Recommend Users",
+  "follow": "Follow",
+  "followSuccess": "Follow Success",
+  "sendMessage": "message"
+}

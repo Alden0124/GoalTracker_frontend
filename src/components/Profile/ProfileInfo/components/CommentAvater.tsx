@@ -15,7 +15,7 @@ const CommentAvater = ({ avatar, size = 100, userId }: ProfileAvatarProps) => {
         <LazyImage
           src={avatar}
           alt="avatar"
-          className="rounded-full object-cover"
+          className="w-full h-full rounded-full object-cover"
           width={size}
           height={size}
         />

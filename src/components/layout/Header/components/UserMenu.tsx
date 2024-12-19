@@ -1,16 +1,16 @@
-import { useRef, useEffect, useState } from "react";
-import { IoPersonOutline, IoChevronDownOutline } from "react-icons/io5";
-import { useTranslation } from "react-i18next";
-import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/hooks/common/useAppReduxs";
-import { selectUserProFile, signOut } from "@/stores/slice/userReducer";
 import { FETCH_AUTH } from "@/services/api/auth";
-import { handleSuccess } from "@/utils/sucessHandler";
+import { selectUserProFile, signOut } from "@/stores/slice/userReducer";
+import { notification } from "@/utils/notification";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { IoChevronDownOutline, IoPersonOutline } from "react-icons/io5";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const UserMenu = () => {
   const dispatch = useAppDispatch(); // 用於派發 Redux actions
   const useProFile = useAppSelector(selectUserProFile);
-  const { t } = useTranslation(); // 用於國際化翻譯
+  const { t } = useTranslation(["common"]); // 用於國際化翻譯
   const navigate = useNavigate(); // 用於路由導航
   const location = useLocation(); // 獲取當前路徑
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 控制下拉選單的開關狀態
@@ -41,7 +41,9 @@ const UserMenu = () => {
 
       // 再執行登出 API
       await FETCH_AUTH.signOut();
-      handleSuccess(null, "登出成功");
+      notification.success({
+        title: "登出成功",
+      });
 
       // 最後導航到登入頁
       navigate("/auth/signIn");
@@ -99,7 +101,7 @@ const UserMenu = () => {
               }}
               className="block w-full px-4 py-2 text-sm text-foreground-light dark:text-foreground-dark text-left hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              {t("logout")}
+              {t("common:logout")}
             </button>
 
             {/* 個人資料 */}
@@ -118,7 +120,7 @@ const UserMenu = () => {
                 }
               `}
             >
-              {t("profile")}
+              {t("common:profile")}
             </button>
           </div>
         )}

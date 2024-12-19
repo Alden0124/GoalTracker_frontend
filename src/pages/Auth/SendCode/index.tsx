@@ -1,12 +1,16 @@
+import { useMemo } from "react";
 // 欄位驗證
-import { useForm } from "react-hook-form";
+import { ForgetFormData, getForgetSchema } from "@/schemas/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { forgetSchema, type ForgetFormData } from "@/schemas/authSchema";
-
+import { useForm } from "react-hook-form";
 // 組件
 import Input from "@/components/ui/Input";
-
+import { useTranslation } from "react-i18next";
 const SendCode = () => {
+  const { t } = useTranslation();
+  // 取得忘記密碼表單驗證
+  const forgetSchema = useMemo(() => getForgetSchema(), []);
+
   const {
     register,
     handleSubmit,
@@ -29,7 +33,7 @@ const SendCode = () => {
   return (
     <main className="w-full min-h-[calc(100vh-64px)] flex flex-col justify-center items-center dark:bg-background-dark">
       <h1 className="text-center  text-2xl dark:text-foreground-dark">
-        寄送驗證碼
+        {t("auth:sendEmailVerificationCode")}
       </h1>
 
       <form
@@ -41,16 +45,15 @@ const SendCode = () => {
           {...register("email")}
           id="email"
           type="email"
-          label="電子信箱"
-          placeholder="電子郵件"
+          label={t("auth:email")}
+          placeholder={t("auth:email")}
           autoComplete="email"
           error={errors.email?.message}
         />
 
         <button type="submit" className="btn-primary w-full hover:opacity-90">
-          寄送驗證碼
+          {t("auth:confirm")}
         </button>
-     
       </form>
     </main>
   );

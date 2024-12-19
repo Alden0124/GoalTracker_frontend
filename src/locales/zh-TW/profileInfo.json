@@ -1,0 +1,22 @@
+{
+  "editProfile": "編輯個人資料",
+  "clickToChangeAvatar": "點擊更換頭像",
+  "username": "姓名",
+  "location": "居住地",
+  "occupation": "職稱",
+  "education": "學歷",
+  "cancel": "取消",
+  "updating": "更新中...",
+  "save": "保存更改",
+  "changeAvatar": "更換頭像",
+  "uploadAvatar": "上傳頭像",
+  "addLocation": "新增居住地",
+  "addOccupation": "新增職稱",
+  "addEducation": "新增學歷",
+  "followers": "粉絲數",
+  "following": "追蹤中",
+  "unfollow": "取消追蹤",
+  "noFollowers": "目前還沒有",
+  "sendMessage": "發送訊息",
+  "follow": "關注"
+}

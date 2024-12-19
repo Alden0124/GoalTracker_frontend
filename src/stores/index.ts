@@ -1,5 +1,6 @@
 import chatReducer from "@/stores/slice/chatReducer";
 import loadingReducer from "@/stores/slice/loadingReducer";
+import socketReducer from "@/stores/slice/socketSlice";
 import userReducer from "@/stores/slice/userReducer";
 import { configureStore } from "@reduxjs/toolkit";
 
@@ -8,6 +9,7 @@ export const store = configureStore({
     user: userReducer,
     loading: loadingReducer,
     chat: chatReducer,
+    socket: socketReducer,
   },
 });
 

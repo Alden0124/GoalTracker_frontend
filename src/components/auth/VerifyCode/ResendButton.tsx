@@ -1,5 +1,6 @@
-import { useCountdown } from "@/hooks/common/useCountdown";
 import { useEmail } from "@/hooks/auth/useEmail";
+import { useCountdown } from "@/hooks/common/useCountdown";
+import { useTranslation } from "react-i18next";
 
 interface ResendButtonProps {
   email: string;
@@ -9,7 +10,7 @@ interface ResendButtonProps {
 const ResendButton = ({ email, className = "" }: ResendButtonProps) => {
   const { countdown, startCountdown, isActive } = useCountdown();
   const { handleSendVerificationCode } = useEmail();
-
+  const { t } = useTranslation();
   const handleResend = async () => {
     if (isActive) return;
     await handleSendVerificationCode(email);
@@ -25,7 +26,11 @@ const ResendButton = ({ email, className = "" }: ResendButtonProps) => {
         ${isActive ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"}
         ${className}`}
     >
-      {isActive ? `重新發送 (${countdown}秒)` : "重新寄送驗證碼"}
+      {isActive
+        ? `${t("auth:resendVerificationCode")} (${countdown} ${t(
+            "auth:seconds"
+          )})`
+        : t("auth:resendVerificationCode")}
     </button>
   );
 };

@@ -10,12 +10,20 @@
 @layer components {
   /* 主要按鈕 */
   .btn-primary {
-    @apply py-[6px] text-center w-[80px] md:w-[140px] rounded-[5px] dark:border text-[#fff] bg-button-light dark:bg-button-dark dark:hover:bg-button-darkHover/30;
+    @apply py-[6px] px-[10px] text-center w-fit md:min-w-[140px] md:px-[12px] rounded-[5px] dark:border text-[#fff] 
+    bg-button-light dark:bg-button-dark dark:hover:bg-button-darkHover/30;
+  }
+
+  
+  .btn-loading {
+    @apply py-[6px] px-[10px] text-center w-fit md:min-w-[140px] md:px-[12px] rounded-[5px] dark:border text-[#fff]
+     bg-button-light/10 dark:bg-button-dark/10 cursor-not-allowed 
+    dark:text-gray-300;
   }
 
   /* 次要按鈕 */
   .btn-secondary {
-    @apply py-[6px] text-center w-[80px] md:w-[140px] rounded-[5px] border border-button-light dark:border-[#374151]
+    @apply py-[6px] px-[10px] text-center w-[80px] md:min-w-[140px] md:px-[12px] rounded-[5px] border border-button-light dark:border-[#374151]
     text-button-light dark:text-[#fff]
     hover:bg-button-light/10 dark:hover:bg-button-darkHover/30;
   }
@@ -27,4 +35,6 @@
     hover:bg-button-light/10 dark:hover:bg-button-dark/10
     transition-all duration-300;
   }
+
+  /* 載入中按鈕 */
 }

@@ -1,15 +1,21 @@
-import { useRef, useState } from 'react';
-import ProfileAvatar from './ProfileAvatar';
 import { notification } from "@/utils/notification";
-
+import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import ProfileAvatar from "./ProfileAvatar";
 interface ProfileAvatarUploadProps {
   currentAvatar?: string;
   onFileSelect: (file: File) => void;
 }
 
-const ProfileAvatarUpload = ({ currentAvatar, onFileSelect }: ProfileAvatarUploadProps) => {
+const ProfileAvatarUpload = ({
+  currentAvatar,
+  onFileSelect,
+}: ProfileAvatarUploadProps) => {
+  const { t } = useTranslation(["profile"]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | undefined>(currentAvatar);
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(
+    currentAvatar
+  );
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -19,19 +25,19 @@ const ProfileAvatarUpload = ({ currentAvatar, onFileSelect }: ProfileAvatarUploa
     const file = event.target.files?.[0];
     if (file) {
       // 檢查檔案類型
-      if (!file.type.startsWith('image/')) {
-        notification.error({ 
-          title: "錯誤", 
-          text: "請上傳圖片檔案" 
+      if (!file.type.startsWith("image/")) {
+        notification.error({
+          title: "錯誤",
+          text: "請上傳圖片檔案",
         });
         return;
       }
 
       // 檢查檔案大小 (例如限制 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        notification.error({ 
-          title: "錯誤", 
-          text: "圖片大小不能超過 5MB" 
+        notification.error({
+          title: "錯誤",
+          text: "圖片大小不能超過 5MB",
         });
         return;
       }
@@ -48,16 +54,12 @@ const ProfileAvatarUpload = ({ currentAvatar, onFileSelect }: ProfileAvatarUploa
   };
 
   return (
-    <div 
-      className="relative cursor-pointer group"
-      onClick={handleClick}
-    >
-      <ProfileAvatar 
-        avatar={previewUrl} 
-        size={120}
-      />
+    <div className="relative cursor-pointer group" onClick={handleClick}>
+      <ProfileAvatar avatar={previewUrl} size={120} />
       <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-        <span className="text-white text-sm">更換頭像</span>
+        <span className="text-white text-sm">
+          {t("profileInfo:changeAvatar")}
+        </span>
       </div>
       <input
         ref={fileInputRef}
@@ -70,4 +72,4 @@ const ProfileAvatarUpload = ({ currentAvatar, onFileSelect }: ProfileAvatarUploa
   );
 };
 
-export default ProfileAvatarUpload; 
+export default ProfileAvatarUpload;

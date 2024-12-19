@@ -17,13 +17,18 @@
 
 @layer components {
   .custom-scrollbar {
-    @apply [&::-webkit-scrollbar]:w-[6px]
-           [&::-webkit-scrollbar-track]:bg-gray-200
+    @apply  [&::-webkit-scrollbar]:w-[6px]
+           /* [&::-webkit-scrollbar-track]:bg-gray-200 */
            [&::-webkit-scrollbar-thumb]:bg-gray-200
+           dark:[&::-webkit-scrollbar-thumb]:bg-gray-500
            [&::-webkit-scrollbar-thumb]:rounded-full
-           /* hover:[&::-webkit-scrollbar-thumb]:bg-gray-300
-           dark:hover:[&::-webkit-scrollbar-thumb]:bg-gray-600
-           hover:[&::-webkit-scrollbar-thumb]:transition-colors
-           hover:[&::-webkit-scrollbar-thumb]:duration-200; */
+           [&::-webkit-scrollbar-thumb]:hidden
+           [&::-webkit-scrollbar-thumb]:hover:block
+            hover:[&::-webkit-scrollbar-thumb]:bg-gray-100
+           dark:hover:[&::-webkit-scrollbar-thumb]:bg-gray-200
+            hover:[&::-webkit-scrollbar-thumb]:transition-colors 
+           hover:[&::-webkit-scrollbar-thumb]:duration-200; 
   }
+
+  
 }

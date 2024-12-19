@@ -1,33 +1,30 @@
+import { useEffect, useMemo, useState } from "react";
 // 欄位驗證
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { getVerifyCodeSchema, VerifyCodeFormData } from "@/schemas/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  verifyCodeSchema,
-  type VerifyCodeFormData,
-} from "@/schemas/authSchema";
+import { useForm } from "react-hook-form";
+import { useNavigate, useSearchParams } from "react-router-dom";
 // 組件
-import Input from "@/components/ui/Input";
-import { useEffect } from "react";
 import ResendButton from "@/components/auth/VerifyCode/ResendButton";
+import Input from "@/components/ui/Input";
 // alert
-import { notification } from "@/utils/notification";
 // 自定義hook
 import { useEmail } from "@/hooks/auth/useEmail";
-
+import { useTranslation } from "react-i18next";
 const VerifyCode = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
   const { handleVerifyCode } = useEmail();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 取得驗證碼表單驗證
+  const verifyCodeSchema = useMemo(() => getVerifyCodeSchema(), []);
 
   // 將 useEffect 移到頂層
   useEffect(() => {
     if (!email) {
-      notification.error({
-        title: "錯誤",
-        text: "缺少必要的 email 參數",
-      });
       navigate("/auth/signIn");
     }
   }, [email, navigate]);
@@ -47,13 +44,15 @@ const VerifyCode = () => {
   }
 
   const onSubmit = async (data: VerifyCodeFormData) => {
+    setIsSubmitting(true);
     await handleVerifyCode(email, data.code);
+    setIsSubmitting(false);
   };
 
   return (
     <main className="w-full min-h-[calc(100vh-64px)] flex flex-col justify-center items-center dark:bg-background-dark">
       <h1 className="text-center  text-2xl dark:text-foreground-dark">
-        輸入驗證碼
+        {t("auth:verifyCode")}
       </h1>
 
       <form
@@ -64,13 +63,21 @@ const VerifyCode = () => {
         <Input
           {...register("code")}
           id="code"
-          label="驗證碼"
-          placeholder="請輸入驗證碼"
+          label={t("auth:verifyCode")}
+          placeholder={t("auth:verifyCode")}
           error={errors.code?.message}
         />
 
-        <button type="submit" className="btn-primary w-full hover:opacity-90">
-          確認
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={` w-full ${
+            isSubmitting
+              ? "opacity-50 cursor-not-allowed"
+              : "btn-primary  hover:opacity-90"
+          }`}
+        >
+          {isSubmitting ? t("auth:confirm") : t("auth:confirm")}
         </button>
 
         <ResendButton email={email} />

@@ -11,6 +11,7 @@ import { CreateCommentParams } from "@/services/api/Profile/ProfileGoals/type";
 import { selectUserProFile } from "@/stores/slice/userReducer";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { IoSend } from "react-icons/io5";
 import CommentSkeleton from "../skeleton/CommentSkeleton";
 import CommentItem from "./CommentItem";
@@ -30,6 +31,9 @@ const GoalDetailsDialog = ({
   goalId,
   isCurrentUser,
 }: GoalDetailsDialogProps) => {
+  // 語言
+  const { t } = useTranslation(["profileGoals"]);
+  // 使用者資料
   const userInfo = useAppSelector(selectUserProFile);
 
   // 新增留言或回覆 API hooks
@@ -68,11 +72,23 @@ const GoalDetailsDialog = ({
     reset();
   };
 
+  // 按下 Enter 鍵提交表單
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      handleSubmit(handleFormSubmit)();
+    }
+  };
+
   return (
     <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      title={`${activeTab === "progress" ? "進度紀錄" : "留言"}`}
+      title={`${
+        activeTab === "progress"
+          ? t("profileGoals:goalProgress")
+          : t("profileGoals:goalComment")
+      }`}
       footer={
         isCurrentUser || activeTab === "comment" ? (
           <form
@@ -82,8 +98,11 @@ const GoalDetailsDialog = ({
             <div className="relative">
               <textarea
                 {...register("content")}
-                placeholder={`新增${
-                  activeTab === "progress" ? "進度紀錄" : "留言"
+                onKeyDown={handleKeyDown}
+                placeholder={`${
+                  activeTab === "progress"
+                    ? t("profileGoals:addProgress")
+                    : t("profileGoals:addComment")
                 }...`}
                 className={`w-full p-3 pr-12 border rounded-lg resize-none text-foreground-light dark:text-foreground-dark min-h-[80px] max-h-[500px] overflow-y-auto focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-background-dark dark:border-gray-700 ${
                   errors.content ? "border-red-500" : ""
@@ -92,7 +111,7 @@ const GoalDetailsDialog = ({
               <button
                 type="submit"
                 className="absolute right-3 bottom-3 text-blue-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="發送"
+                aria-label={t("profileGoals:send")}
               >
                 <IoSend className="text-xl" />
               </button>
@@ -136,7 +155,10 @@ const GoalDetailsDialog = ({
                       />
                     </svg>
                     <p>
-                      目前尚無{activeTab === "progress" ? "進度紀錄" : "留言"}
+                      {t("profileGoals:goalListEmpty")}
+                      {activeTab === "progress"
+                        ? t("profileGoals:goalProgress")
+                        : t("profileGoals:goalComment")}
                     </p>
                   </div>
                 ) : (

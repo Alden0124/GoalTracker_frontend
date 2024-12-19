@@ -1,9 +1,9 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { goalSchema, GoalFormData } from "@/schemas/goalSchema";
-import Input from "@/components/ui/Input";
 import Dialog from "@/components/common/Dialog";
+import Input from "@/components/ui/Input";
+import { getGoalSchema, GoalFormData } from "@/schemas/goalSchema";
 import { Goal as GoalType } from "@/services/api/Profile/ProfileGoals/type";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 interface GoalFormDialogProps {
   isOpen: boolean;
@@ -13,13 +13,19 @@ interface GoalFormDialogProps {
   goal?: GoalType; // 如果有傳入 goal 代表是編輯模式
 }
 
-const GoalFormDialog = ({ isOpen, isPending, onClose, onSubmit, goal }: GoalFormDialogProps) => {
+const GoalFormDialog = ({
+  isOpen,
+  isPending,
+  onClose,
+  onSubmit,
+  goal,
+}: GoalFormDialogProps) => {
   const isEditMode = !!goal;
 
   const formatDateForInput = (dateString: string) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   };
 
   const {
@@ -28,7 +34,7 @@ const GoalFormDialog = ({ isOpen, isPending, onClose, onSubmit, goal }: GoalForm
     reset,
     formState: { errors },
   } = useForm<GoalFormData>({
-    resolver: zodResolver(goalSchema),
+    resolver: zodResolver(getGoalSchema()),
     defaultValues: {
       title: goal?.title,
       description: goal?.description,
@@ -47,9 +53,9 @@ const GoalFormDialog = ({ isOpen, isPending, onClose, onSubmit, goal }: GoalForm
   };
 
   return (
-    <Dialog 
-      isOpen={isOpen} 
-      onClose={onClose} 
+    <Dialog
+      isOpen={isOpen}
+      onClose={onClose}
       title={isEditMode ? "編輯目標" : "新增目標"}
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
@@ -91,7 +97,13 @@ const GoalFormDialog = ({ isOpen, isPending, onClose, onSubmit, goal }: GoalForm
             取消
           </button>
           <button type="submit" className="btn-primary" disabled={isPending}>
-            {isPending ? (isEditMode ? "更新中..." : "新增中...") : (isEditMode ? "確認更新" : "確認新增")}
+            {isPending
+              ? isEditMode
+                ? "更新中..."
+                : "新增中..."
+              : isEditMode
+              ? "確認更新"
+              : "確認新增"}
           </button>
         </div>
       </form>
@@ -99,4 +111,4 @@ const GoalFormDialog = ({ isOpen, isPending, onClose, onSubmit, goal }: GoalForm
   );
 };
 
-export default GoalFormDialog; 
+export default GoalFormDialog;

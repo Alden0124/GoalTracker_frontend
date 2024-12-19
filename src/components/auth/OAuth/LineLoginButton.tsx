@@ -1,6 +1,13 @@
+import { useTranslation } from "react-i18next";
 import { FaLine } from "react-icons/fa";
 
-const LineLoginButton = () => {
+interface LineLoginButtonProps {
+  className?: string;
+}
+
+const LineLoginButton = ({ className = "" }: LineLoginButtonProps) => {
+  const { t } = useTranslation("auth");
+
   const handleLineLogin = async () => {
     try {
       const lineAuthUrl =
@@ -22,10 +29,10 @@ const LineLoginButton = () => {
     <button
       type="button"
       onClick={handleLineLogin}
-      className="w-full border text-center text-[16px] rounded-[5px] hover:bg-[gray]/10 dark:text-foreground-dark dark:border-gray-600 p-[6px] flex items-center justify-center gap-2"
+      className={`w-full border text-center text-[16px] rounded-[5px]  dark:text-foreground-dark dark:border-gray-600 p-[6px] flex items-center justify-center gap-2 ${className}`}
     >
       <FaLine size={24} className="text-[#06C755] dark:text-[#00B900]" />
-      使用 LINE 登入
+      {t("auth:lineLogin")}
     </button>
   );
 };

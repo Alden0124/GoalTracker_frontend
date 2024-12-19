@@ -20,7 +20,7 @@ const NotFoundPage = () => {
 
         <div className="space-x-4">
           <Link
-            to={isLogin ? "/feed" : "/"}
+            to={isLogin ? "/feed" : "/home"}
             className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             返回首頁

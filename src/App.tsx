@@ -6,10 +6,12 @@ import { ToastProvider } from "@/provider/ToastProvider";
 import { selectIsAuthenticated } from "@/stores/slice/userReducer";
 import "react-toastify/dist/ReactToastify.css";
 import { useAppSelector } from "./hooks/common/useAppReduxs";
+import { useSocketListener } from "./hooks/useSocketListener";
 import Routes from "./router";
-
 function App() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  // 監聽新訊息
+  useSocketListener();
 
   return (
     <ThemeProvider>

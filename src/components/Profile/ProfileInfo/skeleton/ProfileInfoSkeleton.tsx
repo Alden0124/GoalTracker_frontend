@@ -1,6 +1,6 @@
 const ProfileInfoSkeleton = () => {
   return (
-    <div className="w-full md:w-[40%] lg:w-[30%] bg-white rounded-lg p-6 space-y-4">
+    <div className="w-full md:w-[40%] lg:w-[30%]  rounded-lg p-6 space-y-4">
       {/* 頭像和名稱區域 */}
       <div className="flex flex-col items-center space-y-3">
         <div className="w-24 h-24 rounded-full bg-gray-200 animate-pulse" />

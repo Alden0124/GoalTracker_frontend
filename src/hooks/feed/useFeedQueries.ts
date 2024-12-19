@@ -1,4 +1,3 @@
-import { queryKeys as ProfileQueryKeys } from "@/hooks/profile/ProfileInfo/queries/queryKeys";
 import { GoalFormData } from "@/schemas/goalSchema";
 import { FETCH_FEED } from "@/services/api/Feed";
 import {
@@ -24,6 +23,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { queryKeys as FeedQueryKeys } from "./queryKeys";
 
 interface UpdateGoalData extends GoalFormData {
@@ -426,22 +426,19 @@ export const useLikeComment = (
 
 // 追蹤用戶
 export const useFollowUser = () => {
+  // 多語系
+  const { t } = useTranslation(["feed"]);
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (FollowUserId: string) => FETCH_USER_PROFILE.FollowUser(FollowUserId),
-    onSuccess: (_, FollowUserId) => {
-      // 更新粉絲列表
+    mutationFn: (FollowUserId: string) =>
+      FETCH_USER_PROFILE.FollowUser(FollowUserId),
+    onSuccess: () => {
+      // 取消所有用戶緩存資料
       queryClient.invalidateQueries({
-        queryKey: FeedQueryKeys.users.following(),
+        queryKey: ["users"],
+        exact: false,
       });
-      // 更新當前用戶資料
-      queryClient.invalidateQueries({
-        queryKey: ProfileQueryKeys.users.profile(),
-      });
-      // 更新目標用戶的公開資料
-      queryClient.invalidateQueries({
-        queryKey: ProfileQueryKeys.users.publicProfile(FollowUserId),
-      });
+      notification.success({ title: t("feed:followSuccess") });
     },
     onError: (error: unknown) => {
       handleError(error, "追蹤失敗");
@@ -494,18 +491,15 @@ export const useUnfollowUser = () => {
   return useMutation({
     mutationFn: (followerId: string) =>
       FETCH_USER_PROFILE.UnfollowUser(followerId),
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       // 更新追蹤列表
       queryClient.invalidateQueries({
         queryKey: FeedQueryKeys.users.following(),
       });
-      // 更新當前用戶資料
+      // 取消所有用戶緩存資料
       queryClient.invalidateQueries({
-        queryKey: ProfileQueryKeys.users.profile(),
-      });
-      // 更新目標用戶的公開資料
-      queryClient.invalidateQueries({
-        queryKey: ProfileQueryKeys.users.publicProfile(variables),
+        queryKey: ["users"],
+        exact: false,
       });
     },
     onError: () => {

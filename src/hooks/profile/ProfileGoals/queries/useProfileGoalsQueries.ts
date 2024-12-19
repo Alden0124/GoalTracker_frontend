@@ -20,6 +20,7 @@ import {
 import { useParams } from "react-router-dom";
 import { queryKeys } from "./queryKeys";
 
+// 更新目標資料
 interface UpdateGoalData extends GoalFormData {
   status?: GoalStatus;
 }

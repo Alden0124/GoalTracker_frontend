@@ -1,12 +1,11 @@
-import { useAppDispatch, useAppSelector } from "@/hooks/common/useAppReduxs";
+import { useAppDispatch } from "@/hooks/common/useAppReduxs";
 import { queryKeys as profileQueryKeys } from "@/hooks/profile/ProfileInfo/queries/queryKeys";
 import { FETCH_USER_PROFILE } from "@/services/api/Profile/ProfileInfo";
-import { selectUserProFile, setUserInfo } from "@/stores/slice/userReducer";
+import { setUserInfo } from "@/stores/slice/userReducer";
 import { GET_COOKIE } from "@/utils/cookies";
 import { handleError } from "@/utils/errorHandler";
 import { notification } from "@/utils/notification";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 
 // 獲取當前用戶資料
 export const useCurrentUser = (options = {}) => {
@@ -35,9 +34,9 @@ export const useCurrentUser = (options = {}) => {
 };
 
 // 公開用戶資料
-export const usePublicUserProfile = (userId: string, options = {}) => {
+export const usePublicUserProfile = (userId: string | null, options = {}) => {
   return useQuery({
-    queryKey: profileQueryKeys.users.publicProfile(userId),
+    queryKey: profileQueryKeys.users.publicProfile(userId ? userId : null),
     queryFn: async () => {
       const response = await FETCH_USER_PROFILE.GetPublicUserProfile(userId);
       return response;
@@ -58,6 +57,15 @@ export const useUpdateProfile = () => {
       queryClient.invalidateQueries({
         queryKey: profileQueryKeys.users.profile(),
       });
+      console.log("更新成功");
+      queryClient.invalidateQueries({
+        queryKey: ["goals"],
+        exact: false,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["feed"],
+        exact: false,
+      });
       notification.success({ title: "更新成功" });
     },
     onError: () => {
@@ -73,23 +81,13 @@ export const useUpdateProfile = () => {
 export const useFollowUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (userId: string) => FETCH_USER_PROFILE.FollowUser(userId),
-    onSuccess: (_, userId) => {
-      // 更新當前用戶資料
+    mutationFn: (followUserId: string) =>
+      FETCH_USER_PROFILE.FollowUser(followUserId),
+    onSuccess: () => {
+      // 取消所有用戶緩存資料
       queryClient.invalidateQueries({
-        queryKey: profileQueryKeys.users.profile(),
-      });
-      // 更新目標用戶的公開資料
-      queryClient.invalidateQueries({
-        queryKey: profileQueryKeys.users.publicProfile(userId),
-      });
-       // 更新追蹤者列表
-       queryClient.invalidateQueries({
-        queryKey: profileQueryKeys.users.following(userId),
-      });
-      // 更新粉絲列表
-      queryClient.invalidateQueries({
-        queryKey: profileQueryKeys.users.followers(userId),
+        queryKey: ["users"],
+        exact: false,
       });
     },
     onError: (error: unknown) => {
@@ -102,24 +100,15 @@ export const useFollowUser = () => {
 export const useUnfollowUser = () => {
   const queryClient = useQueryClient();
   // 獲取當前用戶數據
-  const currentUserProfile = useAppSelector(selectUserProFile); 
+  // const currentUserProfile = useAppSelector(selectUserProFile);
   return useMutation({
     mutationFn: (cancleFollowUserId: string) =>
       FETCH_USER_PROFILE.UnfollowUser(cancleFollowUserId),
-    onSuccess: (_, cancleFollowUserId) => {
-      // 更新當前用戶資料
-      queryClient.invalidateQueries({ queryKey: profileQueryKeys.users.profile() });
-      // 更新目標用戶的公開資料
+    onSuccess: () => {
+      // 取消所有用戶緩存資料
       queryClient.invalidateQueries({
-        queryKey: profileQueryKeys.users.publicProfile(cancleFollowUserId),
-      });
-      // 更新追蹤者列表
-      queryClient.invalidateQueries({
-        queryKey: profileQueryKeys.users.following(currentUserProfile.id),
-      });
-      // 更新粉絲列表
-      queryClient.invalidateQueries({
-        queryKey: profileQueryKeys.users.followers(cancleFollowUserId),
+        queryKey: ["users"],
+        exact: false,
       });
       notification.success({ title: "取消追蹤成功" });
     },
