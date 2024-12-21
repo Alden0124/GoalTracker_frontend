@@ -35,7 +35,7 @@ const ChatRoomId = () => {
   if (!currentChat) return <NoUserIdskeleton />;
 
   return (
-    <div className="absolute top-[64px] w-full h-[calc(100dvh-64px)] flex-1 flex flex-col overflow-hidden ">
+    <div className=" h-[calc(100dvh-64px)] flex-1 flex flex-col overflow-hidden ">
       {/* 聊天標題 */}
       <div className=" w-full  h-16 border-b border-light-border dark:border-dark-border flex items-center justify-between px-6 bg-background-light dark:bg-background-dark">
         <div className="flex items-center space-x-3">

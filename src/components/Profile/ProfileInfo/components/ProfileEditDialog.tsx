@@ -1,6 +1,6 @@
 import Dialog from "@/components/common/Dialog";
 import ProfileAvatarUpload from "@/components/Profile/ProfileInfo/components/ProfileAvatarUpload";
-import Input from "@/components/ui/Input";
+import Input from "@/components/ui/input";
 import { useUpdateProfile } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 import {
   getProfileSchema,

@@ -4,7 +4,7 @@ import { ForgetFormData, getForgetSchema } from "@/schemas/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 // 組件
-import Input from "@/components/ui/Input";
+import Input from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
 const SendCode = () => {
   const { t } = useTranslation();

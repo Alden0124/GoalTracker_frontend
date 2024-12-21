@@ -1,6 +1,6 @@
 import GoogleLoginButton from "@/components/auth/OAuth/GoogleLoginButton";
 import LineLoginButton from "@/components/auth/OAuth/LineLoginButton";
-import Input from "@/components/ui/Input";
+import Input from "@/components/ui/input";
 import { useSignInHandler } from "@/hooks/auth/useSignIn";
 import { getSignInSchema, SignInFormDataType } from "@/schemas/authSchema";
 import { FETCH_AUTH } from "@/services/api/auth";
