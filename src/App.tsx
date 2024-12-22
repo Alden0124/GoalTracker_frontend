@@ -1,6 +1,6 @@
 import "@/assets/style/common.css";
 import "@/assets/style/notification.css";
-import { ChatWindowManager } from "@/components/Chat/ChatWindowManager";
+import { ChatWindowManager } from "@/components/chat/ChatWindowManager";
 import { ThemeProvider } from "@/provider/ThemeProvider";
 import { ToastProvider } from "@/provider/ToastProvider";
 import { selectIsAuthenticated } from "@/stores/slice/userReducer";

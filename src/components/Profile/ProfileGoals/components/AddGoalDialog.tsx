@@ -1,5 +1,5 @@
 import Dialog from "@/components/common/Dialog";
-import Input from "@/components/ui/Input";
+import Input from "@/components/ui/input";
 import { getGoalSchema, GoalFormData } from "@/schemas/goalSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

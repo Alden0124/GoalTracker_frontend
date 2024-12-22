@@ -1,3 +1,4 @@
+import { ChatWindow } from "@/components/chat/ChatWindow";
 import { useAppDispatch, useAppSelector } from "@/hooks/common/useAppReduxs";
 import {
   closeAllChatWindow,
@@ -6,7 +7,6 @@ import {
 } from "@/stores/slice/chatReducer";
 import { throttle } from "@/utils/throttle";
 import { useEffect, useState } from "react";
-import { ChatWindow } from "./ChatWindow";
 
 export const ChatWindowManager = () => {
   const dispatch = useAppDispatch();

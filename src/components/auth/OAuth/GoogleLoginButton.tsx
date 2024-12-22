@@ -13,18 +13,26 @@ interface GoogleLoginButtonProps {
 const GoogleLoginButton = ({
   className = "",
   setIsSubmitting,
+  isSubmitting,
 }: GoogleLoginButtonProps) => {
   const { handelSignInSucess, handleSignInError } = useSignInHandler();
   const { t } = useTranslation("auth");
 
+  const handleGoogleLogin = async (accessToken: string) => {
+    try {
+      setIsSubmitting?.(true);
+      const resp = await FETCH_AUTH.GoogleLogin({ token: accessToken });
+      handelSignInSucess(resp);
+    } catch (error) {
+      handleSignInError(error);
+    } finally {
+      setIsSubmitting?.(false);
+    }
+  };
+
   const login = useGoogleLogin({
     onSuccess: async (credentialResponse) => {
-      setIsSubmitting?.(true);
-      const resp = await FETCH_AUTH.GoogleLogin({
-        token: credentialResponse.access_token,
-      });
-      handelSignInSucess(resp);
-      setIsSubmitting?.(false);
+      await handleGoogleLogin(credentialResponse.access_token);
     },
     onError: (error) => {
       handleSignInError(error);
@@ -33,17 +41,16 @@ const GoogleLoginButton = ({
   });
 
   return (
-    <>
-      {/* 自定義按鈕 */}
-      <button
-        type="button"
-        onClick={() => login()}
-        className={`w-full border text-center text-[16px] rounded-[5px] text-foreground-light dark:border-gray-600 dark:text-foreground-dark p-[6px] flex items-center justify-center gap-2 ${className}`}
-      >
-        <FcGoogle size={24} />
-        {t("auth:googleLogin")}
-      </button>
-    </>
+    <button
+      type="button"
+      onClick={() => login()}
+      disabled={isSubmitting}
+      data-testid="google-login-button"
+      className={`w-full border text-center text-[16px] rounded-[5px] text-foreground-light dark:border-gray-600 dark:text-foreground-dark p-[6px] flex items-center justify-center gap-2 ${className}`}
+    >
+      <FcGoogle size={24} />
+      {t("auth:googleLogin")}
+    </button>
   );
 };
 

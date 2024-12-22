@@ -1,8 +1,8 @@
 import Dialog from "@/components/common/Dialog";
+import Following from "@/components/feed/components/Following";
+import RecommendUsers from "@/components/feed/components/RecommendUsers";
 import { memo, useState } from "react";
 import { FiUserPlus, FiUsers } from "react-icons/fi";
-import Following from "./Following";
-import RecommendUsers from "./RecommendUsers";
 
 const MobileActions = memo(() => {
   const [showUserListDialog, setShowUserListDialog] = useState(false);

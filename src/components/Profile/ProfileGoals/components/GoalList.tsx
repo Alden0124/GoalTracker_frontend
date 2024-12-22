@@ -1,4 +1,4 @@
-import GoalSkeleton from "@/components/Feed/skeleton/GoalSkeleton";
+import GoalSkeleton from "@/components/feed/skeleton/GoalSkeleton";
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { useInfiniteScroll } from "@/hooks/common/useInfiniteScroll";
 import { useGetUserGoals } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";

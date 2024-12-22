@@ -1,7 +1,7 @@
+import { ChatHeader } from "@/components/chat/ChatHeader";
+import { MessageInput } from "@/components/chat/MessageInput";
+import { MessageList } from "@/components/chat/MessageList";
 import { useSendMessage } from "@/hooks/Chat/useChatManager";
-import { ChatHeader } from "./ChatHeader";
-import { MessageInput } from "./MessageInput";
-import { MessageList } from "./MessageList";
 
 interface ChatWindowProps {
   recipientId: string;

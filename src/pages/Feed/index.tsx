@@ -1,13 +1,13 @@
-import Following from "@/components/Feed/components/Following";
-import GoalList from "@/components/Feed/components/GoalList";
-import MobileActions from "@/components/Feed/components/MobileActions";
-import RecommendUsers from "@/components/Feed/components/RecommendUsers";
-import SearchBar from "@/components/Feed/components/SearchBar";
+import Following from "@/components/feed/components/Following";
+import GoalList from "@/components/feed/components/GoalList";
+import MobileActions from "@/components/feed/components/MobileActions";
+import RecommendUsers from "@/components/feed/components/RecommendUsers";
+import SearchBar from "@/components/feed/components/SearchBar";
 import { useState } from "react";
 
 const Feed = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
-  
+
   const handleSearch = (keyword: string) => {
     setSearchKeyword(keyword);
   };
