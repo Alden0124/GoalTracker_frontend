@@ -2,8 +2,6 @@ import ProfileAvatar from "@/components/Profile/ProfileInfo/components/ProfileAv
 import FollowListDialogSkeleton from "@/components/Profile/ProfileInfo/skeleton/FollowListDialogSkeleton";
 import { FollowList } from "@/components/Profile/ProfileInfo/type";
 import { useSelectUser } from "@/hooks/Chat/useSelectUser";
-import { useUnfollowUser } from "@/hooks/feed/useFeedQueries";
-import { notification } from "@/utils/notification";
 import { useTranslation } from "react-i18next";
 import { IoPersonOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
@@ -18,26 +16,13 @@ interface FollowerListProps {
 const FollowerList = ({
   followers,
   isLoading,
-  title,
   isFetching,
 }: FollowerListProps) => {
   // 多語系
   const { t } = useTranslation(["feed"]);
-  // 取消追蹤
-  const { mutate: unfollowUser } = useUnfollowUser();
 
   // 選擇聊天對象
   const { handleSelectUser } = useSelectUser();
-
-  // 取消追蹤
-  const handleUnfollow = async (followerId: string) => {
-    const confirm = await notification.confirm({
-      title: t("feed:confirmUnfollow"),
-    });
-    if (confirm) {
-      unfollowUser(followerId);
-    }
-  };
 
   return (
     <>

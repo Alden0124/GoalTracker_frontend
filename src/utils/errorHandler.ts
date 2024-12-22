@@ -2,6 +2,7 @@ import { isApiError } from "@/services/axiosInstance/type/typeGuards";
 import { notification } from "./notification";
 
 export const handleError = (error: unknown, title: string) => {
+  // 判斷是否為 ApiError
   if (isApiError(error)) {
     const { errorMessage } = error;
 

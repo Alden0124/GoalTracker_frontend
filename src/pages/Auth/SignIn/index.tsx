@@ -135,12 +135,13 @@ const SignIn = () => {
             }}
           >
             <GoogleLoginButton
-              setIsSubmitting={setIsSubmitting}
               className={`${
                 isSubmitting
                   ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-[gray]/10 dark:text-foreground-dark "
+                  : "hover:bg-[gray]/10 dark:text-foreground-dark"
               }`}
+              setIsSubmitting={setIsSubmitting}
+              isSubmitting={isSubmitting}
             />
           </GoogleOAuthProvider>
           <LineLoginButton

@@ -277,11 +277,13 @@ export const useUpdateComment = (goalId: string, query: GetCommentsQuery) => {
       content: string;
     }) => FETCH_GOAL.UpdateComment(commentId, content),
     onSuccess: (data: { comment: Comment; message: string }) => {
-      console.log(data);
+      // 重新獲取主留言列表
       queryClient.invalidateQueries({
         queryKey: queryKeys.goals.getComments(goalId, query),
       });
-      if (data.comment?.parentId._id) {
+
+      // 安全地檢查 parentId 是否存在
+      if (data.comment?.parentId?._id) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.goals.getReplies(goalId, {
             ...query,
