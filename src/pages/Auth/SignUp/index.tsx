@@ -1,4 +1,4 @@
-import Input from "@/components/ui/Input";
+import Input from "@/components/ui/input";
 import { useEmail } from "@/hooks/auth/useEmail";
 import { getSignUpSchema, SignUpFormData } from "@/schemas/authSchema";
 import { FETCH_AUTH } from "@/services/api/auth";

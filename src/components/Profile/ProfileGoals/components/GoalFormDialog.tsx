@@ -1,5 +1,5 @@
 import Dialog from "@/components/common/Dialog";
-import Input from "@/components/ui/Input";
+import Input from "@/components/ui/input";
 import { getGoalSchema, GoalFormData } from "@/schemas/goalSchema";
 import { Goal as GoalType } from "@/services/api/Profile/ProfileGoals/type";
 import { zodResolver } from "@hookform/resolvers/zod";

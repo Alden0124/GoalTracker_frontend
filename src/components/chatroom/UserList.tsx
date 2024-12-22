@@ -1,3 +1,4 @@
+import UserListSkeleton from "@/components/chatroom/skeleton/UserListSkeleton";
 import {
   useChatRecord,
   useUpdateMessageReadStatus,
@@ -6,7 +7,6 @@ import { useAppDispatch } from "@/hooks/common/useAppReduxs";
 import { openChatRoom } from "@/stores/slice/chatReducer";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import UserListSkeleton from "./skeleton/UserListSkeleton";
 
 const UserList = () => {
   const navigate = useNavigate();

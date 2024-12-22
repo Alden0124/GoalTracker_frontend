@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 // 組件
 import ResendButton from "@/components/auth/VerifyCode/ResendButton";
-import Input from "@/components/ui/Input";
+import Input from "@/components/ui/input";
 // alert
 // 自定義hook
 import { useEmail } from "@/hooks/auth/useEmail";

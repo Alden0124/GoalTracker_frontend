@@ -1,7 +1,7 @@
-import { MessageInput } from "@/components/Chat/MessageInput";
-import { MessageList } from "@/components/Chat/MessageList";
-import ChatRoomIdSkeleton from "@/components/ChatRoom/skeleton/ChatRoomIdSkeleton";
-import NoUserIdskeleton from "@/components/ChatRoom/skeleton/NoUserIdskeleton";
+import { MessageInput } from "@/components/chat/MessageInput";
+import { MessageList } from "@/components/chat/MessageList";
+import ChatRoomIdSkeleton from "@/components/chatroom/skeleton/ChatRoomIdSkeleton";
+import NoUserIdskeleton from "@/components/chatroom/skeleton/NoUserIdskeleton";
 import { useSendMessage } from "@/hooks/Chat/useChatManager";
 import { usePublicUserProfile } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 import { useNavigate, useParams } from "react-router-dom";
@@ -35,7 +35,7 @@ const ChatRoomId = () => {
   if (!currentChat) return <NoUserIdskeleton />;
 
   return (
-    <div className="absolute top-[64px] w-full h-[calc(100dvh-64px)] flex-1 flex flex-col overflow-hidden ">
+    <div className=" h-[calc(100dvh-64px)] flex-1 flex flex-col overflow-hidden ">
       {/* 聊天標題 */}
       <div className=" w-full  h-16 border-b border-light-border dark:border-dark-border flex items-center justify-between px-6 bg-background-light dark:bg-background-dark">
         <div className="flex items-center space-x-3">

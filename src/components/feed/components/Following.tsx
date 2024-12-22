@@ -1,10 +1,10 @@
 import Wrapper from "@/components/common/Wrapper";
+import FollowerList from "@/components/feed/components/FollowerList";
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { useGetFollowers, useGetFollowing } from "@/hooks/feed/useFeedQueries";
 import { selectUserProFile } from "@/stores/slice/userReducer";
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import FollowerList from "./FollowerList";
 
 interface FollowingProps {
   className?: string;

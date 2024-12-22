@@ -1,6 +1,6 @@
 import GoogleLoginButton from "@/components/auth/OAuth/GoogleLoginButton";
 import LineLoginButton from "@/components/auth/OAuth/LineLoginButton";
-import Input from "@/components/ui/Input";
+import Input from "@/components/ui/input";
 import { useSignInHandler } from "@/hooks/auth/useSignIn";
 import { getSignInSchema, SignInFormDataType } from "@/schemas/authSchema";
 import { FETCH_AUTH } from "@/services/api/auth";
@@ -135,12 +135,13 @@ const SignIn = () => {
             }}
           >
             <GoogleLoginButton
-              setIsSubmitting={setIsSubmitting}
               className={`${
                 isSubmitting
                   ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-[gray]/10 dark:text-foreground-dark "
+                  : "hover:bg-[gray]/10 dark:text-foreground-dark"
               }`}
+              setIsSubmitting={setIsSubmitting}
+              isSubmitting={isSubmitting}
             />
           </GoogleOAuthProvider>
           <LineLoginButton

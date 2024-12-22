@@ -8,7 +8,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 // 組件
-import Input from "@/components/ui/Input";
+import Input from "@/components/ui/input";
 // api
 import { FETCH_AUTH } from "@/services/api/auth";
 // type
