@@ -1,4 +1,4 @@
-import UserListSkeleton from "@/components/chatRoom/skeleton/UserListSkeleton";
+import UserListSkeleton from "@/components/chatroom/skeleton/UserListSkeleton";
 import {
   useChatRecord,
   useUpdateMessageReadStatus,

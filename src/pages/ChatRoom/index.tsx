@@ -1,5 +1,5 @@
-import NoUserIdskeleton from "@/components/chatRoom/skeleton/NoUserIdskeleton";
-import UserList from "@/components/chatRoom/UserList";
+import NoUserIdskeleton from "@/components/chatroom/skeleton/NoUserIdskeleton";
+import UserList from "@/components/chatroom/UserList";
 import { useAppDispatch } from "@/hooks/common/useAppReduxs";
 import { closeChatRoom } from "@/stores/slice/chatReducer";
 import { useEffect } from "react";

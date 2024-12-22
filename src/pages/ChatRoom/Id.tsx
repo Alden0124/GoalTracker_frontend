@@ -1,7 +1,7 @@
 import { MessageInput } from "@/components/chat/MessageInput";
 import { MessageList } from "@/components/chat/MessageList";
-import ChatRoomIdSkeleton from "@/components/chatRoom/skeleton/ChatRoomIdSkeleton";
-import NoUserIdskeleton from "@/components/chatRoom/skeleton/NoUserIdskeleton";
+import ChatRoomIdSkeleton from "@/components/chatroom/skeleton/ChatRoomIdSkeleton";
+import NoUserIdskeleton from "@/components/chatroom/skeleton/NoUserIdskeleton";
 import { useSendMessage } from "@/hooks/Chat/useChatManager";
 import { usePublicUserProfile } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 import { useNavigate, useParams } from "react-router-dom";
