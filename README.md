@@ -1,50 +1,88 @@
-# React + TypeScript + Vite
+# GoalTracker - 目標追蹤與社群平台
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一個幫助用戶設定、追蹤並實現目標的網路應用程式。透過社群互動提高達成目標的動力。
 
-Currently, two official plugins are available:
+## 主要功能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 目標設定與追蹤
+- 設立短期和長期目標
+- 詳細記錄目標進度
+- 設定開始和結束日期
+- 標記完成的里程碑
 
-## Expanding the ESLint configuration
+### 社群互動
+- 分享目標進展
+- 互相評論與按讚
+- 追蹤其他用戶
+- 即時聊天功能
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### 個人化推薦
+- 推薦相似目標的用戶
+- 發掘新的目標靈感
+- 建立志同道合的社群
 
-- Configure the top-level `parserOptions` property like this:
+## 技術架構
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- 前端框架: React 18
+- 開發工具: Vite
+- 程式語言: TypeScript
+- UI 框架: Tailwind CSS
+- 狀態管理: Redux Toolkit
+- API 整合: React Query
+- 多語言: react-i18next
+- 表單處理: React Hook Form
+- 即時通訊: Socket.IO
+
+## 開始使用
+
+1. 安裝依賴:
+```bash
+npm install
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+2. 開發環境運行:
+```bash
+npm run dev
 ```
+
+3. 建置專案:
+```bash
+npm run build
+```
+
+## 專案特色
+
+- 🌓 深色模式支持
+- 🌐 多語言支援 (繁體中文、英文)
+- 📱 響應式設計
+- 🔒 完整的身份驗證
+- 💬 即時聊天功能
+- 🔔 即時通知系統
+
+## 環境要求
+
+- Node.js 16+
+- npm 7+
+
+## 專案結構
+
+```
+src/
+  ├── assets/        # 靜態資源
+  ├── components/    # React 組件
+  ├── hooks/         # 自定義 Hooks
+  ├── locales/       # 多語言文件
+  ├── pages/         # 頁面組件
+  ├── services/      # API 服務
+  ├── stores/        # Redux store
+  └── utils/         # 工具函數
+```
+
+## 開發團隊
+
+- 前端開發: [您的名字]
+- 聯絡方式: h0989541162@gmail.com
+
+## 授權
+
+© 2024 GoalTracker. All rights reserved.
